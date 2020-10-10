@@ -14,15 +14,16 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::post('register', 'restaurant\API\V1\RegisterController@register');
-Route::post('login', 'restaurant\API\V1\RegisterController@login');
-   
-Route::middleware('auth:api')->group( function () {
-    Route::resource('products', 'API\ProductController');
-});
+Route::apiResources([
+    'customers' => API\V1\CustomerController::class,
+    'restaurants' => API\V1\RestaurantController::class,
+    'shippers' => API\V1\ShipperController::class,
+]);
 
 
 
-Route::fallback(function() {
-    return 'Hm, why did you land here somehow?';
+
+Route::fallback(function(){
+    return response()->json([
+        'message' => 'Page Not Found. If error persists, contact info@website.com'], 404);
 });

@@ -12,8 +12,6 @@ class CreateCustomersTable extends Migration
      *
      * @return void
      */
-    use TableCommonColumn;
-
     public function up()
     {
         Schema::create('customers', function (Blueprint $table) {
@@ -24,7 +22,8 @@ class CreateCustomersTable extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
-            $this->commonColumns($table);
+            $table->enum('status', ['active','inactive'])->default('active');
+            $table->timestamps();
         });
     }
 
