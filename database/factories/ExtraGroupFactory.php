@@ -2,7 +2,7 @@
 
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
 
-use App\Models\RestaurantReview;
+use App\Models\ExtraGroup;
 use Faker\Generator as Faker;
 use Illuminate\Support\Str;
 
@@ -17,13 +17,11 @@ use Illuminate\Support\Str;
 |
 */
 
-$factory->define(RestaurantReview::class, function (Faker $faker) {
+$factory->define(ExtraGroup::class, function (Faker $faker) {
     return [
-        'review' => $faker->text,
-        'rate' => $faker->numberBetween(1,5),
-        'restaurant_id' => $faker->numberBetween(1, App\Models\Restaurant::count()),
-        'customer_id' => $faker->numberBetween(1, App\Models\Customer::count()),
-        'created_at' => date('Y-m-d h:i:s'),
-        'updated_at' => date('Y-m-d h:i:s'),
+        'name' => $faker->title,
+        'status' => 1,
+        'created_by' => 1,
+        'created_at' => $faker->date(),
     ];
 });

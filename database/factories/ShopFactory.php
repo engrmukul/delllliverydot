@@ -2,7 +2,7 @@
 
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
 
-use App\Models\Food;
+use App\Models\Shop;
 use Faker\Generator as Faker;
 use Illuminate\Support\Str;
 
@@ -17,24 +17,23 @@ use Illuminate\Support\Str;
 |
 */
 
-$factory->define(Food::class, function (Faker $faker) {
+$factory->define(Shop::class, function (Faker $faker) {
     return [
         'name' => $faker->name,
-        'short_description' => $faker->text,
+        'delivery_type' => 'home',
+        'delivery_fee' => 0,
+        'delivery_time' => '30 min',
+        'discount' => 0.00,
+        'delivery_range' => 5,
+        'mobile' => $faker->phoneNumber,
+        'address' => $faker->address,
+        'latitude' => $faker->latitude,
+        'longitude' => $faker->longitude,
+        'closed_shop' => 1,
+        'available_for_delivery' => 1,
         'image' => $faker->imageUrl(),
-        'discount_price' => $faker->randomFloat(8,2),
         'description' => $faker->text,
-        'ingredients' => $faker->text,
-        'unit' => $faker->text,
-        'package_count' => $faker->numberBetween(1,5),
-        'weight' => 200,
-        'featured' => 1,
-        'deliverable_food' => 1,
-        'restaurant_id' => $faker->numberBetween(1, App\Models\Restaurant::count()),
-        'category_id' => $faker->numberBetween(1, App\Models\Category::count()),
+        'information' => $faker->text,
         'options' => $faker->text,
-        'status' => 'active',
-        'created_by' => 1,
-        'created_at' => date('Y-m-d'),
     ];
 });

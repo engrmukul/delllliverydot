@@ -2,7 +2,7 @@
 
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
 
-use App\Models\Food;
+use App\Models\Coupon;
 use Faker\Generator as Faker;
 use Illuminate\Support\Str;
 
@@ -17,24 +17,18 @@ use Illuminate\Support\Str;
 |
 */
 
-$factory->define(Food::class, function (Faker $faker) {
+$factory->define(Coupon::class, function (Faker $faker) {
     return [
-        'name' => $faker->name,
-        'short_description' => $faker->text,
-        'image' => $faker->imageUrl(),
-        'discount_price' => $faker->randomFloat(8,2),
-        'description' => $faker->text,
-        'ingredients' => $faker->text,
-        'unit' => $faker->text,
-        'package_count' => $faker->numberBetween(1,5),
-        'weight' => 200,
-        'featured' => 1,
-        'deliverable_food' => 1,
+        'code' => 'DOT'.$faker->unique()->numberBetween(1,3),
+        'discount_type' => 'percent',
+        'discount' => $faker->randomFloat(2,2),
+        'food_id' => $faker->numberBetween(1, App\Models\Food::count()),
         'restaurant_id' => $faker->numberBetween(1, App\Models\Restaurant::count()),
         'category_id' => $faker->numberBetween(1, App\Models\Category::count()),
-        'options' => $faker->text,
-        'status' => 'active',
+        'expire_at' => $faker->dateTime(),
+        'enabled' => 1,
+        'status' => 1,
         'created_by' => 1,
-        'created_at' => date('Y-m-d'),
+        'created_at' => $faker->date(),
     ];
 });

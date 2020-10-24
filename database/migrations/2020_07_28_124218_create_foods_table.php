@@ -21,8 +21,7 @@ class CreateFoodsTable extends Migration
             $table->string('name', 150)->nullable(false);
             $table->string('short_description', 200)->nullable();
             $table->string('image', 100)->nullable();
-            $table->double('price',8,2)->default(0.00);
-            $table->double('discount_price',8,2)->default(0.00);
+            $table->string('discount_price', 20)->default(10.00);
             $table->text('description')->nullable();
             $table->text('ingredients')->nullable();
             $table->string('unit')->comment('Enter the unit of food (ex:L, ml, Kg, g)');
