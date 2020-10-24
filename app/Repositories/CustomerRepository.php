@@ -7,6 +7,7 @@ use App\Contracts\CustomerContract;
 use Illuminate\Database\QueryException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Doctrine\Instantiator\Exception\InvalidArgumentException;
+use Twilio\Rest\Client;
 use Yajra\DataTables\Facades\DataTables;
 
 class CustomerRepository extends BaseRepository implements CustomerContract
@@ -59,9 +60,52 @@ class CustomerRepository extends BaseRepository implements CustomerContract
 
             $customer = new Customer($collection->all());
 
-            $customer->save();
+            /* Get credentials from .env */
+            $token = getenv("TWILIO_AUTH_TOKEN");
+            $twilio_sid = getenv("TWILIO_SID");
+            $twilio_verify_sid = getenv("TWILIO_VERIFY_SID");
+            $twilio = new Client($twilio_sid, $token);
+            $twilio->verify->v2->services($twilio_verify_sid)
+                ->verifications
+                ->create($collection['phone_number'], "sms");
+
+            $created_at = date('Y-m-d');
+
+            $merge = $collection->merge(compact('created_at'));
+
+            $customer->save($merge->all());
 
             return $customer;
+
+        } catch (QueryException $exception) {
+            throw new InvalidArgumentException($exception->getMessage());
+        }
+    }
+
+    public function customerOTPVerify(array $params)
+    {
+        try {
+            $collection = collect($params);
+
+            /* Get credentials from .env */
+            $token = getenv("TWILIO_AUTH_TOKEN");
+            $twilio_sid = getenv("TWILIO_SID");
+            $twilio_verify_sid = getenv("TWILIO_VERIFY_SID");
+            $twilio = new Client($twilio_sid, $token);
+
+            $verification = $twilio->verify->v2->services($twilio_verify_sid)
+                ->verificationChecks
+                ->create($collection['verification_code'], array('to' => $collection['phone_number']));
+
+            if ($verification->valid) {
+
+                $otp = tap(Customer::where('phone_number', $collection['phone_number']))->update(['isVerified' => true]);
+
+                return $this->findCustomerById($params['id']);
+
+            }else{
+                return false;
+            }
 
         } catch (QueryException $exception) {
             throw new InvalidArgumentException($exception->getMessage());

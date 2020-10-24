@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\API\V1;
 
 use App\Contracts\CustomerContract;
+use App\Http\Requests\CustomerOTPVerificationFormRequest;
+use App\Http\Requests\CustomerPhoneVerificationFormRequest;
 use App\Http\Requests\CustomerStoreFormRequest;
 use App\Http\Requests\CustomerUpdateFormRequest;
 use App\Models\Customer;
@@ -25,7 +27,7 @@ class CustomerController extends BaseController
         return $this->sendResponse($customers, 'Customer retrieved successfully.',Response::HTTP_OK);
     }
 
-    public function store(CustomerStoreFormRequest $request)
+    public function store(CustomerPhoneVerificationFormRequest $request)
     {
         $params = $request->except('_token');
 
@@ -36,6 +38,19 @@ class CustomerController extends BaseController
         }
         return $this->sendError('Unable to create.', 'Internal Server Error' ,Response::HTTP_INTERNAL_SERVER_ERROR);
     }
+
+    protected function otpVerify(CustomerOTPVerificationFormRequest $request)
+    {
+        $params = $request->except('_token');
+
+        $otp = $this->customerRepository->customerOTPVerify($params);
+
+        if ($otp) {
+            return $this->sendResponse($otp, 'Customer phone number valid.',Response::HTTP_OK);
+        }
+        return $this->sendError('Invalid verification code entered!.', 'Internal Server Error' ,Response::HTTP_INTERNAL_SERVER_ERROR);
+    }
+
 
     public function edit($id)
     {

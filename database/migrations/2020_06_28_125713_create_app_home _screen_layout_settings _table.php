@@ -18,7 +18,7 @@ class CreateAppHomeScreenLayoutSettingsTable extends Migration
     {
         Schema::create('app_home_screen_layout_settings', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->enum('row', ['trending','popular','discounted', 'favorite', 'top_rating_restaurant', 'top_rating_food'])->default('trending');
+            $table->enum('row', ['trending','popular','discounted', 'favorite', 'trr', 'trf'])->default('trending')->comment('trr=top rating restaurant, trf=top rating food');
             $this->commonColumns($table);
         });
     }

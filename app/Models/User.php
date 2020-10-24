@@ -9,12 +9,12 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * Class Attribute
  * @package App\Models
  */
-class Customer extends Model
+class User extends Model
 {
     /**
      * @var string
      */
-    protected $table = 'customers';
+    protected $table = 'users';
 
     /**
      * @var array
@@ -22,11 +22,9 @@ class Customer extends Model
     protected $fillable = [
         'name',
         'email',
-        'phone_number',
-        'isVerified',
         'email_verified_at',
         'password',
-        'status',
+        'remember_token',
         'created_at',
         'updated_at',
     ];

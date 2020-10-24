@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class CustomerStoreFormRequest extends FormRequest
+class CustomerOTPVerificationFormRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,17 +24,9 @@ class CustomerStoreFormRequest extends FormRequest
      */
     public function rules()
     {
-        if ($this->request->has('phone_number')){
-            $phone_number = $this->phone_number;
-        }
-
         return [
-            'phone_number' => [
-                'required',
-                Rule::unique('customers')->where(function ($query) use($phone_number) {
-                    return $query->where('phone_number', $phone_number);
-                }),
-            ]
+            'verification_code' => ['required', 'numeric'],
+            'phone_number' => ['required', 'string'],
         ];
     }
 }

@@ -20,6 +20,8 @@ Route::apiResources([
     'shippers' => API\V1\ShipperController::class,
 ]);
 
+Route::post('/otp-verify', 'API\V1\CustomerController@otpVerify')->name('otp-verify');
+
 
 
 

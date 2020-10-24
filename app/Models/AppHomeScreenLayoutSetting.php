@@ -9,26 +9,25 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * Class Attribute
  * @package App\Models
  */
-class Customer extends Model
+class AppHomeScreenLayoutSetting extends Model
 {
     /**
      * @var string
      */
-    protected $table = 'customers';
+    protected $table = 'app_home_screen_layout_settings';
 
     /**
      * @var array
      */
     protected $fillable = [
-        'name',
-        'email',
-        'phone_number',
-        'isVerified',
-        'email_verified_at',
-        'password',
+        'row',
         'status',
+        'created_by',
         'created_at',
+        'updated_by',
         'updated_at',
+        'deleted_by',
+        'deleted_at',
     ];
 
     /**

@@ -9,26 +9,28 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * Class Attribute
  * @package App\Models
  */
-class Customer extends Model
+class Category extends Model
 {
     /**
      * @var string
      */
-    protected $table = 'customers';
+    protected $table = 'categories';
 
     /**
      * @var array
      */
     protected $fillable = [
         'name',
-        'email',
-        'phone_number',
-        'isVerified',
-        'email_verified_at',
-        'password',
+        'description',
+        'image',
+        'option',
         'status',
+        'created_by',
         'created_at',
+        'updated_by',
         'updated_at',
+        'deleted_by',
+        'deleted_at',
     ];
 
     /**
