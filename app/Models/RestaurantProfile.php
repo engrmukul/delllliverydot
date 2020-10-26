@@ -49,5 +49,4 @@ class RestaurantProfile extends Model
     protected $casts  = [
 
     ];
-
 }

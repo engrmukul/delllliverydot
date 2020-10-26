@@ -21,6 +21,6 @@ $factory->define(FoodVariant::class, function (Faker $faker) {
     return [
         'food_id' => $faker->numberBetween(1, App\Models\Food::count()),
         'name' => $faker->name,
-        'price' => $faker->randomNumber(1,500),
+        'price' => $faker->randomFloat(3, 0,500),
         ];
 });

@@ -15,6 +15,7 @@ class Order extends Model
      * @var string
      */
     protected $table = 'orders';
+    public $timestamps = false;
 
     /**
      * @var array
@@ -32,7 +33,7 @@ class Order extends Model
         'delivery_fee',
         'instructions',
         'restaurant_id',
-        'coup_code'
+        'coupon_code'
     ];
 
     /**
@@ -41,5 +42,15 @@ class Order extends Model
     protected $casts  = [
 
     ];
+
+    public function orderDetails()
+    {
+        return $this->hasMany(OrderDetail::class);
+    }
+
+    public function RestaurantDetails()
+    {
+        return $this->hasOne(RestaurantProfile::class,'restaurant_id','restaurant_id');
+    }
 
 }

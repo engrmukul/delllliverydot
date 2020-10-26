@@ -15,6 +15,7 @@ class OrderDetail extends Model
      * @var string
      */
     protected $table = 'order_details';
+    public $timestamps = false;
 
     /**
      * @var array
@@ -36,5 +37,15 @@ class OrderDetail extends Model
     protected $casts  = [
 
     ];
+
+    public function foods()
+    {
+        return $this->hasOne(Food::class, 'id','food_id');
+    }
+
+    public function foodVariants()
+    {
+        return $this->hasMany(FoodVariant::class, 'id','food_variant_id');
+    }
 
 }

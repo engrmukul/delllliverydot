@@ -21,6 +21,7 @@ Route::apiResources([
 ]);
 
 Route::post('/otp-verify', 'API\V1\CustomerController@otpVerify')->name('otp-verify');
+Route::post('/my-orders', 'API\V1\OrderController@index')->name('my-orders');
 
 
 

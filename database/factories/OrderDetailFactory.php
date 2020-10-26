@@ -24,7 +24,7 @@ $factory->define(OrderDetail::class, function (Faker $faker) {
         'food_variant_id' => $faker->numberBetween(1, App\Models\FoodVariant::count()),
         'food_quantity' => 1,
         'extra_id' => $faker->numberBetween(1, App\Models\Extra::count()),
-        'extra_price'=> $faker->randomFloat(4,2),
-        'sub_total'=> $faker->randomFloat(4,2),
+        'extra_price'=> $faker->randomFloat(2,0,2),
+        'sub_total'=> $faker->randomFloat(2,0,2),
     ];
 });

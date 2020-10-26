@@ -23,7 +23,7 @@ class CreateShopsTable extends Migration
             $table->string('delivery_time')->default('30 min');
             $table->float('discount')->default(0.00);
             $table->integer('delivery_range')->default(5);
-            $table->string('mobile',14);
+            $table->string('mobile',30);
             $table->text('address');
             $table->string('latitude', 15);
             $table->string('longitude', 15);

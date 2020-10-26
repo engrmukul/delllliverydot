@@ -22,7 +22,7 @@ $factory->define(Extra::class, function (Faker $faker) {
         'name' => $faker->title,
         'description' => $faker->text,
         'image' => $faker->imageUrl(),
-        'price' => $faker->randomFloat(4,2),
+        'price' => $faker->randomFloat(2,0,3),
         'food_id' => $faker->numberBetween(1, App\Models\Food::count()),
         'extra_group_id' => $faker->numberBetween(1, App\Models\ExtraGroup::count()),
         'status' => 1,

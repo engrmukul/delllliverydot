@@ -41,4 +41,8 @@ class Restaurant extends Model
 
     ];
 
+    public function restaurantDetails(){
+        return $this->hasOne('App\Models\RestaurantProfile');
+    }
+
 }

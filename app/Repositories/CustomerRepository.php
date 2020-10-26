@@ -101,7 +101,8 @@ class CustomerRepository extends BaseRepository implements CustomerContract
 
                 $otp = tap(Customer::where('phone_number', $collection['phone_number']))->update(['isVerified' => true]);
 
-                return $this->findCustomerById($params['id']);
+                //return $this->findCustomerById($params['id']);
+                return $otp;
 
             }else{
                 return false;
