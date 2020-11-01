@@ -17,6 +17,7 @@ class CreateDeliveriesTable extends Migration
     {
         Schema::create('deliveries', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->foreignId('customer_id')->references('id')->on('customers')->onDelete('cascade');
             $table->string('from_name', 100);
             $table->string('from_phone', 20);
             $table->string('from_email', 100);

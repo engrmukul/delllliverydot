@@ -8,6 +8,7 @@ use App\Http\Requests\CustomerPhoneVerificationFormRequest;
 use App\Http\Requests\CustomerStoreFormRequest;
 use App\Http\Requests\CustomerUpdateFormRequest;
 use App\Models\Customer;
+use App\Models\Setting;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
@@ -34,6 +35,11 @@ class CustomerController extends BaseController
         $customer = $this->customerRepository->createCustomer($params);
 
         if ($customer) {
+            $settings = new Setting();
+            $settings->customer_id = $customer->id;
+            $settings->save();
+
+
             return $this->sendResponse($customer, 'Customer saved successfully.',Response::HTTP_OK);
         }
         return $this->sendError('Unable to create.', 'Internal Server Error' ,Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -45,8 +51,10 @@ class CustomerController extends BaseController
 
         $otp = $this->customerRepository->customerOTPVerify($params);
 
+        $customer = Customer::where('phone_number', $request->phone_number)->first();
+
         if ($otp) {
-            return $this->sendResponse($otp, 'Customer phone number valid.',Response::HTTP_OK);
+            return $this->sendResponse($customer, 'Customer phone number valid.',Response::HTTP_OK);
         }
         return $this->sendError('Invalid verification code entered!.', 'Internal Server Error' ,Response::HTTP_INTERNAL_SERVER_ERROR);
     }

@@ -9,21 +9,22 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * Class Attribute
  * @package App\Models
  */
-class FavoriteFood extends Model
+class Setting extends Model
 {
     /**
      * @var string
      */
-    protected $table = 'favorite_foods';
+    protected $table = 'settings';
+    public $timestamps = false;
 
     /**
      * @var array
      */
     protected $fillable = [
         'customer_id',
-        'food_id',
-        'created_at',
-        'updated_at',
+        'notification',
+        'sms',
+        'offer_and_promotion',
     ];
 
     /**
@@ -32,10 +33,5 @@ class FavoriteFood extends Model
     protected $casts  = [
 
     ];
-
-    public function foods()
-    {
-        return $this->hasOne(Food::class,'id', 'food_id');
-    }
 
 }
