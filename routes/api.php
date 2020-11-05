@@ -33,6 +33,9 @@ Route::post('/my-delivery-save', 'API\V1\RestaurantController@myDeliverySave')->
 Route::post('/my-delivery', 'API\V1\RestaurantController@myDeliveryList')->name('my-delivery');
 Route::post('/settings', 'API\V1\RestaurantController@settings')->name('settings');
 Route::post('/settings-update', 'API\V1\RestaurantController@settingsUpdate')->name('settings-update');
+Route::post('/order', 'API\V1\RestaurantController@order')->name('order');
+
+Route::post('/restaurant-order-list', 'API\V1\RestaurantController@restaurantOrderList')->name('restaurant-order-list');
 
 
 

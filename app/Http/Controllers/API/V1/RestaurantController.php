@@ -9,6 +9,8 @@ use App\Models\CustomerProfile;
 use App\Models\Delivery;
 use App\Models\FavoriteFood;
 use App\Models\Food;
+use App\Models\Order;
+use App\Models\OrderDetail;
 use App\Models\Setting;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -158,6 +160,74 @@ class RestaurantController extends BaseController
 
         return $this->sendResponse($Setting, 'Seetings updated successfully.',Response::HTTP_OK);
     }
+
+
+    public function order(Request $request)
+    {
+        $order = new Order();
+
+        $order->customer_id  = $request->customer_id;
+        $order->delivery_address  = $request->delivery_address ;
+        $order->order_date  = date('Y-m-d') ;
+        $order->order_status  = 'order_received' ;
+        $order->payment_method  = $request->payment_method ;
+        $order->payment_status  = $request->payment_status ;
+        $order->total_price  = $request->total_price ;
+        $order->discount  = $request->discount ;
+        $order->vat  = 0 ;
+        $order->delivery_fee  = $request->delivery_fee ;
+        $order->instructions  = $request->instructions ;
+        $order->restaurant_id  = $request->restaurant_id ;
+        $order->coupon_code  = $request->coupon_code ;
+
+        $order->save();
+
+        $foodArray = array();
+        foreach($request->food_id as $key => $item){
+
+            $foodData['order_id']           = $order->id;
+            $foodData['food_id']            = $item ;
+            $foodData['food_variant_id']    = $item[$key]['food_variant_id'] ;
+            $foodData['food_price']         = $item[$key]['food_price'] ;
+            $foodData['food_quantity']      = $item[$key]['food_quantity'] ;
+            $foodData['extra_id']           = $item[$key]['extra_id'] ;
+            $foodData['extra_price']        = $item[$key]['extra_price'] ;
+            $foodData['sub_total']          = $item[$key]['sub_total'] ;
+
+            $foodArray[] = $foodData;
+        }
+
+
+
+        OrderDetail::insert($foodArray);
+
+
+        return $this->sendResponse($order, 'Order added successfully.',Response::HTTP_OK);
+    }
+
+    public function restaurantOrderList(Request $request)
+    {
+        $orders = Order::where('restaurant_id', $request->restaurant_id)->orderBy('id', 'DESC')->get();
+
+        return $this->sendResponse($orders, 'Restaurant order list.',Response::HTTP_OK);
+    }
+
+    public function restaurantOrderUpdate(Request $request)
+    {
+        Order::where(["id" => $request->order_id])->update(
+            [
+                "order_status" => $request->order_status,
+            ]
+        );
+
+        $order = Order::where('id', $request->order_id)->first();
+
+        return $this->sendResponse($order, 'Order updated successfully.',Response::HTTP_OK);
+    }
+
+
+
+
 
 
 }
