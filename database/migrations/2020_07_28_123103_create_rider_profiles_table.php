@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateCustomerProfilesTable extends Migration
+class CreateRiderProfilesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,10 @@ class CreateCustomerProfilesTable extends Migration
      */
     public function up()
     {
-        Schema::create('customer_profiles', function (Blueprint $table) {
+        Schema::create('rider_profiles', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->foreignId('customer_id')->references('id')->on('customers')->onDelete('cascade');
+            $table->foreignId('rider_id')->references('id')->on('riders')->onDelete('cascade');
+            $table->string('nid_or_passport', 100)->nullable();
             $table->string('image', 100)->nullable();
             $table->date('dob')->nullable();
             $table->date('spouse_dob')->nullable();
@@ -36,6 +37,6 @@ class CreateCustomerProfilesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('customer_profiles');
+        Schema::dropIfExists('rider_profiles');
     }
 }

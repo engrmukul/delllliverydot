@@ -53,4 +53,10 @@ class Order extends Model
         return $this->hasOne(RestaurantProfile::class,'restaurant_id','restaurant_id');
     }
 
+    public function customer()
+    {
+        return $this->hasOne(Customer::class,'id', 'customer_id');
+    }
+
+
 }

@@ -17,10 +17,12 @@ use Illuminate\Support\Facades\Route;
 Route::apiResources([
     'customers' => API\V1\CustomerController::class,
     'restaurants' => API\V1\RestaurantController::class,
-    'shippers' => API\V1\ShipperController::class,
+    'riders' => API\V1\RiderController::class,
 ]);
 
 Route::post('/otp-verify', 'API\V1\CustomerController@otpVerify')->name('otp-verify');
+
+
 Route::post('/my-orders', 'API\V1\OrderController@index')->name('my-orders');
 
 Route::post('/items', 'API\V1\RestaurantController@itemList')->name('items');
@@ -37,6 +39,15 @@ Route::post('/order', 'API\V1\RestaurantController@order')->name('order');
 
 Route::post('/restaurant-order-list', 'API\V1\RestaurantController@restaurantOrderList')->name('restaurant-order-list');
 
+
+
+//RIDER
+Route::post('/rider-otp-verify', 'API\V1\RiderController@otpVerify')->name('rider-otp-verify');
+Route::post('/rider-document', 'API\V1\RiderController@documentUpdate')->name('rider-document');
+Route::post('/rider-today-order', 'API\V1\RiderController@riderTodayOrder')->name('rider-today-order');
+Route::post('/rider-order-history', 'API\V1\RiderController@index')->name('rider-order-history');
+Route::post('/rider-profile-update', 'API\V1\RiderController@riderProfileUpdate')->name('rider-profile-update');
+Route::post('/rider-settings', 'API\V1\RiderController@settingsUpdate')->name('rider-settings');
 
 
 

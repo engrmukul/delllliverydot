@@ -13,7 +13,7 @@ class FoodReviewsTableSeeder extends Seeder
      */
     public function run()
     {
-        $count = 500;
+        $count = 100;
         factory(FoodReview::class, $count)->create();
     }
 }
