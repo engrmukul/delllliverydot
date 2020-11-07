@@ -25,17 +25,17 @@ Route::post('/otp-verify', 'API\V1\CustomerController@otpVerify')->name('otp-ver
 
 Route::post('/my-orders', 'API\V1\OrderController@index')->name('my-orders');
 
-Route::post('/items', 'API\V1\RestaurantController@itemList')->name('items');
-Route::post('/my-location-save', 'API\V1\RestaurantController@myLocationSave')->name('my-location-save');
-Route::post('/my-locations', 'API\V1\RestaurantController@myLocation')->name('my-locations');
-Route::post('/my-profile', 'API\V1\RestaurantController@myProfile')->name('my-profile');
-Route::post('/profile-update', 'API\V1\RestaurantController@myProfileUpdate')->name('profile-update');
-Route::post('/my-favorite-foods', 'API\V1\RestaurantController@myFavoriteFood')->name('my-favorite-foods');
-Route::post('/my-delivery-save', 'API\V1\RestaurantController@myDeliverySave')->name('my-delivery-save');
-Route::post('/my-delivery', 'API\V1\RestaurantController@myDeliveryList')->name('my-delivery');
-Route::post('/settings', 'API\V1\RestaurantController@settings')->name('settings');
-Route::post('/settings-update', 'API\V1\RestaurantController@settingsUpdate')->name('settings-update');
-Route::post('/order', 'API\V1\RestaurantController@order')->name('order');
+Route::post('/items', 'API\V1\CustomerController@itemList')->name('items');
+Route::post('/my-location-save', 'API\V1\CustomerController@myLocationSave')->name('my-location-save');
+Route::post('/my-locations', 'API\V1\CustomerController@myLocation')->name('my-locations');
+Route::post('/my-profile', 'API\V1\CustomerController@myProfile')->name('my-profile');
+Route::post('/profile-update', 'API\V1\CustomerController@myProfileUpdate')->name('profile-update');
+Route::post('/my-favorite-foods', 'API\V1\CustomerController@myFavoriteFood')->name('my-favorite-foods');
+Route::post('/my-delivery-save', 'API\V1\CustomerController@myDeliverySave')->name('my-delivery-save');
+Route::post('/my-delivery', 'API\V1\CustomerController@myDeliveryList')->name('my-delivery');
+Route::post('/settings', 'API\V1\CustomerController@settings')->name('settings');
+Route::post('/settings-update', 'API\V1\CustomerController@settingsUpdate')->name('settings-update');
+Route::post('/order', 'API\V1\CustomerController@order')->name('order');
 
 Route::post('/restaurant-order-list', 'API\V1\RestaurantController@restaurantOrderList')->name('restaurant-order-list');
 
@@ -48,6 +48,16 @@ Route::post('/rider-today-order', 'API\V1\RiderController@riderTodayOrder')->nam
 Route::post('/rider-order-history', 'API\V1\RiderController@index')->name('rider-order-history');
 Route::post('/rider-profile-update', 'API\V1\RiderController@riderProfileUpdate')->name('rider-profile-update');
 Route::post('/rider-settings', 'API\V1\RiderController@settingsUpdate')->name('rider-settings');
+
+
+//RESTAURANT
+Route::post('/restaurant-otp-verify', 'API\V1\RestauranrController@otpVerify')->name('restaurant-otp-verify');
+Route::post('/restaurant-document', 'API\V1\RestauranrController@documentUpdate')->name('restaurant-document');
+Route::post('/restaurant-today-order', 'API\V1\RestauranrController@restaurentTodayOrder')->name('restaurant-today-order');
+Route::post('/restaurant-order-history', 'API\V1\RestauranrController@index')->name('restaurant-order-history');
+Route::post('/restaurant-profile-update', 'API\V1\RestauranrController@restaurantProfileUpdate')->name('restaurant-profile-update');
+Route::post('/restaurant-settings', 'API\V1\RestauranrController@settingsUpdate')->name('restaurant-settings');
+
 
 
 

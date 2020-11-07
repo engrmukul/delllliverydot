@@ -9,18 +9,50 @@ namespace App\Contracts;
 interface RestaurantContract
 {
     /**
+     * @param int $restaurantId
      * @param string $order
      * @param string $sort
      * @param array $columns
-     * @param int $featureSection
      * @return mixed
      */
-    public function listRestaurant(string $order = 'id', string $sort = 'desc', array $columns = ['*'], int $featureSection = 1);
+    public function listRestaurant(int $restaurantId, string $order = 'id', string $sort = 'desc', array $columns = ['*']);
 
     /**
      * @param int $id
      * @return mixed
      */
     public function findRestaurantById(int $id);
+
+
+    /**
+     * @param array $params
+     * @return mixed
+     */
+    public function createRestaurant(array $params);
+
+    /**
+     * @param $id
+     * @return bool
+     */
+    public function deleteRestaurant($id, array $params);
+
+    /**
+     * @param array $params
+     * @return mixed
+     */
+    public function createCategory(array $params);
+
+    /**
+     * @param array $params
+     * @return mixed
+     */
+    public function categoryUpdate(array $params);
+
+    /**
+     * @param $id
+     * @param array $params
+     * @return mixed
+     */
+    public function deleteCategory($id, array $params);
 
 }

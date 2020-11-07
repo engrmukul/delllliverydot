@@ -3,24 +3,25 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * Class Attribute
  * @package App\Models
  */
-class RiderSetting extends Model
+class RestaurantSetting extends Model
 {
     /**
      * @var string
      */
-    protected $table = 'rider_settings';
+    protected $table = 'restaurant_settings';
     public $timestamps = false;
 
     /**
      * @var array
      */
     protected $fillable = [
-        'rider_id',
+        'restaurant_id',
         'notification',
         'popup_notification',
         'sms',

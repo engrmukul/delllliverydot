@@ -40,4 +40,9 @@ class Category extends Model
 
     ];
 
+    public function items()
+    {
+        return $this->hasMany(Food::class, 'id', 'food_id');
+    }
+
 }
