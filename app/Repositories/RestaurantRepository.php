@@ -343,4 +343,24 @@ class RestaurantRepository extends BaseRepository implements RestaurantContract
         return RestaurantOperatingLocation::where('restaurant_id', $collection['restaurant_id'])->get();
     }
 
+    public function createComplain(array $params)
+    {
+        try {
+            $collection = collect($params);
+
+            $complain = new Complain($collection->all());
+
+            $created_at = date('Y-m-d');
+
+            $merge = $collection->merge(compact('created_at'));
+
+            $complain->save($merge->all());
+
+            return $complain;
+
+        } catch (QueryException $exception) {
+            throw new InvalidArgumentException($exception->getMessage());
+        }
+    }
+
 }

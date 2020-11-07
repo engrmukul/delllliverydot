@@ -294,5 +294,21 @@ class RestaurantController extends BaseController
         return $this->sendError('Unable to create.', 'Internal Server Error' ,Response::HTTP_INTERNAL_SERVER_ERROR);
     }
 
+    /**
+     * @param Request $request
+     * @return Response
+     */
+    public function storeComplain(Request $request)
+    {
+        $params = $request->except('_token');
+
+        $complain = $this->restaurantRepository->createComplain($params);
+
+        if ($complain) {
+            return $this->sendResponse($complain, 'Location saved successfully.',Response::HTTP_OK);
+        }
+        return $this->sendError('Unable to create.', 'Internal Server Error' ,Response::HTTP_INTERNAL_SERVER_ERROR);
+    }
+
 
 }

@@ -58,6 +58,19 @@ Route::post('/restaurant-order-history', 'API\V1\RestauranrController@index')->n
 Route::post('/restaurant-profile-update', 'API\V1\RestauranrController@restaurantProfileUpdate')->name('restaurant-profile-update');
 Route::post('/restaurant-settings', 'API\V1\RestauranrController@settingsUpdate')->name('restaurant-settings');
 
+##
+Route::post('/restaurant-new-category', 'API\V1\RestauranrController@storeCategory')->name('restaurant-new-category');
+Route::post('/restaurant-update-category', 'API\V1\RestauranrController@categoryUpdate')->name('restaurant-update-category');
+Route::post('/restaurant-delete-category', 'API\V1\RestauranrController@categoryDestroy')->name('restaurant-delete-category');
+
+##
+Route::post('/restaurant-new-location', 'API\V1\RestauranrController@storeLocation')->name('restaurant-new-location');
+Route::post('/restaurant-update-location', 'API\V1\RestauranrController@locationUpdate')->name('restaurant-update-location');
+Route::post('/restaurant-delete-location', 'API\V1\RestauranrController@locationDestroy')->name('restaurant-delete-location');
+
+##
+Route::post('/restaurant-complain', 'API\V1\RestauranrController@storeComplain')->name('restaurant-complain');
+
 
 
 

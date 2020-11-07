@@ -55,4 +55,29 @@ interface RestaurantContract
      */
     public function deleteCategory($id, array $params);
 
+    /**
+     * @param array $params
+     * @return mixed
+     */
+    public function createLocation(array $params);
+
+    /**
+     * @param array $params
+     * @return mixed
+     */
+    public function locationUpdate(array $params);
+
+    /**
+     * @param $id
+     * @param array $params
+     * @return mixed
+     */
+    public function deleteLocation($id, array $params);
+
+    /**
+     * @param array $params
+     * @return mixed
+     */
+    public function createComplain(array $params);
+
 }
