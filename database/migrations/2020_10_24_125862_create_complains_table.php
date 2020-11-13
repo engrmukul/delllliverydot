@@ -17,8 +17,8 @@ class CreateComplainsTable extends Migration
     {
         Schema::create('complains', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->foreignId('customer_id')->nullable()->references('id')->on('restaurant')->onDelete('cascade');
-            $table->foreignId('restaurant_id')->nullable()->references('id')->on('restaurant')->onDelete('cascade');
+            $table->foreignId('customer_id')->nullable()->references('id')->on('customers')->onDelete('cascade');
+            $table->foreignId('restaurant_id')->nullable()->references('id')->on('restaurants')->onDelete('cascade');
             $table->foreignId('rider_id')->nullable()->references('id')->on('riders')->onDelete('cascade');
             $table->text('complain');
             $table->text('solution');

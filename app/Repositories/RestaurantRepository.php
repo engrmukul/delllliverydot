@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Models\Category;
+use App\Models\Coupon;
 use App\Models\Food;
 use App\Models\FoodVariant;
 use App\Models\Restaurant;
@@ -361,6 +362,58 @@ class RestaurantRepository extends BaseRepository implements RestaurantContract
         } catch (QueryException $exception) {
             throw new InvalidArgumentException($exception->getMessage());
         }
+    }
+
+    /**
+     * @param array $params
+     * @return mixed
+     */
+    public function createCreate(array $params)
+    {
+        try {
+            $collection = collect($params);
+
+            $coupon = new Coupon($collection->all());
+
+            $created_at = date('Y-m-d');
+
+            $merge = $collection->merge(compact('created_at'));
+
+            $coupon->save($merge->all());
+
+            return $coupon->get();
+
+        } catch (QueryException $exception) {
+            throw new InvalidArgumentException($exception->getMessage());
+        }
+    }
+
+    /**
+     * @param array $params
+     * @return mixed
+     */
+    public function couponUpdate(array $params)
+    {
+        $coupon = new Coupon();
+
+        $collection = collect($params)->except('_token');
+
+        $updated_at = date('Y-m-d');
+
+        $merge = $collection->merge(compact('updated_at'));
+
+        $coupon->where(['restaurant_id' => $collection['restaurant_id'], 'id' => $collection['id']])->update($merge->all());
+
+        return Coupon::where('restaurant_id', $collection['restaurant_id'])->get();
+    }
+
+    public function deleteCoupon($id, array $params)
+    {
+        Coupon::destroy($id);
+
+        $collection = collect($params)->except('_token');
+
+        return Coupon::where('restaurant_id', $collection['restaurant_id'])->get();
     }
 
 }

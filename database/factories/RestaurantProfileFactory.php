@@ -19,7 +19,7 @@ use Illuminate\Support\Str;
 
 $factory->define(RestaurantProfile::class, function (Faker $faker) {
     return [
-        'restaurant_id' => factory('App\Models\Restaurant')->create()->id,
+        'restaurant_id' => $faker->numberBetween(1, App\Models\Restaurant::count()),
         'name' => $faker->name,
         'delivery_type' => 'home',
         'delivery_fee' => 0,

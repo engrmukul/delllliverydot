@@ -17,7 +17,7 @@ class CreateRestaurantOperatingLocationsTable extends Migration
     {
         Schema::create('restaurant_operating_locations', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->foreignId('restaurant_id')->references('id')->on('restaurant')->onDelete('cascade');
+            $table->foreignId('restaurant_id')->references('id')->on('restaurants')->onDelete('cascade');
             $table->longText('address');
             $table->timestamps();
         });

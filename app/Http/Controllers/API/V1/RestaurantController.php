@@ -310,5 +310,55 @@ class RestaurantController extends BaseController
         return $this->sendError('Unable to create.', 'Internal Server Error' ,Response::HTTP_INTERNAL_SERVER_ERROR);
     }
 
+    /**
+     * @param Request $request
+     * @return Response
+     */
+    public function storeCoupon(Request $request)
+    {
+        $params = $request->except('_token');
+
+        $coupon = $this->restaurantRepository->createCoupon($params);
+
+        if ($coupon) {
+            return $this->sendResponse($coupon, 'Coupon saved successfully.',Response::HTTP_OK);
+        }
+        return $this->sendError('Unable to create.', 'Internal Server Error' ,Response::HTTP_INTERNAL_SERVER_ERROR);
+    }
+
+    /**
+     * @param Request $request
+     * @return Response
+     */
+    public function couponUpdate(Request $request)
+    {
+        $params = $request->except('_token');
+
+        $coupon = $this->restaurantRepository->couponUpdate($params);
+
+        if ($coupon) {
+            return $this->sendResponse($coupon, 'Coupon update successfully.',Response::HTTP_OK);
+        }
+        return $this->sendError('Unable to update.', 'Internal Server Error' ,Response::HTTP_INTERNAL_SERVER_ERROR);
+
+    }
+
+    /**
+     * @param Request $request
+     * @param $id
+     * @return Response
+     */
+    public function couponDestroy(Request $request, $id)
+    {
+        $params = $request->except('_token');
+
+        $coupon = $this->restaurantRepository->deleteCoupon($id, $params);
+
+        if ($coupon) {
+            return $this->sendResponse($coupon, 'Coupon delete successfully.',Response::HTTP_OK);
+        }
+        return $this->sendError('Unable to create.', 'Internal Server Error' ,Response::HTTP_INTERNAL_SERVER_ERROR);
+    }
+
 
 }

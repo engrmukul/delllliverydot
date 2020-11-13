@@ -20,6 +20,8 @@ use Illuminate\Support\Str;
 $factory->define(Coupon::class, function (Faker $faker) {
     return [
         'code' => 'DOT'. $faker->unique(true)->numberBetween(1, 100),
+        'total_code' => $faker->randomDigit,
+        'total_used_code' => $faker->randomDigit,
         'discount_type' => 'percent',
         'discount' => $faker->randomFloat(2,0,50),
         'food_id' => $faker->numberBetween(1, App\Models\Food::count()),

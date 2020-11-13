@@ -19,8 +19,8 @@ class CreateCouponsTable extends Migration
         Schema::create('coupons', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('code', 10)->unique();
-            $table->integer('total_code', 1)->autoIncrement(false)->unique();
-            $table->integer('total_used_code', 1)->autoIncrement(false)->unique();
+            $table->integer('total_code', 1)->autoIncrement(false);
+            $table->integer('total_used_code', 1)->autoIncrement(false);
             $table->enum('discount_type', ['percent','fixed'])->default('percent');
             $table->float('discount',10,2)->default(0.00);
             $table->text('description')->nullable();

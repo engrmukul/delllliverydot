@@ -20,8 +20,8 @@ Route::apiResources([
     'riders' => API\V1\RiderController::class,
 ]);
 
+//CUSTOMER
 Route::post('/otp-verify', 'API\V1\CustomerController@otpVerify')->name('otp-verify');
-
 
 Route::post('/my-orders', 'API\V1\OrderController@index')->name('my-orders');
 
@@ -62,6 +62,11 @@ Route::post('/restaurant-settings', 'API\V1\RestauranrController@settingsUpdate'
 Route::post('/restaurant-new-category', 'API\V1\RestauranrController@storeCategory')->name('restaurant-new-category');
 Route::post('/restaurant-update-category', 'API\V1\RestauranrController@categoryUpdate')->name('restaurant-update-category');
 Route::post('/restaurant-delete-category', 'API\V1\RestauranrController@categoryDestroy')->name('restaurant-delete-category');
+
+##
+Route::post('/restaurant-new-coupon', 'API\V1\RestauranrController@storeCoupon')->name('restaurant-new-category');
+Route::post('/restaurant-update-coupon', 'API\V1\RestauranrController@couponUpdate')->name('restaurant-update-category');
+Route::post('/restaurant-delete-coupon', 'API\V1\RestauranrController@couponDestroy')->name('restaurant-delete-category');
 
 ##
 Route::post('/restaurant-new-location', 'API\V1\RestauranrController@storeLocation')->name('restaurant-new-location');
