@@ -25,8 +25,18 @@ Route::post('/otp-verify', 'API\V1\CustomerController@otpVerify')->name('otp-ver
 
 Route::post('/my-orders', 'API\V1\OrderController@index')->name('my-orders');
 
+Route::get('restaurant-list', 'API\V1\CustomerController@restaurantList')->name('restaurant-list');
+
+Route::post('promotional-restaurants', 'API\V1\CustomerController@promotionalRestaurants')->name('restaurant-list');
+
+Route::post('restaurant-panel', 'API\V1\CustomerController@restaurantPanel')->name('restaurant-panel');
+
+Route::post('food-variants', 'API\V1\CustomerController@foodVariants')->name('food-variants');
+
 Route::post('/items', 'API\V1\CustomerController@itemList')->name('items');
 Route::post('/my-location-save', 'API\V1\CustomerController@myLocationSave')->name('my-location-save');
+Route::post('/my-location-update', 'API\V1\CustomerController@myLocationUpdate')->name('my-location-update');
+Route::post('/my-location-delete', 'API\V1\CustomerController@myLocationDelete')->name('my-location-delete');
 Route::post('/my-locations', 'API\V1\CustomerController@myLocation')->name('my-locations');
 Route::post('/my-profile', 'API\V1\CustomerController@myProfile')->name('my-profile');
 Route::post('/profile-update', 'API\V1\CustomerController@myProfileUpdate')->name('profile-update');

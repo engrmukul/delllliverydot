@@ -15,7 +15,7 @@ interface RestaurantContract
      * @param array $columns
      * @return mixed
      */
-    public function listRestaurant(int $restaurantId, string $order = 'id', string $sort = 'desc', array $columns = ['*']);
+    public function listRestaurant(string $order = 'id', string $sort = 'desc', array $columns = ['*']);
 
     /**
      * @param int $id

@@ -24,7 +24,11 @@ class CustomerPhoneVerificationFormRequest extends FormRequest
      */
     public function rules()
     {
-        if ($this->request->has('phone_number')){
+        return [
+            'phone_number' => 'required'
+        ];
+
+        /*if ($this->request->has('phone_number')){
             $phone_number = $this->phone_number;
         }
 
@@ -35,6 +39,6 @@ class CustomerPhoneVerificationFormRequest extends FormRequest
                     return $query->where('phone_number', $phone_number);
                 }),
             ]
-        ];
+        ];*/
     }
 }

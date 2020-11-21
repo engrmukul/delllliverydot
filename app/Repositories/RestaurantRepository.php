@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Models\Coupon;
 use App\Models\Food;
 use App\Models\FoodVariant;
+use App\Models\Order;
 use App\Models\Restaurant;
 use App\Contracts\RestaurantContract;
 use App\Models\RestaurantProfile;
@@ -13,6 +14,7 @@ use App\Models\RestaurantSetting;
 use Illuminate\Database\QueryException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Doctrine\Instantiator\Exception\InvalidArgumentException;
+use Illuminate\Support\Facades\DB;
 use Twilio\Rest\Client;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -36,9 +38,10 @@ class RestaurantRepository extends BaseRepository implements RestaurantContract
      * @param array $columns
      * @return mixed
      */
-    public function listRestaurant(int $restaurantId, string $order = 'id', string $sort = 'desc', array $columns = ['*'])
+
+    public function listRestaurant(string $order = 'id', string $sort = 'desc', array $columns = ['*'])
     {
-        return Order::with('RestaurantDetails','orderDetails', 'orderDetails.foods', 'orderDetails.foodVariants')->where('restaurant_id', $restaurantId)->get();
+       return Restaurant::with('RestaurantDetails', 'coupon', 'foods')->get();
     }
 
     /**
@@ -50,7 +53,7 @@ class RestaurantRepository extends BaseRepository implements RestaurantContract
      */
     public function listRestaurantTodayOrder(int $restaurantId, string $order = 'id', string $sort = 'desc', array $columns = ['*'])
     {
-        return Order::with('customer','RestaurantDetails','orderDetails', 'orderDetails.foods', 'orderDetails.foodVariants')->whereDate('order_date','>=', date('Y-m-d'))->where('restaurant_id', $restaurantId)->get();
+        return Order::with('customer', 'RestaurantDetails', 'orderDetails', 'orderDetails.foods', 'orderDetails.foodVariants')->whereDate('order_date', '>=', date('Y-m-d'))->where('restaurant_id', $restaurantId)->get();
     }
 
     /**
@@ -141,7 +144,7 @@ class RestaurantRepository extends BaseRepository implements RestaurantContract
                 //return $this->findRestaurantById($params['id']);
                 return $otp;
 
-            }else{
+            } else {
                 return false;
             }
 
@@ -286,7 +289,7 @@ class RestaurantRepository extends BaseRepository implements RestaurantContract
 
         Food::where('category_id', $collection['category_id'])->destroy();
 
-        FoodVariant::where('food_id', array_column($foodIds,'id'))->destroy();
+        FoodVariant::where('food_id', array_column($foodIds, 'id'))->destroy();
 
 
         return Category::with('items')->where('restaurant_id', $collection['restaurant_id'])->get();

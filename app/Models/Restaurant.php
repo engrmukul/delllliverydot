@@ -45,4 +45,16 @@ class Restaurant extends Model
         return $this->hasOne('App\Models\RestaurantProfile');
     }
 
+    public function coupon(){
+        return $this->hasOne('App\Models\Coupon');
+    }
+
+    public function foods(){
+        return $this->hasMany('App\Models\Food');
+    }
+
+    public function ratting(){
+        return $this->hasMany('App\Models\RestaurantReview');
+    }
+
 }

@@ -56,6 +56,7 @@ class CustomerRepository extends BaseRepository implements CustomerContract
     public function createCustomer(array $params)
     {
         try {
+
             $collection = collect($params);
 
             $customer = new Customer($collection->all());
@@ -72,6 +73,12 @@ class CustomerRepository extends BaseRepository implements CustomerContract
             $created_at = date('Y-m-d');
 
             $merge = $collection->merge(compact('created_at'));
+
+            if( Customer::where('phone_number','=', $collection['phone_number'])->count() > 0){
+                return $customer = Customer::where('phone_number', $collection['phone_number'])->first();
+            }
+
+
 
             $customer->save($merge->all());
 
