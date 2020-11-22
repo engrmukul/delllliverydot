@@ -9,6 +9,7 @@ use App\Http\Requests\CustomerOTPVerificationFormRequest;
 use App\Http\Requests\CustomerPhoneVerificationFormRequest;
 use App\Http\Requests\CustomerStoreFormRequest;
 use App\Http\Requests\CustomerUpdateFormRequest;
+use App\Http\Requests\PromotionalRestaurantsRequest;
 use App\Models\Customer;
 use App\Models\Extra;
 use App\Models\FoodVariant;
@@ -115,40 +116,44 @@ class CustomerController extends BaseController
     {
         //$restaurants = new stdClass();
 
-        //$restaurants->favorite = $this->restaurantRepository->listRestaurant();
-        //$restaurants->discounted = $this->restaurantRepository->listRestaurant();
-        //$restaurants->trending = $this->restaurantRepository->listRestaurant();
-        //$restaurants->popular = $this->restaurantRepository->listRestaurant();
+        $restaurantsFavorite = $this->restaurantRepository->listRestaurant();
+        $restaurantsDiscounted = $this->restaurantRepository->listRestaurant();
+        $restaurantsTrending = $this->restaurantRepository->listRestaurant();
+        $restaurantsPopular = $this->restaurantRepository->listRestaurant();
 
-        $data =
-            array(
+        if ($restaurantsFavorite->count() > 0 || $restaurantsDiscounted->count() > 0 || $restaurantsTrending->count() > 0 || $restaurantsPopular->count() > 0) {
+            $data =
                 array(
-                    'title' => 'favorite',
-                    'restaurants' => $this->restaurantRepository->listRestaurant()
-                ),
-                array(
-                    'title' => 'discounted',
-                    'restaurants' => $this->restaurantRepository->listRestaurant()
-                ),
-                array(
-                    'title' => 'trending',
-                    'restaurants' => $this->restaurantRepository->listRestaurant()
-                ),
-                array(
-                    'title' => 'popular',
-                    'restaurants' => $this->restaurantRepository->listRestaurant()
-                ),
-            );
+                    array(
+                        'title' => 'favorite',
+                        'restaurants' => $restaurantsFavorite
+                    ),
+                    array(
+                        'title' => 'discounted',
+                        'restaurants' => $restaurantsDiscounted
+                    ),
+                    array(
+                        'title' => 'trending',
+                        'restaurants' => $restaurantsTrending
+                    ),
+                    array(
+                        'title' => 'popular',
+                        'restaurants' => $restaurantsPopular
+                    ),
+                );
 
+            return $this->sendResponse($data, 'Group of Restaurant list.', Response::HTTP_OK);
+        } else {
+            return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
+        }
 
-        return $this->sendResponse($data, 'Group of Restaurant list.', Response::HTTP_OK);
     }
 
-    public function promotionalRestaurants()
+    public function promotionalRestaurants(PromotionalRestaurantsRequest $request)
     {
         $restaurantList = $this->restaurantRepository->listRestaurant();
 
-        if ($restaurantList) {
+        if ($restaurantList->count() > 0) {
             $data = array(
                 'title' => 'Promotional restaurant',
                 'restaurants' => $restaurantList
@@ -156,11 +161,7 @@ class CustomerController extends BaseController
             return $this->sendResponse($data, 'Promotional restaurant list', Response::HTTP_OK);
 
         } else {
-            $data = array(
-                'message' => 'Data not found',
-                'restaurants' => $restaurantList
-            );
-            return $this->sendResponse($data, 'Data not found', Response::HTTP_OK);
+            return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
         }
     }
 
@@ -168,27 +169,20 @@ class CustomerController extends BaseController
     {
         $items = Food::with('categories', 'foodVariants')->where('restaurant_id', $request->restaurant_id)->get();
 
-        $allData = array();
-        foreach ($items as $item) {
-            $data['title'] = $item->categories->name;
-            $data['items'] = $item;
+        if ($items->count() > 0) {
+            $allData = array();
+            foreach ($items as $item) {
+                $data = array(
+                    'title' => $item->categories->name,
+                    'items' => $items,
+                );
 
-            $allData[] = $data;
-        }
+                $allData[] = $data;
 
-
-        //$grouped = $items->groupBy('categories.name');
-
-        if ($allData) {
-
-            return $this->sendResponse($allData, 'Food items', Response::HTTP_OK);
-
+                return $this->sendResponse($allData, 'Food items', Response::HTTP_OK);
+            }
         } else {
-            $data = array(
-                'message' => 'Data not found',
-                'items' => array()
-            );
-            return $this->sendResponse($data, 'Data not found', Response::HTTP_OK);
+            return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
         }
     }
 
@@ -197,7 +191,7 @@ class CustomerController extends BaseController
         $items = FoodVariant::where('food_id', $request->food_id)->get();
         $extra = Extra::where('food_id', $request->food_id)->get();
 
-        if ($items) {
+        if ($items->count() > 0) {
 
             $data = array(
                 'food_variants' => array(
@@ -214,11 +208,7 @@ class CustomerController extends BaseController
             return $this->sendResponse($data, 'Food variants', Response::HTTP_OK);
 
         } else {
-            $data = array(
-                'message' => 'Data not found',
-                'items' => $items
-            );
-            return $this->sendResponse($data, 'Data not found', Response::HTTP_OK);
+            return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
         }
     }
 
@@ -234,7 +224,7 @@ class CustomerController extends BaseController
     {
         $customerAddress = CustomerAddress::where('customer_id', $request->customer_id)->get();
 
-        if ($customerAddress) {
+        if ($customerAddress->count() > 0) {
             $data = array(
                 'title' => 'Address list',
                 'addresses' => $customerAddress
@@ -242,11 +232,7 @@ class CustomerController extends BaseController
             return $this->sendResponse($data, 'Promotional restaurant list', Response::HTTP_OK);
 
         } else {
-            $data = array(
-                'message' => 'Data not found',
-                'addresses' => $customerAddress
-            );
-            return $this->sendResponse($data, 'Data not found', Response::HTTP_OK);
+            return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
         }
     }
 
@@ -258,33 +244,30 @@ class CustomerController extends BaseController
         $myLocation->address = $request->address;
         $myLocation->is_current_address = $request->is_current_address;
 
-        $myLocation->save();
+        if($myLocation->save()){
+            if ($request->is_current_address == 'yes') {
+                CustomerAddress::where("id", '!=', $myLocation->id)->where("customer_id", $request->customer_id)->update(
+                    [
+                        "is_current_address" => 'no',
+                    ]
+                );
+            }
 
-        if ($request->is_current_address == 'yes') {
-            CustomerAddress::where("id", '!=', $myLocation->id)->where("customer_id", $request->customer_id)->update(
-                [
-                    "is_current_address" => 'no',
-                ]
-            );
+            $customerAddress = CustomerAddress::where('customer_id', $request->customer_id)->get();
+
+            if ($customerAddress->count()) {
+                $data = array(
+                    'title' => 'Address list',
+                    'addresses' => $customerAddress
+                );
+                return $this->sendResponse($data, 'Promotional restaurant list', Response::HTTP_OK);
+
+            } else {
+                return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
+            }
+        }else{
+            return $this->sendResponse(array(), 'Data not found', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-
-        $customerAddress = CustomerAddress::where('customer_id', $request->customer_id)->get();
-
-        if ($customerAddress) {
-            $data = array(
-                'title' => 'Address list',
-                'addresses' => $customerAddress
-            );
-            return $this->sendResponse($data, 'Promotional restaurant list', Response::HTTP_OK);
-
-        } else {
-            $data = array(
-                'message' => 'Data not found',
-                'addresses' => $customerAddress
-            );
-            return $this->sendResponse($data, 'Data not found', Response::HTTP_OK);
-        }
-
     }
 
     public function myLocationUpdate(CustomerAddressUpdateFormRequest $request)
@@ -307,7 +290,7 @@ class CustomerController extends BaseController
 
         $customerAddress = CustomerAddress::where('customer_id', $request->customer_id)->get();
 
-        if ($customerAddress) {
+        if ($customerAddress->count() > 0) {
             $data = array(
                 'title' => 'Address list',
                 'addresses' => $customerAddress
@@ -315,11 +298,7 @@ class CustomerController extends BaseController
             return $this->sendResponse($data, 'Promotional restaurant list', Response::HTTP_OK);
 
         } else {
-            $data = array(
-                'message' => 'Data not found',
-                'addresses' => $customerAddress
-            );
-            return $this->sendResponse($data, 'Data not found', Response::HTTP_OK);
+            return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
         }
     }
 
@@ -330,7 +309,7 @@ class CustomerController extends BaseController
 
         $customerAddress = CustomerAddress::where('customer_id', $request->customer_id)->get();
 
-        if ($customerAddress) {
+        if ($customerAddress->count() > 0) {
             $data = array(
                 'title' => 'Address list',
                 'addresses' => $customerAddress
@@ -338,11 +317,7 @@ class CustomerController extends BaseController
             return $this->sendResponse($data, 'Promotional restaurant list', Response::HTTP_OK);
 
         } else {
-            $data = array(
-                'message' => 'Data not found',
-                'addresses' => $customerAddress
-            );
-            return $this->sendResponse($data, 'Data not found', Response::HTTP_OK);
+            return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
         }
     }
 
