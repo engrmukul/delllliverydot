@@ -61,4 +61,9 @@ class Food extends Model
         return $this->hasMany(FoodVariant::class);
     }
 
+    public function coupon()
+    {
+        return $this->hasOne(Coupon::class);
+    }
+
 }

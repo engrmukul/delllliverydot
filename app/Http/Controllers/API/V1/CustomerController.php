@@ -10,9 +10,11 @@ use App\Http\Requests\CustomerPhoneVerificationFormRequest;
 use App\Http\Requests\CustomerStoreFormRequest;
 use App\Http\Requests\CustomerUpdateFormRequest;
 use App\Http\Requests\PromotionalRestaurantsRequest;
+use App\Models\Banner;
 use App\Models\Customer;
 use App\Models\Extra;
 use App\Models\FoodVariant;
+use App\Models\PromotionalBanner;
 use App\Models\Setting;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -114,7 +116,7 @@ class CustomerController extends BaseController
 
     public function restaurantList()
     {
-        //$restaurants = new stdClass();
+        $banners = Banner::all();
 
         $restaurantsFavorite = $this->restaurantRepository->listRestaurant();
         $restaurantsDiscounted = $this->restaurantRepository->listRestaurant();
@@ -124,23 +126,27 @@ class CustomerController extends BaseController
         if ($restaurantsFavorite->count() > 0 || $restaurantsDiscounted->count() > 0 || $restaurantsTrending->count() > 0 || $restaurantsPopular->count() > 0) {
             $data =
                 array(
-                    array(
-                        'title' => 'favorite',
-                        'restaurants' => $restaurantsFavorite
-                    ),
-                    array(
-                        'title' => 'discounted',
-                        'restaurants' => $restaurantsDiscounted
-                    ),
-                    array(
-                        'title' => 'trending',
-                        'restaurants' => $restaurantsTrending
-                    ),
-                    array(
-                        'title' => 'popular',
-                        'restaurants' => $restaurantsPopular
-                    ),
+                    'banners' => $banners,
+                    'restaurant' => array(
+                        array(
+                            'title' => 'favorite',
+                            'restaurants' => $restaurantsFavorite
+                        ),
+                        array(
+                            'title' => 'discounted',
+                            'restaurants' => $restaurantsDiscounted
+                        ),
+                        array(
+                            'title' => 'trending',
+                            'restaurants' => $restaurantsTrending
+                        ),
+                        array(
+                            'title' => 'popular',
+                            'restaurants' => $restaurantsPopular
+                        ),
+                    )
                 );
+
 
             return $this->sendResponse($data, 'Group of Restaurant list.', Response::HTTP_OK);
         } else {
@@ -153,11 +159,18 @@ class CustomerController extends BaseController
     {
         $restaurantList = $this->restaurantRepository->listRestaurant();
 
+        $promotionalBanner = PromotionalBanner::where('id', 1)->first();
+
         if ($restaurantList->count() > 0) {
-            $data = array(
-                'title' => 'Promotional restaurant',
-                'restaurants' => $restaurantList
-            );
+            $data =
+                array(
+                    "promotional_banner" => $promotionalBanner,
+                    "promotional_restaurant" => array(
+                        'title' => 'Promotional restaurant',
+                        'restaurants' => $restaurantList
+                    )
+                );
+
             return $this->sendResponse($data, 'Promotional restaurant list', Response::HTTP_OK);
 
         } else {
@@ -169,6 +182,8 @@ class CustomerController extends BaseController
     {
         $items = Food::with('categories', 'foodVariants')->where('restaurant_id', $request->restaurant_id)->get();
 
+        $promotionalFoods = Food::with('coupon')->get();
+
         if ($items->count() > 0) {
             $allData = array();
             foreach ($items as $item) {
@@ -178,9 +193,15 @@ class CustomerController extends BaseController
                 );
 
                 $allData[] = $data;
-
-                return $this->sendResponse($allData, 'Food items', Response::HTTP_OK);
             }
+
+            $itemData = array(
+                "promotional_foods" => $promotionalFoods,
+                "food_items" => $allData,
+            );
+
+            return $this->sendResponse($itemData, 'Food items', Response::HTTP_OK);
+
         } else {
             return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
         }
@@ -244,7 +265,7 @@ class CustomerController extends BaseController
         $myLocation->address = $request->address;
         $myLocation->is_current_address = $request->is_current_address;
 
-        if($myLocation->save()){
+        if ($myLocation->save()) {
             if ($request->is_current_address == 'yes') {
                 CustomerAddress::where("id", '!=', $myLocation->id)->where("customer_id", $request->customer_id)->update(
                     [
@@ -265,7 +286,7 @@ class CustomerController extends BaseController
             } else {
                 return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
             }
-        }else{
+        } else {
             return $this->sendResponse(array(), 'Data not found', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
