@@ -246,11 +246,11 @@ class CustomerController extends BaseController
         $customerAddress = CustomerAddress::where('customer_id', $request->customer_id)->get();
 
         if ($customerAddress->count() > 0) {
-            $data = array(
-                'title' => 'Address list',
-                'addresses' => $customerAddress
-            );
-            return $this->sendResponse($data, 'Promotional restaurant list', Response::HTTP_OK);
+//            $data = array(
+//                'title' => 'Address list',
+//                'addresses' => $customerAddress
+//            );
+            return $this->sendResponse($customerAddress, 'Promotional restaurant list', Response::HTTP_OK);
 
         } else {
             return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
@@ -281,13 +281,13 @@ class CustomerController extends BaseController
                     'title' => 'Address list',
                     'addresses' => $customerAddress
                 );
-                return $this->sendResponse($data, 'Promotional restaurant list', Response::HTTP_OK);
+                return $this->sendResponse($data, 'Location saved', Response::HTTP_OK);
 
             } else {
                 return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
             }
         } else {
-            return $this->sendResponse(array(), 'Data not found', Response::HTTP_INTERNAL_SERVER_ERROR);
+             $this->sendResponse(array(), 'server error', Response::HTTP_NOT_FOUND);
         }
     }
 
