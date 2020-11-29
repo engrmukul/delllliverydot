@@ -16,6 +16,7 @@ use App\Models\Extra;
 use App\Models\FoodVariant;
 use App\Models\PromotionalBanner;
 use App\Models\Setting;
+use App\Models\Shop;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
@@ -215,15 +216,8 @@ class CustomerController extends BaseController
         if ($items->count() > 0) {
 
             $data = array(
-                'food_variants' => array(
-                    'title' => 'Food variants',
-                    'items' => $items
-                ),
-
-                'extra_item' => array(
-                    'title' => 'Extra Item',
-                    'extra_items' => $extra
-                ),
+                'food_variants' => $items,
+                'extra_item' => $extra
             );
 
             return $this->sendResponse($data, 'Food variants', Response::HTTP_OK);
@@ -243,13 +237,9 @@ class CustomerController extends BaseController
 
     public function myLocation(Request $request)
     {
-        $customerAddress = CustomerAddress::where('customer_id', $request->customer_id)->get();
+        $customerAddress = CustomerAddress::where('customer_id', $request->customer_id)->orderBy('is_current_address', 'desc')->get();
 
         if ($customerAddress->count() > 0) {
-//            $data = array(
-//                'title' => 'Address list',
-//                'addresses' => $customerAddress
-//            );
             return $this->sendResponse($customerAddress, 'Promotional restaurant list', Response::HTTP_OK);
 
         } else {
@@ -274,14 +264,14 @@ class CustomerController extends BaseController
                 );
             }
 
-            $customerAddress = CustomerAddress::where('customer_id', $request->customer_id)->get();
+            $customerAddress = CustomerAddress::where('customer_id', $request->customer_id)->orderBy('is_current_address', 'desc')->get();
 
             if ($customerAddress->count()) {
-                $data = array(
+                /*$data = array(
                     'title' => 'Address list',
                     'addresses' => $customerAddress
-                );
-                return $this->sendResponse($data, 'Location saved', Response::HTTP_OK);
+                );*/
+                return $this->sendResponse($customerAddress, 'Location saved', Response::HTTP_OK);
 
             } else {
                 return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
@@ -309,14 +299,14 @@ class CustomerController extends BaseController
             );
         }
 
-        $customerAddress = CustomerAddress::where('customer_id', $request->customer_id)->get();
+        $customerAddress = CustomerAddress::where('customer_id', $request->customer_id)->orderBy('is_current_address', 'desc')->get();
 
         if ($customerAddress->count() > 0) {
-            $data = array(
+            /*$data = array(
                 'title' => 'Address list',
                 'addresses' => $customerAddress
-            );
-            return $this->sendResponse($data, 'Promotional restaurant list', Response::HTTP_OK);
+            );*/
+            return $this->sendResponse($customerAddress, 'Promotional restaurant list', Response::HTTP_OK);
 
         } else {
             return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
@@ -328,14 +318,14 @@ class CustomerController extends BaseController
         CustomerAddress::where(['id' => $request->id, 'customer_id' => $request->customer_id])->delete();
 
 
-        $customerAddress = CustomerAddress::where('customer_id', $request->customer_id)->get();
+        $customerAddress = CustomerAddress::where('customer_id', $request->customer_id)->orderBy('is_current_address', 'desc')->get();
 
         if ($customerAddress->count() > 0) {
-            $data = array(
+            /*$data = array(
                 'title' => 'Address list',
                 'addresses' => $customerAddress
-            );
-            return $this->sendResponse($data, 'Promotional restaurant list', Response::HTTP_OK);
+            );*/
+            return $this->sendResponse($customerAddress, 'Promotional restaurant list', Response::HTTP_OK);
 
         } else {
             return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
@@ -503,6 +493,39 @@ class CustomerController extends BaseController
 
         return $this->sendResponse($order, 'Order updated successfully.', Response::HTTP_OK);
     }
+
+
+    //SHOP LIST
+    public function shopList()
+    {
+        $shopList = Shop::all();
+
+        if ($shopList->count() > 0) {
+            $data = array(
+                'shops' => $shopList
+            );
+            return $this->sendResponse($data, 'Shop list', Response::HTTP_OK);
+
+        } else {
+            return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
+        }
+    }
+
+    //SHOP ITEM LIST
+    /*public function shopItemList()
+    {
+        $shopList = Shop::all();
+
+        if ($shopList->count() > 0) {
+            $data = array(
+                'shops' => $shopList
+            );
+            return $this->sendResponse($data, 'Shop list', Response::HTTP_OK);
+
+        } else {
+            return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
+        }
+    }*/
 
 
 }

@@ -87,6 +87,9 @@ Route::post('/restaurant-delete-location', 'API\V1\RestauranrController@location
 Route::post('/restaurant-complain', 'API\V1\RestauranrController@storeComplain')->name('restaurant-complain');
 
 
+//SHOP API ROUTE
+Route::get('/shops', 'API\V1\CustomerController@shopList')->name('shops');
+Route::post('/shop-items', 'API\V1\CustomerController@shopItemList')->name('shop-items');
 
 
 Route::fallback(function(){
