@@ -16,3 +16,11 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+Auth::routes();
+require 'admin.php';
+
+//FALLBACK ROUTE
+Route::fallback(function () {
+    return response()->view('error.404');
+});
