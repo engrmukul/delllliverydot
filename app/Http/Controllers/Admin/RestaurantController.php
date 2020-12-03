@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\BaseController;
+use App\Http\Controllers\Admin\BaseController;
 use App\Models\Restaurant;
 use Illuminate\Http\Request;
 use App\Contracts\RestaurantContract;
@@ -33,23 +33,22 @@ class RestaurantController extends BaseController
     {
         $this->setPageTitle('restaurants', 'restaurants List');
         $data = [
-            'tableHeads' => [trans('restaurant.SN'), trans('restaurant.language'),
-                trans('restaurant.name'), trans('restaurant.restaurant_category'),
-                trans('restaurant.instructor'),trans('restaurant.price'),
-                trans('restaurant.start_date'), trans('restaurant.end_date'),
-                trans('restaurant.total_slot'),
-                trans('restaurant.status'), trans('restaurant.action')],
+            'tableHeads' => [
+                trans('restaurant.SN'),
+                trans('restaurant.name'),
+                trans('restaurant.email'),
+                trans('restaurant.phone_number'),
+                trans('restaurant.isVerified'),
+                trans('restaurant.status'),
+                trans('restaurant.action')
+            ],
             'dataUrl' => 'admin/restaurants/get-data',
             'columns' => [
                 ['data' => 'id', 'name' => 'id'],
-                ['data' => 'language', 'name' => 'language'],
                 ['data' => 'name', 'name' => 'name'],
-                ['data' => 'restaurant_category', 'name' => 'restaurant_category'],
-                ['data' => 'instructor', 'name' => 'instructor'],
-                ['data' => 'price', 'name' => 'price'],
-                ['data' => 'start_date', 'name' => 'start_date'],
-                ['data' => 'end_date', 'name' => 'end_date'],
-                ['data' => 'total_slot', 'name' => 'total_slot'],
+                ['data' => 'email', 'name' => 'email'],
+                ['data' => 'phone_number', 'name' => 'phone_number'],
+                ['data' => 'isVerified', 'name' => 'isVerified'],
                 ['data' => 'status', 'name' => 'status'],
                 ['data' => 'action', 'name' => 'action', 'orderable' => false]
             ],
@@ -76,7 +75,7 @@ class RestaurantController extends BaseController
         $restaurantCategories = RestaurantCategory::all();
         $instructors = Instructor::all();
 
-        return view('admin.restaurants.create', compact('instructors','restaurantCategories', 'languages'));
+        return view('admin.restaurants.create', compact('instructors', 'restaurantCategories', 'languages'));
 
     }
 
@@ -93,7 +92,7 @@ class RestaurantController extends BaseController
         $restaurant = $this->restaurantRepository->createRestaurant($params);
 
         if (!$restaurant) {
-            return $this->responseRedirectBack( trans('common.create_error'), 'error', true, true);
+            return $this->responseRedirectBack(trans('common.create_error'), 'error', true, true);
         }
         return $this->responseRedirect('restaurants.index', trans('common.create_success'), 'success', false, false);
     }
@@ -112,7 +111,7 @@ class RestaurantController extends BaseController
         $restaurantCategories = RestaurantCategory::all();
         $instructors = Instructor::all();
 
-        return view('admin.restaurants.edit', compact('instructors','restaurant','restaurantCategories', 'languages'));
+        return view('admin.restaurants.edit', compact('instructors', 'restaurant', 'restaurantCategories', 'languages'));
     }
 
     /**
@@ -148,6 +147,6 @@ class RestaurantController extends BaseController
         if (!$restaurant) {
             return $this->responseRedirectBack(trans('common.delete_error'), 'error', true, true);
         }
-        return $this->responseRedirect('restaurants.index', trans('common.delete_success') ,'success',false, false);
+        return $this->responseRedirect('restaurants.index', trans('common.delete_success'), 'success', false, false);
     }
 }

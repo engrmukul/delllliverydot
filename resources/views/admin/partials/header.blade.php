@@ -6,7 +6,7 @@
         <ul class="nav navbar-top-links navbar-right">
             <li>
                 <span
-                    class="m-r-sm text-muted welcome-message">AIT</span>
+                    class="m-r-sm text-muted welcome-message">DD</span>
             </li>
 
             <li>
