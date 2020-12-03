@@ -8,7 +8,7 @@ Route::group(['prefix' => 'admin'], function () {
 
     Route::group(['middleware' => ['auth:admin']], function () {
 
-        // banner route
+        // restaurant route
         Route::group(['prefix' => 'restaurants'], function () {
             Route::get('/', 'Admin\RestaurantController@index')->name('restaurants.index');
             Route::get('/create', 'Admin\RestaurantController@create')->name('restaurants.create');

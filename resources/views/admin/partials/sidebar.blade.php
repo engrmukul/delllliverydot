@@ -23,46 +23,14 @@
                     </ul>
                 </div>
                 <div class="logo-element">
-                    AIT
+                    DD
                 </div>
             </li>
 
             <li>
-                <a href="#"><i class="fa fa-book"></i> <span class="nav-label">{{ trans('sidebar.course_settings')}}</span><span class="fa arrow"></span></a>
+                <a href="#"><i class="fa fa-book"></i> <span class="nav-label">{{ trans('sidebar.restaurant')}}</span><span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level collapse">
-                    <li class="@if(in_array(Route::current()->getName(), array('course-categories.index', 'course-categories.create', 'course-categories.edit'))) active @else  @endif"><a href="{{ route('course-categories.index') }}"><i class="fa fa-list"></i>{{ trans('sidebar.course_category')}}</a></li>
-                    <li class="@if(in_array(Route::current()->getName(), array('courses.index', 'courses.create', 'courses.edit'))) active @else  @endif"><a href="{{ route('courses.index') }}"><i class="fa fa-list"></i>{{ trans('sidebar.courses')}}</a></li>
-                    <li class="@if(in_array(Route::current()->getName(), array('sections.index', 'sections.create', 'sections.edit'))) active @else  @endif"><a href="{{ route('sections.index') }}"><i class="fa fa-list"></i>{{ trans('sidebar.sections')}}</a></li>
-                    <li class="@if(in_array(Route::current()->getName(), array('lessons.index', 'lessons.create', 'lessons.edit'))) active @else  @endif"><a href="{{ route('lessons.index') }}"><i class="fa fa-list"></i>{{ trans('sidebar.lessons')}}</a></li>
-                </ul>
-            </li>
-
-            <li>
-                <a href="#"><i class="fa fa-book"></i> <span class="nav-label">{{ trans('sidebar.pages_settings')}}</span><span class="fa arrow"></span></a>
-                <ul class="nav nav-second-level collapse">
-                    <li class="@if(in_array(Route::current()->getName(), array('banners.index', 'banners.create', 'banners.edit'))) active @else  @endif"><a href="{{ route('banners.index') }}"><i class="fa fa-list"></i>{{ trans('sidebar.banner')}}</a></li>
-                    <li class="@if(in_array(Route::current()->getName(), array('branches.index', 'branches.create', 'branches.edit'))) active @else  @endif"><a href="{{ route('branches.index') }}"><i class="fa fa-list"></i>{{ trans('sidebar.branches')}}</a></li>
-                    <li class="@if(in_array(Route::current()->getName(), array('pages.index', 'pages.create', 'pages.edit'))) active @else  @endif"><a href="{{ route('pages.index') }}"><i class="fa fa-list"></i>{{ trans('sidebar.pages')}}</a></li>
-                    <li class="@if(in_array(Route::current()->getName(), array('page-contents.index', 'page-contents.create', 'page-contents.edit'))) active @else  @endif"><a href="{{ route('page-contents.index') }}"><i class="fa fa-list"></i>{{ trans('sidebar.page-contents')}}</a></li>
-                    <li class="@if(in_array(Route::current()->getName(), array('faqs.index', 'faqs.create', 'faqs.edit'))) active @else  @endif"><a href="{{ route('faqs.index') }}"><i class="fa fa-list"></i>{{ trans('sidebar.faq')}}</a></li>
-                    <li class="@if(in_array(Route::current()->getName(), array('instructors.index', 'instructors.create', 'instructors.edit'))) active @else  @endif"><a href="{{ route('instructors.index') }}"><i class="fa fa-list"></i>{{ trans('sidebar.instructor')}}</a></li>
-
-                </ul>
-            </li>
-
-            <li>
-                <a href="#"><i class="fa fa-eraser"></i> <span class="nav-label">{{ trans('sidebar.events_settings')}}</span><span class="fa arrow"></span></a>
-                <ul class="nav nav-second-level collapse">
-                    <li class="@if(in_array(Route::current()->getName(), array('event-categories.index', 'event-categories.create', 'event-categories.edit'))) active @else  @endif"><a href="{{ route('event-categories.index') }}"><i class="fa fa-list"></i>{{ trans('sidebar.event-categories')}}</a></li>
-                    <li class="@if(in_array(Route::current()->getName(), array('events.index', 'events.create', 'events.edit'))) active @else  @endif"><a href="{{ route('events.index') }}"><i class="fa fa-list"></i>{{ trans('sidebar.events')}}</a></li>
-                </ul>
-            </li>
-
-            <li>
-                <a href="#"><i class="fa fa-shopping-bag"></i> <span class="nav-label">{{ trans('sidebar.products_settings')}}</span><span class="fa arrow"></span></a>
-                <ul class="nav nav-second-level collapse">
-                    <li class="@if(in_array(Route::current()->getName(), array('product-categories.index', 'product-categories.create', 'product-categories.edit'))) active @else  @endif"><a href="{{ route('product-categories.index') }}"><i class="fa fa-list"></i>{{ trans('sidebar.product-categories')}}</a></li>
-                    <li class="@if(in_array(Route::current()->getName(), array('products.index', 'products.create', 'products.edit'))) active @else  @endif"><a href="{{ route('products.index') }}"><i class="fa fa-list"></i>{{ trans('sidebar.products')}}</a></li>
+                    <li class="@if(in_array(Route::current()->getName(), array('restaurants.index', 'restaurants.create', 'restaurants.edit'))) active @else  @endif"><a href="{{ route('restaurants.index') }}"><i class="fa fa-list"></i>{{ trans('sidebar.restaurants')}}</a></li>
                 </ul>
             </li>
         </ul>
