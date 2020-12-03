@@ -5,18 +5,23 @@ namespace App\Http\Controllers\API\V1;
 use App\Contracts\CustomerContract;
 use App\Http\Requests\CustomerAddressStoreFormRequest;
 use App\Http\Requests\CustomerAddressUpdateFormRequest;
+use App\Http\Requests\CustomerOrderRequest;
 use App\Http\Requests\CustomerOTPVerificationFormRequest;
 use App\Http\Requests\CustomerPhoneVerificationFormRequest;
 use App\Http\Requests\CustomerStoreFormRequest;
 use App\Http\Requests\CustomerUpdateFormRequest;
+use App\Http\Requests\PromoCodeRequest;
 use App\Http\Requests\PromotionalRestaurantsRequest;
 use App\Models\Banner;
+use App\Models\Coupon;
 use App\Models\Customer;
 use App\Models\Extra;
 use App\Models\FoodVariant;
 use App\Models\PromotionalBanner;
 use App\Models\Setting;
 use App\Models\Shop;
+use App\Models\ShopItem;
+use App\Models\ShopPromotion;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
@@ -431,8 +436,18 @@ class CustomerController extends BaseController
         return $this->sendResponse($Setting, 'Seetings updated successfully.', Response::HTTP_OK);
     }
 
+    public function applyPromoCode(PromoCodeRequest $request)
+    {
+        $promotion = Coupon::where('code', $request->code)->first();
 
-    public function order(Request $request)
+        if ($promotion) {
+            return $this->sendResponse(doubleval(round($promotion->discount,'2')), 'Discount', Response::HTTP_OK);
+        } else {
+            return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
+        }
+    }
+
+    public function order(CustomerOrderRequest $request)
     {
         $order = new Order();
 
@@ -498,10 +513,13 @@ class CustomerController extends BaseController
     //SHOP LIST
     public function shopList()
     {
+        $shopPromotion = ShopPromotion::all();
         $shopList = Shop::all();
 
         if ($shopList->count() > 0) {
             $data = array(
+                'message' => $shopPromotion[0]->message,
+                'banner' => $shopPromotion[0]->image,
                 'shops' => $shopList
             );
             return $this->sendResponse($data, 'Shop list', Response::HTTP_OK);
@@ -512,20 +530,17 @@ class CustomerController extends BaseController
     }
 
     //SHOP ITEM LIST
-    /*public function shopItemList()
+    public function shopItemList(Request $request)
     {
-        $shopList = Shop::all();
+        $shopItemList = ShopItem::where('shop_id', $request->shop_id);
 
-        if ($shopList->count() > 0) {
-            $data = array(
-                'shops' => $shopList
-            );
-            return $this->sendResponse($data, 'Shop list', Response::HTTP_OK);
+        if ($shopItemList->count() > 0) {
+            return $this->sendResponse($shopItemList, 'Shop item list', Response::HTTP_OK);
 
         } else {
             return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
         }
-    }*/
+    }
 
 
 }

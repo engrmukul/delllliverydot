@@ -45,6 +45,8 @@ Route::post('/my-delivery-save', 'API\V1\CustomerController@myDeliverySave')->na
 Route::post('/my-delivery', 'API\V1\CustomerController@myDeliveryList')->name('my-delivery');
 Route::post('/settings', 'API\V1\CustomerController@settings')->name('settings');
 Route::post('/settings-update', 'API\V1\CustomerController@settingsUpdate')->name('settings-update');
+
+Route::post('/promo-code', 'API\V1\CustomerController@applyPromoCode')->name('promo-code');
 Route::post('/order', 'API\V1\CustomerController@order')->name('order');
 
 Route::post('/restaurant-order-list', 'API\V1\RestaurantController@restaurantOrderList')->name('restaurant-order-list');

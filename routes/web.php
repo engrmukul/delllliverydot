@@ -22,5 +22,5 @@ require 'admin.php';
 
 //FALLBACK ROUTE
 Route::fallback(function () {
-    return response()->view('error.404');
+    return response()->view('admin.error.404');
 });
