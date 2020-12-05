@@ -24,17 +24,8 @@ class RestaurantPhoneVerificationFormRequest extends FormRequest
      */
     public function rules()
     {
-        if ($this->request->has('phone_number')){
-            $phone_number = $this->phone_number;
-        }
-
         return [
-            'phone_number' => [
-                'required',
-                Rule::unique('restaurants')->where(function ($query) use($phone_number) {
-                    return $query->where('phone_number', $phone_number);
-                }),
-            ]
+            'phone_number' => 'required'
         ];
     }
 }

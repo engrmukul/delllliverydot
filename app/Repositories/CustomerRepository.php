@@ -78,8 +78,6 @@ class CustomerRepository extends BaseRepository implements CustomerContract
                 return $customer = Customer::where('phone_number', $collection['phone_number'])->first();
             }
 
-
-
             $customer->save($merge->all());
 
             return $customer;

@@ -3,9 +3,12 @@
 namespace App\Http\Controllers\API\V1;
 
 use App\Http\Controllers\Controller as Controller;
+use App\Traits\ImageUpload;
 
 class BaseController extends Controller
 {
+    use ImageUpload;
+
     /**
      * success response method.
      *

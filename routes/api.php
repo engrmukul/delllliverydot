@@ -68,12 +68,13 @@ Route::post('/rider-settings', 'API\V1\RiderController@settingsUpdate')->name('r
 
 
 //RESTAURANT
-Route::post('/restaurant-otp-verify', 'API\V1\RestauranrController@otpVerify')->name('restaurant-otp-verify');
-Route::post('/restaurant-document', 'API\V1\RestauranrController@documentUpdate')->name('restaurant-document');
-Route::post('/restaurant-today-order', 'API\V1\RestauranrController@restaurentTodayOrder')->name('restaurant-today-order');
-Route::post('/restaurant-order-history', 'API\V1\RestauranrController@index')->name('restaurant-order-history');
-Route::post('/restaurant-profile-update', 'API\V1\RestauranrController@restaurantProfileUpdate')->name('restaurant-profile-update');
-Route::post('/restaurant-settings', 'API\V1\RestauranrController@settingsUpdate')->name('restaurant-settings');
+Route::post('/restaurant-otp-verify', 'API\V1\RestaurantController@otpVerify')->name('restaurant-otp-verify');
+Route::post('/restaurant-document', 'API\V1\RestaurantController@documentUpdate')->name('restaurant-document');
+Route::post('/restaurant-today-order', 'API\V1\RestaurantController@restaurantTodayOrder')->name('restaurant-today-order');
+Route::post('/restaurant-order-accept', 'API\V1\RestaurantController@orderAcceptCancel')->name('restaurant-order-accept');
+Route::post('/restaurant-order-history', 'API\V1\RestaurantController@index')->name('restaurant-order-history');
+Route::post('/restaurant-profile-update', 'API\V1\RestaurantController@restaurantProfileUpdate')->name('restaurant-profile-update');
+Route::post('/restaurant-settings', 'API\V1\RestaurantController@settingsUpdate')->name('restaurant-settings');
 
 ##
 Route::post('/restaurant-new-category', 'API\V1\RestauranrController@storeCategory')->name('restaurant-new-category');
@@ -96,7 +97,7 @@ Route::post('/restaurant-complain', 'API\V1\RestauranrController@storeComplain')
 
 //SHOP API ROUTE
 Route::get('/shops', 'API\V1\CustomerController@shopList')->name('shops');
-Route::post('/shop-items', 'API\V1\CustomerController@shopItemList')->name('shop-items');
+Route::get('/shop-items/{shopId}', 'API\V1\CustomerController@shopItemList')->name('shop-items');
 
 
 Route::fallback(function(){

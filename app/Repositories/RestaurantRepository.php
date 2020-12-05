@@ -153,11 +153,20 @@ class RestaurantRepository extends BaseRepository implements RestaurantContract
 
             $merge = $collection->merge(compact('created_at'));
 
+            if( Restaurant::where('phone_number','=', $collection['phone_number'])->count() > 0){
+                return $restaurant = Restaurant::where('phone_number', $collection['phone_number'])->first();
+            }
+
             $restaurant->save($merge->all());
 
             $restaurantProfile = new RestaurantProfile();
 
             $restaurantProfile->restaurant_id = $restaurant->id;
+            $restaurantProfile->feature_section = 1;
+            $restaurantProfile->delivery_fee = 0;
+            $restaurantProfile->delivery_time = "30 min";
+            $restaurantProfile->delivery_range = 5;
+            $restaurantProfile->ratting = 5;
 
             $restaurantProfile->save();
 
@@ -166,7 +175,7 @@ class RestaurantRepository extends BaseRepository implements RestaurantContract
             $restaurantSettings->save();
 
 
-            return $restaurant;
+            return $restaurant = Restaurant::where('phone_number', $collection['phone_number'])->first();
 
         } catch (QueryException $exception) {
             throw new InvalidArgumentException($exception->getMessage());
@@ -226,17 +235,6 @@ class RestaurantRepository extends BaseRepository implements RestaurantContract
 
         $restaurant->update($merge->all());
 
-        //$profile = new RestaurantProfile();
-
-        //$profileCollection = collect($params['address'])->except('_token');
-
-        //$dob = '';
-
-        //$profileMerge = $profileCollection->merge(compact('dob'));
-
-        //$profile->where('restaurant_id', $params['restaurant_id'])->update($profileMerge->all());
-
-
         return $restaurant;
     }
 
@@ -249,6 +247,12 @@ class RestaurantRepository extends BaseRepository implements RestaurantContract
         $merge = $collection->merge(compact('image'));
 
         $affected = $document->where('restaurant_id', $params['restaurant_id'])->update($merge->all());
+
+        Restaurant::where("id", $params['restaurant_id'])->update(
+            [
+                "isNew" => 'no',
+            ]
+        );
 
         return $affected;
     }

@@ -601,9 +601,9 @@ class CustomerController extends BaseController
     }
 
     //SHOP ITEM LIST
-    public function shopItemList(Request $request)
+    public function shopItemList($shopId='')
     {
-        $shopItemList = ShopItem::where('shop_id', $request->shop_id)->get();
+        $shopItemList = ShopItem::where('shop_id', $shopId)->get();
 
         if ($shopItemList->count() > 0) {
             return $this->sendResponse($shopItemList, 'Shop item list', Response::HTTP_OK);

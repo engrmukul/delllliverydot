@@ -7,6 +7,7 @@ use App\Http\Requests\RestaurantOTPVerificationFormRequest;
 use App\Http\Requests\RestaurantPhoneVerificationFormRequest;
 use App\Http\Requests\RestaurantStoreFormRequest;
 use App\Http\Requests\RestaurantUpdateFormRequest;
+use App\Models\Order;
 use App\Models\Restaurant;
 use App\Models\RestaurantSetting;
 use App\Traits\UploadTrait;
@@ -56,15 +57,14 @@ class RestaurantController extends BaseController
      */
     public function restaurantTodayOrder(Request $request)
     {
-        $params = $request->except('_token');
+        $todaysOrder = Order::with('customer', 'RestaurantDetails', 'orderDetails', 'orderDetails.foods', 'orderDetails.foodVariants')->whereDate('order_date', '>=', date('Y-m-d'))->where('restaurant_id', $request->restaurant_id)->get();
 
-        $todaysOrder = $this->restaurantRepository->listRestaurantTodayOrder($params['restaurant_id']);
-
-        if($todaysOrder){
+        if($todaysOrder->count() > 0){
             return $this->sendResponse($todaysOrder, 'Restaurant retrieved successfully.',Response::HTTP_OK);
+        }else{
+            return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
         }
 
-        return $this->sendError('Unable to get data.', 'Internal Server Error' ,Response::HTTP_INTERNAL_SERVER_ERROR);
     }
 
     /**
@@ -79,8 +79,10 @@ class RestaurantController extends BaseController
 
         if ($restaurant) {
             return $this->sendResponse($restaurant, 'Restaurant saved successfully.',Response::HTTP_OK);
+        }else{
+
+            return $this->sendResponse(array(), 'Data not save', Response::HTTP_NOT_FOUND);
         }
-        return $this->sendError('Unable to create.', 'Internal Server Error' ,Response::HTTP_INTERNAL_SERVER_ERROR);
     }
 
     /**
@@ -97,8 +99,10 @@ class RestaurantController extends BaseController
 
         if ($otp) {
             return $this->sendResponse($restaurant, 'Restaurant phone number valid.',Response::HTTP_OK);
+        }else{
+
+            return $this->sendResponse(array(), 'Data not verified', Response::HTTP_NOT_FOUND);
         }
-        return $this->sendError('Invalid verification code entered!.', 'Internal Server Error' ,Response::HTTP_INTERNAL_SERVER_ERROR);
     }
 
     /**
@@ -125,12 +129,15 @@ class RestaurantController extends BaseController
     {
         $params = $request->except('_token');
 
+        $params['image'] = $this->saveImages($request->file('image'), 'img/restaurant/', 250,250);
+
         $restaurant = $this->restaurantRepository->updateRestaurantProfile($params);
 
         if ($restaurant) {
             return $this->sendResponse($restaurant, 'Restaurant update successfully.',Response::HTTP_OK);
+        }else{
+            return $this->sendResponse(array(), 'Data not updated', Response::HTTP_NOT_FOUND);
         }
-        return $this->sendError('Unable to update.', 'Internal Server Error' ,Response::HTTP_INTERNAL_SERVER_ERROR);
     }
 
     /**
@@ -172,8 +179,28 @@ class RestaurantController extends BaseController
 
         if ($document) {
             return $this->sendResponse($document, 'Document update successfully.',Response::HTTP_OK);
+        }else{
+            return $this->sendResponse(array(), 'Data not updated', Response::HTTP_NOT_FOUND);
         }
-        return $this->sendError('Unable to update.', 'Internal Server Error' ,Response::HTTP_INTERNAL_SERVER_ERROR);
+
+    }
+
+    public function orderAcceptCancel(Request $request)
+    {
+
+        Order::where("id", $request->order_id)->update(
+            [
+                "order_status" => ($request->order_status == 'accept') ? 'food_is_cooking' : 'order_placed',
+            ]
+        );
+
+        $todaysOrder = Order::with('customer', 'RestaurantDetails', 'orderDetails', 'orderDetails.foods', 'orderDetails.foodVariants')->whereDate('order_date', '>=', date('Y-m-d'))->where('restaurant_id', $request->restaurant_id)->get();
+
+        if($todaysOrder->count() > 0){
+            return $this->sendResponse($todaysOrder, 'Restaurant retrieved successfully.',Response::HTTP_OK);
+        }else{
+            return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
+        }
 
     }
 
