@@ -47,6 +47,9 @@ class RestaurantProfile extends Model
      * @var array
      */
     protected $casts  = [
-
+        'restaurant_id' => 'int',
+        'delivery_fee' => 'double',
+        'discount' => 'double',
+        'sn' => 'int',
     ];
 }

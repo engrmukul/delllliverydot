@@ -9,6 +9,22 @@ namespace App\Contracts;
 interface RestaurantContract
 {
     /**
+     * @param string $order
+     * @param string $sort
+     * @param array $columns
+     * @return mixed
+     */
+    public function requestedRestaurant(string $order = 'id', string $sort = 'desc', array $columns = ['*']);
+
+    /**
+     * @param string $order
+     * @param string $sort
+     * @param array $columns
+     * @return mixed
+     */
+    public function allRestaurants(string $order = 'id', string $sort = 'desc', array $columns = ['*']);
+
+    /**
      * @param int $restaurantId
      * @param string $order
      * @param string $sort

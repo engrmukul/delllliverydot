@@ -48,7 +48,7 @@ class Food extends Model
      * @var array
      */
     protected $casts  = [
-
+        'discount_price' => 'double',
     ];
 
     public function categories()

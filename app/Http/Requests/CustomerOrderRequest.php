@@ -25,7 +25,7 @@ class CustomerOrderRequest extends FormRequest
     public function rules()
     {
         return [
-            'code' =>  'required',
+            'customer_id' =>  'required',
         ];
     }
 }

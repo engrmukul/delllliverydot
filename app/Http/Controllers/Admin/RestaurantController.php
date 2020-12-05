@@ -22,8 +22,46 @@ class RestaurantController extends BaseController
      */
     public function __construct(RestaurantContract $restaurantRepository)
     {
-        //$this->middleware('auth');
         $this->restaurantRepository = $restaurantRepository;
+    }
+
+    /**
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function requestedRestaurant()
+    {
+        $this->setPageTitle('restaurants', 'restaurants List');
+        $data = [
+            'tableHeads' => [
+                trans('restaurant.SN'),
+                trans('restaurant.name'),
+                trans('restaurant.email'),
+                trans('restaurant.phone_number'),
+                trans('restaurant.isVerified'),
+                trans('restaurant.status'),
+                trans('restaurant.action')
+            ],
+            'dataUrl' => 'admin/restaurants/requested-get-data',
+            'columns' => [
+                ['data' => 'id', 'name' => 'id'],
+                ['data' => 'name', 'name' => 'name'],
+                ['data' => 'email', 'name' => 'email'],
+                ['data' => 'phone_number', 'name' => 'phone_number'],
+                ['data' => 'isVerified', 'name' => 'isVerified'],
+                ['data' => 'status', 'name' => 'status'],
+                ['data' => 'action', 'name' => 'action', 'orderable' => false]
+            ],
+        ];
+        return view('admin.restaurants.index', $data);
+    }
+
+    /**
+     * @param Request $request
+     * @return mixed
+     */
+    public function requestedGetData(Request $request)
+    {
+        return $this->restaurantRepository->requestedRestaurant($request);
     }
 
     /**
@@ -62,7 +100,7 @@ class RestaurantController extends BaseController
      */
     public function getData(Request $request)
     {
-        return $this->restaurantRepository->listRestaurant($request);
+        return $this->restaurantRepository->allRestaurants($request);
     }
 
     /**
@@ -72,10 +110,7 @@ class RestaurantController extends BaseController
     {
         $this->setPageTitle('restaurants', 'create restaurant');
 
-        $restaurantCategories = RestaurantCategory::all();
-        $instructors = Instructor::all();
-
-        return view('admin.restaurants.create', compact('instructors', 'restaurantCategories', 'languages'));
+        return view('admin.restaurants.create');
 
     }
 
@@ -87,7 +122,7 @@ class RestaurantController extends BaseController
     {
         $params = $request->except('_token');
 
-        $params['image'] = $this->saveImages($request->file('image'), 'site/img/single-restaurant/', 810, 500);
+        $params['image'] = $this->saveImages($request->file('image'), 'img/restaurant/', 500, 500);
 
         $restaurant = $this->restaurantRepository->createRestaurant($params);
 
@@ -107,11 +142,7 @@ class RestaurantController extends BaseController
 
         $restaurant = $this->restaurantRepository->findRestaurantById($id);
 
-        $languages = Language::all();
-        $restaurantCategories = RestaurantCategory::all();
-        $instructors = Instructor::all();
-
-        return view('admin.restaurants.edit', compact('instructors', 'restaurant', 'restaurantCategories', 'languages'));
+        return view('admin.restaurants.edit', compact('restaurant'));
     }
 
     /**
@@ -124,7 +155,7 @@ class RestaurantController extends BaseController
 
         if ($request->has('image')) {
 
-            $params['image'] = $this->saveImages($request->file('image'), 'site/img/single-restaurant/', 810, 500);
+            $params['image'] = $this->saveImages($request->file('image'), 'img/restaurant/', 500, 500);
         }
 
         $restaurant = $this->restaurantRepository->updateRestaurant($params);

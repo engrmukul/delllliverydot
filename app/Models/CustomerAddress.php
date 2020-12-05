@@ -29,7 +29,7 @@ class CustomerAddress extends Model
      * @var array
      */
     protected $casts  = [
-
+        'customer_id' => 'int'
     ];
 
 }

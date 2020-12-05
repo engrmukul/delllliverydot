@@ -10,6 +10,7 @@ use App\Http\Requests\CustomerOTPVerificationFormRequest;
 use App\Http\Requests\CustomerPhoneVerificationFormRequest;
 use App\Http\Requests\CustomerStoreFormRequest;
 use App\Http\Requests\CustomerUpdateFormRequest;
+use App\Http\Requests\DeliveryStoreFormRequest;
 use App\Http\Requests\PromoCodeRequest;
 use App\Http\Requests\PromotionalRestaurantsRequest;
 use App\Models\Banner;
@@ -17,6 +18,7 @@ use App\Models\Coupon;
 use App\Models\Customer;
 use App\Models\Extra;
 use App\Models\FoodVariant;
+use App\Models\Point;
 use App\Models\PromotionalBanner;
 use App\Models\Setting;
 use App\Models\Shop;
@@ -193,6 +195,7 @@ class CustomerController extends BaseController
         if ($items->count() > 0) {
             $allData = array();
             foreach ($items as $item) {
+                //dd($item->toArray());
                 $data = array(
                     'title' => $item->categories->name,
                     'items' => $items,
@@ -282,7 +285,7 @@ class CustomerController extends BaseController
                 return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
             }
         } else {
-             $this->sendResponse(array(), 'server error', Response::HTTP_NOT_FOUND);
+            $this->sendResponse(array(), 'server error', Response::HTTP_NOT_FOUND);
         }
     }
 
@@ -326,17 +329,22 @@ class CustomerController extends BaseController
         $customerAddress = CustomerAddress::where('customer_id', $request->customer_id)->orderBy('is_current_address', 'desc')->get();
 
         if ($customerAddress->count() > 0) {
-            /*$data = array(
-                'title' => 'Address list',
-                'addresses' => $customerAddress
-            );*/
-            return $this->sendResponse($customerAddress, 'Promotional restaurant list', Response::HTTP_OK);
-
+            return $this->sendResponse($customerAddress, 'CUstomer Address list', Response::HTTP_OK);
         } else {
             return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
         }
     }
 
+    public function customerSelectedLocation(Request $request)
+    {
+        $customerAddress = CustomerAddress::where(['customer_id' => $request->customer_id, 'is_current_address' => 'yes'])->first();
+
+        if ($customerAddress) {
+            return $this->sendResponse($customerAddress, 'Customer selected address', Response::HTTP_OK);
+        } else {
+            return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
+        }
+    }
 
     public function myProfile(Request $request)
     {
@@ -374,7 +382,7 @@ class CustomerController extends BaseController
         return $this->sendResponse($favoriteFoods, 'My favorite items.', Response::HTTP_OK);
     }
 
-    public function myDeliverySave(Request $request)
+    public function myDeliverySave(DeliveryStoreFormRequest $request)
     {
         $myDelivery = new Delivery();
 
@@ -400,24 +408,33 @@ class CustomerController extends BaseController
         $myDelivery->pickup_time = $request->pickup_time;
         $myDelivery->status = 'processing';
 
-        $myDelivery->save();
-
-
-        return $this->sendResponse($myDelivery, 'Delivery added successfully.', Response::HTTP_OK);
+        if ($myDelivery->save()) {
+            return $this->sendResponse($myDelivery, 'Delivery added successfully.', Response::HTTP_OK);
+        } else {
+            return $this->sendResponse(array(), 'Data not save', Response::HTTP_NOT_FOUND);
+        }
     }
 
     public function myDeliveryList(Request $request)
     {
-        $deliverys = Delivery::where('customer_id', $request->customer_id)->get();
+        $deliveries = Delivery::where('customer_id', $request->customer_id)->get();
 
-        return $this->sendResponse($deliverys, 'My delivery list.', Response::HTTP_OK);
+        if ($deliveries->count() > 0) {
+            return $this->sendResponse($deliveries, 'My delivery list.', Response::HTTP_OK);
+        } else {
+            return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
+        }
     }
 
     public function settings(Request $request)
     {
         $settings = Setting::where('customer_id', $request->customer_id)->first();
 
-        return $this->sendResponse($settings, 'Notification settings data.', Response::HTTP_OK);
+        if ($settings) {
+            return $this->sendResponse($settings, 'My settings.', Response::HTTP_OK);
+        } else {
+            return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
+        }
     }
 
 
@@ -431,9 +448,13 @@ class CustomerController extends BaseController
             ]
         );
 
-        $Setting = Setting::where('customer_id', $request->customer_id)->first();
+        $settings = Setting::where('customer_id', $request->customer_id)->first();
 
-        return $this->sendResponse($Setting, 'Seetings updated successfully.', Response::HTTP_OK);
+        if ($settings) {
+            return $this->sendResponse($settings, 'My settings.', Response::HTTP_OK);
+        } else {
+            return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
+        }
     }
 
     public function applyPromoCode(PromoCodeRequest $request)
@@ -441,7 +462,7 @@ class CustomerController extends BaseController
         $promotion = Coupon::where('code', $request->code)->first();
 
         if ($promotion) {
-            return $this->sendResponse(doubleval(round($promotion->discount,'2')), 'Discount', Response::HTTP_OK);
+            return $this->sendResponse(doubleval(round($promotion->discount, '2')), 'Discount', Response::HTTP_OK);
         } else {
             return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
         }
@@ -449,45 +470,95 @@ class CustomerController extends BaseController
 
     public function order(CustomerOrderRequest $request)
     {
-        $order = new Order();
+        //WILL USE TRANSACTION
 
-        $order->customer_id = $request->customer_id;
-        $order->delivery_address = $request->delivery_address;
-        $order->order_date = date('Y-m-d');
-        $order->order_status = 'order_received';
-        $order->payment_method = $request->payment_method;
-        $order->payment_status = $request->payment_status;
-        $order->total_price = $request->total_price;
-        $order->discount = $request->discount;
-        $order->vat = 0;
-        $order->delivery_fee = $request->delivery_fee;
-        $order->instructions = $request->instructions;
-        $order->restaurant_id = $request->restaurant_id;
-        $order->coupon_code = $request->coupon_code;
+        $orderData = json_decode($request->getContent(), true);
 
-        $order->save();
+        if($orderData){
+            $order = new Order();
 
-        $foodArray = array();
-        foreach ($request->food_id as $key => $item) {
+            $order->customer_id = $orderData['customer_id'];
+            $order->delivery_address = $orderData['address'];
+            $order->order_date = date('Y-m-d');
+            $order->order_status = 'order_placed';
+            $order->payment_method = 'cash_on_delivery';//$orderData['payment_method;
+            $order->payment_status = 'not_paid';//$orderData['payment_status;
+            $order->total_price = $orderData['sub_total'];
+            $order->discount = $orderData['discount'];
+            $order->vat = $orderData['vat_amount'];
+            $order->delivery_fee = $orderData['delivery_fee'];
+            $order->instructions = $orderData['instructions'];
+            $order->restaurant_id = $orderData['restaurantId'];
+            $order->coupon_code = $orderData['coupon_code'];
 
-            $foodData['order_id'] = $order->id;
-            $foodData['food_id'] = $item;
-            $foodData['food_variant_id'] = $item[$key]['food_variant_id'];
-            $foodData['food_price'] = $item[$key]['food_price'];
-            $foodData['food_quantity'] = $item[$key]['food_quantity'];
-            $foodData['extra_id'] = $item[$key]['extra_id'];
-            $foodData['extra_price'] = $item[$key]['extra_price'];
-            $foodData['sub_total'] = $item[$key]['sub_total'];
+            $order->save();
 
-            $foodArray[] = $foodData;
+            $foodArray = array();
+            foreach ($orderData['carts'] as $key => $item) {
+
+                $foodData['order_id'] = $order->id;
+                $foodData['food_id'] = $item['foodId'];
+                $foodData['food_variant_id'] = $item['foodVariantId'];
+                $foodData['food_price'] = $item['price'];
+                $foodData['food_quantity'] = $item['quantity'];
+                $foodData['extra_id'] = $item['extraItemId'];
+                $foodData['extra_price'] = $item['extraItemPrice'];
+                $foodData['sub_total'] = ($item['price']*$item['quantity']) + $item['extraItemPrice'];
+
+                $foodArray[] = $foodData;
+            }
+
+
+            OrderDetail::insert($foodArray);
+
+
+            //POINT SAVE
+            $pointData['customer_id'] = $orderData['customer_id'];
+            $pointData['order_id'] = $order->id;
+            $pointData['amount'] = doubleval($orderData['sub_total']);
+            $pointData['point'] = doubleval(($orderData['sub_total'] * 10)/100);
+
+            Point::insert($pointData);
+
+            $orderStatus = Order::with('RestaurantDetails')->where('id', $order->id)->orderBy('id', 'DESC')->first();
+
+            if($orderStatus)
+            {
+                return $this->sendResponse($orderStatus, 'My order list.', Response::HTTP_OK);
+            }else{
+                return $this->sendResponse(array(), 'Data not save', Response::HTTP_NOT_FOUND);
+            }
+
+        }else{
+            return $this->sendResponse(array(), 'Data not save', Response::HTTP_NOT_FOUND);
         }
-
-
-        OrderDetail::insert($foodArray);
-
-
-        return $this->sendResponse($order, 'Order added successfully.', Response::HTTP_OK);
     }
+
+    public function customerOrderDetails($orderId='')
+    {
+        $orderStatus = Order::with('RestaurantDetails')->where('id', $orderId)->orderBy('id', 'DESC')->first();
+
+        if($orderStatus)
+        {
+            return $this->sendResponse($orderStatus, 'My order list.', Response::HTTP_OK);
+        }else{
+            return $this->sendResponse(array(), 'Data not save', Response::HTTP_NOT_FOUND);
+        }
+    }
+
+
+    public function myOrder(Request $request)
+    {
+        $myOrders = Order::with('orderDetails','orderDetails.foods')->where('customer_id', $request->customer_id)->orderBy('id', 'DESC')->get();
+
+        if($myOrders->count() > 0)
+        {
+            return $this->sendResponse($myOrders, 'My order list.', Response::HTTP_OK);
+        }else{
+            return $this->sendResponse(array(), 'Data not save', Response::HTTP_NOT_FOUND);
+        }
+    }
+
 
     public function restaurantOrderList(Request $request)
     {
@@ -532,10 +603,27 @@ class CustomerController extends BaseController
     //SHOP ITEM LIST
     public function shopItemList(Request $request)
     {
-        $shopItemList = ShopItem::where('shop_id', $request->shop_id);
+        $shopItemList = ShopItem::where('shop_id', $request->shop_id)->get();
 
         if ($shopItemList->count() > 0) {
             return $this->sendResponse($shopItemList, 'Shop item list', Response::HTTP_OK);
+
+        } else {
+            return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
+        }
+    }
+
+    //POINT LIST
+    public function point(Request $request)
+    {
+        $points = Point::with('orders','orders.RestaurantDetails', 'orders.orderDetails','orders.orderDetails.foods')->where('customer_id', $request->customer_id)->get();
+
+        if ($points->count() > 0) {
+            $data = array(
+                'earned_point' => $points->sum('point'),
+                'points_list' => $points
+            );
+            return $this->sendResponse($data, 'Point list', Response::HTTP_OK);
 
         } else {
             return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);

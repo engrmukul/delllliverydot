@@ -31,5 +31,18 @@ return [
     'products' => 'Product',
 
     'restaurant' => 'Restaurant',
+    'restaurant_requested' => 'Restaurant Requested',
     'restaurants' => 'Restaurants',
+    'restaurant_reviews' => 'Restaurant Reviews',
+    'food' => 'Food',
+    'foods' => 'Foods',
+    'category' => 'Category',
+    'extras' => 'Extras',
+    'food_reviews' => 'Food Reviews',
+    'order' => 'Order',
+    'orders' => 'Orders',
+    'order_statuses' => 'Order Statuses',
+    'delivery_addresses' => 'Delivery Addresses',
+    'coupons' => 'Coupons',
+    'payments' => 'Payments',
 ];

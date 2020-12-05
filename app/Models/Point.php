@@ -9,29 +9,34 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * Class Attribute
  * @package App\Models
  */
-class FoodVariant extends Model
+class Point extends Model
 {
     /**
      * @var string
      */
-    protected $table = 'food_variants';
-    public $timestamps = false;
+    protected $table = 'points';
 
     /**
      * @var array
      */
     protected $fillable = [
-        'food_id',
-        'name',
-        'price',
+        'customer_id',
+        'order_id',
+        'amount',
+        'point'
     ];
 
     /**
      * @var array
      */
     protected $casts  = [
-        'price' => 'double',
-        'food_id' => 'int',
+        'amount' => 'double',
+        'point' => 'int',
     ];
+
+    public function orders()
+    {
+        return $this->hasOne(Order::class,'id', 'order_id');
+    }
 
 }

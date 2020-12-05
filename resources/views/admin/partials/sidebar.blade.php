@@ -3,7 +3,7 @@
         <ul class="nav metismenu" id="side-menu">
             <li class="nav-header">
                 <div class="dropdown profile-element">
-                    <h2 class="text-center text-light">AIT</h2>
+                    <h2 class="text-center text-light">DD</h2>
 {{--                    <a data-toggle="dropdown" class="dropdown-toggle" href="#">--}}
 {{--                        <span class="block m-t-xs font-bold">{{ auth()->user()->name  }}</span>--}}
 {{--                    </a>--}}
@@ -27,12 +27,39 @@
                 </div>
             </li>
 
+            <li class="@if(in_array(Route::current()->getName(), array('dashboard.index'))) active @else  @endif"><a href="{{ route('admin.dashboard') }}"><i class="fa fa-list"></i>{{ trans('sidebar.dashboard')}}</a></li>
+
             <li>
                 <a href="#"><i class="fa fa-book"></i> <span class="nav-label">{{ trans('sidebar.restaurant')}}</span><span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level collapse">
-                    <li class="@if(in_array(Route::current()->getName(), array('restaurants.index', 'restaurants.create', 'restaurants.edit'))) active @else  @endif"><a href="{{ route('restaurants.index') }}"><i class="fa fa-list"></i>{{ trans('sidebar.restaurants')}}</a></li>
+                    <li class="@if(in_array(Route::current()->getName(), array('restaurants.index', 'restaurants.create', 'restaurants.edit')))  @else  @endif"><a href="{{ route('restaurants.requested') }}"><i class="fa fa-list"></i>{{ trans('sidebar.restaurant_requested')}}</a></li>
+                    <li class="@if(in_array(Route::current()->getName(), array('restaurants.index', 'restaurants.create', 'restaurants.edit')))  @else  @endif"><a href="{{ route('restaurants.index') }}"><i class="fa fa-list"></i>{{ trans('sidebar.restaurants')}}</a></li>
+                    <li class="@if(in_array(Route::current()->getName(), array('restaurants.index', 'restaurants.create', 'restaurants.edit')))  @else  @endif"><a href="{{ route('restaurants.reviews') }}"><i class="fa fa-list"></i>{{ trans('sidebar.restaurant_reviews')}}</a></li>
                 </ul>
             </li>
+
+            <li>
+                <a href="#"><i class="fa fa-book"></i> <span class="nav-label">{{ trans('sidebar.food')}}</span><span class="fa arrow"></span></a>
+                <ul class="nav nav-second-level collapse">
+                    <li class="@if(in_array(Route::current()->getName(), array('restaurants.index', 'restaurants.create', 'restaurants.edit')))  @else  @endif"><a href="{{ route('restaurants.index') }}"><i class="fa fa-list"></i>{{ trans('sidebar.category')}}</a></li>
+                    <li class="@if(in_array(Route::current()->getName(), array('restaurants.index', 'restaurants.create', 'restaurants.edit')))  @else  @endif"><a href="{{ route('restaurants.index') }}"><i class="fa fa-list"></i>{{ trans('sidebar.foods')}}</a></li>
+                    <li class="@if(in_array(Route::current()->getName(), array('restaurants.index', 'restaurants.create', 'restaurants.edit')))  @else  @endif"><a href="{{ route('restaurants.index') }}"><i class="fa fa-list"></i>{{ trans('sidebar.extras')}}</a></li>
+                    <li class="@if(in_array(Route::current()->getName(), array('restaurants.index', 'restaurants.create', 'restaurants.edit')))  @else  @endif"><a href="{{ route('restaurants.index') }}"><i class="fa fa-list"></i>{{ trans('sidebar.food_reviews')}}</a></li>
+                </ul>
+            </li>
+
+            <li>
+                <a href="#"><i class="fa fa-book"></i> <span class="nav-label">{{ trans('sidebar.order')}}</span><span class="fa arrow"></span></a>
+                <ul class="nav nav-second-level collapse">
+                    <li class="@if(in_array(Route::current()->getName(), array('restaurants.index', 'restaurants.create', 'restaurants.edit')))  @else  @endif"><a href="{{ route('restaurants.index') }}"><i class="fa fa-list"></i>{{ trans('sidebar.orders')}}</a></li>
+                    <li class="@if(in_array(Route::current()->getName(), array('restaurants.index', 'restaurants.create', 'restaurants.edit')))  @else  @endif"><a href="{{ route('restaurants.index') }}"><i class="fa fa-list"></i>{{ trans('sidebar.order_statuses')}}</a></li>
+                    <li class="@if(in_array(Route::current()->getName(), array('restaurants.index', 'restaurants.create', 'restaurants.edit')))  @else  @endif"><a href="{{ route('restaurants.index') }}"><i class="fa fa-list"></i>{{ trans('sidebar.delivery_addresses')}}</a></li>
+                </ul>
+            </li>
+
+            <li class="@if(in_array(Route::current()->getName(), array('restaurants.index', 'restaurants.create', 'restaurants.edit')))  @else  @endif"><a href="{{ route('restaurants.index') }}"><i class="fa fa-list"></i>{{ trans('sidebar.coupons')}}</a></li>
+            <li class="@if(in_array(Route::current()->getName(), array('restaurants.index', 'restaurants.create', 'restaurants.edit')))  @else  @endif"><a href="{{ route('restaurants.index') }}"><i class="fa fa-list"></i>{{ trans('sidebar.payments')}}</a></li>
+
         </ul>
 
     </div>

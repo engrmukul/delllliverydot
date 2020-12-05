@@ -39,7 +39,8 @@ class Extra extends Model
      * @var array
      */
     protected $casts  = [
-
+        'price' => 'double',
+        'food_id' => 'int',
     ];
 
 }

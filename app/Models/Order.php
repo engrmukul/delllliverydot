@@ -40,7 +40,13 @@ class Order extends Model
      * @var array
      */
     protected $casts  = [
-
+        'order_date'  => 'date:Y-m-d',
+        'customer_id'  => 'int',
+        'total_price'  => 'double',
+        'discount'  => 'double',
+        'vat'  => 'double',
+        'delivery_fee'  => 'double',
+        'restaurant_id'  => 'int',
     ];
 
     public function orderDetails()

@@ -23,7 +23,7 @@ Route::apiResources([
 //CUSTOMER
 Route::post('/otp-verify', 'API\V1\CustomerController@otpVerify')->name('otp-verify');
 
-Route::post('/my-orders', 'API\V1\OrderController@index')->name('my-orders');
+//Route::post('/my-orders', 'API\V1\OrderController@index')->name('my-orders');
 
 Route::get('restaurant-list', 'API\V1\CustomerController@restaurantList')->name('restaurant-list');
 
@@ -38,6 +38,7 @@ Route::post('/my-location-save', 'API\V1\CustomerController@myLocationSave')->na
 Route::post('/my-location-update', 'API\V1\CustomerController@myLocationUpdate')->name('my-location-update');
 Route::post('/my-location-delete', 'API\V1\CustomerController@myLocationDelete')->name('my-location-delete');
 Route::post('/my-locations', 'API\V1\CustomerController@myLocation')->name('my-locations');
+Route::post('/selected-location', 'API\V1\CustomerController@customerSelectedLocation')->name('selected-location');
 Route::post('/my-profile', 'API\V1\CustomerController@myProfile')->name('my-profile');
 Route::post('/profile-update', 'API\V1\CustomerController@myProfileUpdate')->name('profile-update');
 Route::post('/my-favorite-foods', 'API\V1\CustomerController@myFavoriteFood')->name('my-favorite-foods');
@@ -48,6 +49,10 @@ Route::post('/settings-update', 'API\V1\CustomerController@settingsUpdate')->nam
 
 Route::post('/promo-code', 'API\V1\CustomerController@applyPromoCode')->name('promo-code');
 Route::post('/order', 'API\V1\CustomerController@order')->name('order');
+Route::post('/points', 'API\V1\CustomerController@point')->name('points');
+Route::post('/my-orders', 'API\V1\CustomerController@myOrder')->name('my-orders');
+Route::get('/order-status/{orderId}', 'API\V1\CustomerController@customerOrderDetails')->name('order-status');
+
 
 Route::post('/restaurant-order-list', 'API\V1\RestaurantController@restaurantOrderList')->name('restaurant-order-list');
 
