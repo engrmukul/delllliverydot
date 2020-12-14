@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Models\Rider;
 use App\Contracts\RiderContract;
+use App\Models\RiderAddress;
 use App\Models\RiderOrder;
 use App\Models\RiderProfile;
 use App\Models\RiderSetting;
@@ -72,17 +73,21 @@ class RiderRepository extends BaseRepository implements RiderContract
             $rider = new Rider($collection->all());
 
             /* Get credentials from .env */
-            $token = getenv("TWILIO_AUTH_TOKEN");
+            /*$token = getenv("TWILIO_AUTH_TOKEN");
             $twilio_sid = getenv("TWILIO_SID");
             $twilio_verify_sid = getenv("TWILIO_VERIFY_SID");
             $twilio = new Client($twilio_sid, $token);
             $twilio->verify->v2->services($twilio_verify_sid)
                 ->verifications
-                ->create($collection['phone_number'], "sms");
+                ->create($collection['phone_number'], "sms");*/
 
             $created_at = date('Y-m-d');
 
             $merge = $collection->merge(compact('created_at'));
+
+            if( Rider::where('phone_number','=', $collection['phone_number'])->count() > 0){
+                return $rider = Rider::where('phone_number', $collection['phone_number'])->first();
+            }
 
             $rider->save($merge->all());
 
@@ -104,8 +109,13 @@ class RiderRepository extends BaseRepository implements RiderContract
         try {
             $collection = collect($params);
 
+            Rider::where('phone_number', $collection['phone_number'])->update(['isVerified' => true]);
+
+            return true;
+
+
             /* Get credentials from .env */
-            $token = getenv("TWILIO_AUTH_TOKEN");
+            /*$token = getenv("TWILIO_AUTH_TOKEN");
             $twilio_sid = getenv("TWILIO_SID");
             $twilio_verify_sid = getenv("TWILIO_VERIFY_SID");
             $twilio = new Client($twilio_sid, $token);
@@ -123,7 +133,7 @@ class RiderRepository extends BaseRepository implements RiderContract
 
             }else{
                 return false;
-            }
+            }*/
 
         } catch (QueryException $exception) {
             throw new InvalidArgumentException($exception->getMessage());
@@ -142,20 +152,17 @@ class RiderRepository extends BaseRepository implements RiderContract
 
         $updated_at = date('Y-m-d');
 
-        $merge = $collection->merge(compact('updated_at'));
+        $merge = $collection->merge(compact('updated_at','image'));
 
         $rider->update($merge->all());
 
-        //$profile = new RiderProfile();
 
-        //$profileCollection = collect($params['address'])->except('_token');
-
-        //$dob = '';
-
-        //$profileMerge = $profileCollection->merge(compact('dob'));
-
-        //$profile->where('rider_id', $params['rider_id'])->update($profileMerge->all());
-
+        //UPDATE RESTAURANT ADDRESS
+        RiderAddress::where(["rider_id" => $params['rider_id'], 'is_current_address' => 'yes'])->update(
+            [
+                "address" =>$params['address'],
+            ]
+        );
 
         return $rider;
     }
@@ -169,6 +176,12 @@ class RiderRepository extends BaseRepository implements RiderContract
         $merge = $collection->merge(compact('image'));
 
         $affected = $document->where('rider_id', $params['rider_id'])->update($merge->all());
+
+        Rider::where("id", $params['rider_id'])->update(
+            [
+                "isNew" => 'no',
+            ]
+        );
 
         return $affected;
     }

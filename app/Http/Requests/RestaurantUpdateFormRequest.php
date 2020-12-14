@@ -24,9 +24,22 @@ class RestaurantUpdateFormRequest extends FormRequest
      */
     public function rules()
     {
+       if ($this->request->has('phone_number')){
+            $phone_number = $this->phone_number;
+            $restaurantId = $this->restaurant_id;
+        }
+
         return [
-            'nid' =>  'required',
-            'trade_licence' =>  'required',
+            'name' =>  'required',
+            'phone_number' => [
+                'required',
+                Rule::unique('restaurants')->where(function ($query) use($phone_number, $restaurantId) {
+                    return $query->where('phone_number', $phone_number)->where('id', '<>', $restaurantId);
+                }),
+            ],
+            'email' =>  'required',
+            'password' =>  'required',
+            'address' =>  'required',
         ];
     }
 }

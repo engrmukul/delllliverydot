@@ -76,14 +76,18 @@ class CustomerController extends BaseController
     {
         $params = $request->except('_token');
 
-        $otp = $this->customerRepository->customerOTPVerify($params);
+        //$otp = $this->customerRepository->customerOTPVerify($params);
 
         $customer = Customer::where('phone_number', $request->phone_number)->first();
 
-        if ($otp) {
-            return $this->sendResponse($customer, 'Customer phone number valid.', Response::HTTP_OK);
-        }
-        return $this->sendError('Invalid verification code entered!.', 'Internal Server Error', Response::HTTP_INTERNAL_SERVER_ERROR);
+        //will remove
+        return $this->sendResponse($customer, 'Customer phone number valid.', Response::HTTP_OK);
+
+
+//        if ($otp) {
+//            return $this->sendResponse($customer, 'Customer phone number valid.', Response::HTTP_OK);
+//        }
+//        return $this->sendError('Invalid verification code entered!.', 'Internal Server Error', Response::HTTP_INTERNAL_SERVER_ERROR);
     }
 
 

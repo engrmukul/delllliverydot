@@ -9,6 +9,7 @@ use App\Models\FoodVariant;
 use App\Models\Order;
 use App\Models\Restaurant;
 use App\Contracts\RestaurantContract;
+use App\Models\RestaurantAddress;
 use App\Models\RestaurantProfile;
 use App\Models\RestaurantSetting;
 use Illuminate\Database\QueryException;
@@ -141,13 +142,13 @@ class RestaurantRepository extends BaseRepository implements RestaurantContract
             $restaurant = new Restaurant($collection->all());
 
             /* Get credentials from .env */
-            $token = getenv("TWILIO_AUTH_TOKEN");
+            /*$token = getenv("TWILIO_AUTH_TOKEN");
             $twilio_sid = getenv("TWILIO_SID");
             $twilio_verify_sid = getenv("TWILIO_VERIFY_SID");
             $twilio = new Client($twilio_sid, $token);
             $twilio->verify->v2->services($twilio_verify_sid)
                 ->verifications
-                ->create($collection['phone_number'], "sms");
+                ->create($collection['phone_number'], "sms");*/
 
             $created_at = date('Y-m-d');
 
@@ -194,16 +195,21 @@ class RestaurantRepository extends BaseRepository implements RestaurantContract
             $collection = collect($params);
 
             /* Get credentials from .env */
-            $token = getenv("TWILIO_AUTH_TOKEN");
+            /*$token = getenv("TWILIO_AUTH_TOKEN");
             $twilio_sid = getenv("TWILIO_SID");
             $twilio_verify_sid = getenv("TWILIO_VERIFY_SID");
             $twilio = new Client($twilio_sid, $token);
 
             $verification = $twilio->verify->v2->services($twilio_verify_sid)
                 ->verificationChecks
-                ->create($collection['verification_code'], array('to' => $collection['phone_number']));
+                ->create($collection['verification_code'], array('to' => $collection['phone_number']));*/
 
-            if ($verification->valid) {
+            //WILL CHANGE
+            Restaurant::where('phone_number', $collection['phone_number'])->update(['isVerified' => true]);
+
+            return true;
+
+            /*if ($verification->valid) {
 
                 $otp = tap(Restaurant::where('phone_number', $collection['phone_number']))->update(['isVerified' => true]);
 
@@ -212,7 +218,7 @@ class RestaurantRepository extends BaseRepository implements RestaurantContract
 
             } else {
                 return false;
-            }
+            }*/
 
         } catch (QueryException $exception) {
             throw new InvalidArgumentException($exception->getMessage());
@@ -221,9 +227,10 @@ class RestaurantRepository extends BaseRepository implements RestaurantContract
 
     /**
      * @param array $params
+     * @param $image
      * @return mixed
      */
-    public function updateRestaurantProfile(array $params)
+    public function updateRestaurantProfile(array $params, $image)
     {
         $restaurant = $this->findRestaurantById($params['restaurant_id']);
 
@@ -231,9 +238,17 @@ class RestaurantRepository extends BaseRepository implements RestaurantContract
 
         $updated_at = date('Y-m-d');
 
-        $merge = $collection->merge(compact('updated_at'));
+        $merge = $collection->merge(compact('updated_at','image'));
 
         $restaurant->update($merge->all());
+
+
+        //UPDATE RESTAURANT ADDRESS
+        RestaurantAddress::where(["restaurant_id" => $params['restaurant_id'], 'is_current_address' => 'yes'])->update(
+            [
+                "address" =>$params['address'],
+            ]
+        );
 
         return $restaurant;
     }

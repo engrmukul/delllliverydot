@@ -9,34 +9,27 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * Class Attribute
  * @package App\Models
  */
-class Rider extends Model
+class RestaurantAddress extends Model
 {
     /**
      * @var string
      */
-    protected $table = 'riders';
+    protected $table = 'restaurant_address';
+    public $timestamps = false;
 
     /**
      * @var array
      */
     protected $fillable = [
-        'name',
-        'email',
-        'phone_number',
-        'isVerified',
-        'email_verified_at',
-        'password',
-        'status',
-        'isNew',
-        'created_at',
-        'updated_at',
+        'restaurant_id',
+        'address',
     ];
 
     /**
      * @var array
      */
     protected $casts  = [
-
+        'restaurant_id' => 'int'
     ];
 
 }

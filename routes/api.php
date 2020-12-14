@@ -61,8 +61,15 @@ Route::post('/restaurant-order-list', 'API\V1\RestaurantController@restaurantOrd
 //RIDER
 Route::post('/rider-otp-verify', 'API\V1\RiderController@otpVerify')->name('rider-otp-verify');
 Route::post('/rider-document', 'API\V1\RiderController@documentUpdate')->name('rider-document');
-Route::post('/rider-today-order', 'API\V1\RiderController@riderTodayOrder')->name('rider-today-order');
-Route::post('/rider-order-history', 'API\V1\RiderController@index')->name('rider-order-history');
+Route::post('/rider-location-save', 'API\V1\RiderController@riderLocationSave')->name('rider-location-save');
+Route::post('/rider-location-update', 'API\V1\RiderController@riderLocationUpdate')->name('rider-location-update');
+Route::post('/rider-location-delete', 'API\V1\RiderController@riderLocationDelete')->name('rider-location-delete');
+Route::post('/rider-locations', 'API\V1\RiderController@riderLocation')->name('rider-locations');
+Route::post('/rider-selected-location', 'API\V1\RiderController@riderSelectedLocation')->name('rider-selected-location');
+Route::post('/rider-order-detail', 'API\V1\RiderController@orderDetail')->name('rider-order-detail');
+Route::post('/rider-order-accept', 'API\V1\RiderController@orderAccept')->name('rider-order-accept');
+Route::post('/rider-order-list', 'API\V1\RiderController@orderList')->name('rider-order-list');
+Route::post('/rider-order-history', 'API\V1\RiderController@orderHistory')->name('rider-order-history');
 Route::post('/rider-profile-update', 'API\V1\RiderController@riderProfileUpdate')->name('rider-profile-update');
 Route::post('/rider-settings', 'API\V1\RiderController@settingsUpdate')->name('rider-settings');
 
@@ -71,7 +78,9 @@ Route::post('/rider-settings', 'API\V1\RiderController@settingsUpdate')->name('r
 Route::post('/restaurant-otp-verify', 'API\V1\RestaurantController@otpVerify')->name('restaurant-otp-verify');
 Route::post('/restaurant-document', 'API\V1\RestaurantController@documentUpdate')->name('restaurant-document');
 Route::post('/restaurant-today-order', 'API\V1\RestaurantController@restaurantTodayOrder')->name('restaurant-today-order');
-Route::post('/restaurant-order-accept', 'API\V1\RestaurantController@orderAcceptCancel')->name('restaurant-order-accept');
+Route::post('/restaurant-order-accept', 'API\V1\RestaurantController@orderAccept')->name('restaurant-order-accept');
+Route::post('/restaurant-order-cancel', 'API\V1\RestaurantController@orderCancel')->name('restaurant-order-cancel');
+Route::post('/restaurant-order-ready', 'API\V1\RestaurantController@orderReady')->name('restaurant-order-ready');
 Route::post('/restaurant-order-history', 'API\V1\RestaurantController@index')->name('restaurant-order-history');
 Route::post('/restaurant-profile-update', 'API\V1\RestaurantController@restaurantProfileUpdate')->name('restaurant-profile-update');
 Route::post('/restaurant-settings', 'API\V1\RestaurantController@settingsUpdate')->name('restaurant-settings');
@@ -87,9 +96,13 @@ Route::post('/restaurant-update-coupon', 'API\V1\RestauranrController@couponUpda
 Route::post('/restaurant-delete-coupon', 'API\V1\RestauranrController@couponDestroy')->name('restaurant-delete-category');
 
 ##
-Route::post('/restaurant-new-location', 'API\V1\RestauranrController@storeLocation')->name('restaurant-new-location');
-Route::post('/restaurant-update-location', 'API\V1\RestauranrController@locationUpdate')->name('restaurant-update-location');
-Route::post('/restaurant-delete-location', 'API\V1\RestauranrController@locationDestroy')->name('restaurant-delete-location');
+Route::post('/restaurant-location-save', 'API\V1\RestaurantController@restaurantLocationSave')->name('restaurant-location-save');
+Route::post('/restaurant-location-update', 'API\V1\RestaurantController@restaurantLocationUpdate')->name('restaurant-location-update');
+Route::post('/restaurant-location-delete', 'API\V1\RestaurantController@restaurantLocationDelete')->name('restaurant-location-delete');
+Route::post('/restaurant-locations', 'API\V1\RestaurantController@restaurantLocation')->name('restaurant-locations');
+Route::post('/restaurant-selected-location', 'API\V1\RestaurantController@restaurantSelectedLocation')->name('restaurant-selected-location');
+
+
 
 ##
 Route::post('/restaurant-complain', 'API\V1\RestauranrController@storeComplain')->name('restaurant-complain');

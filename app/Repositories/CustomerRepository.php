@@ -62,13 +62,13 @@ class CustomerRepository extends BaseRepository implements CustomerContract
             $customer = new Customer($collection->all());
 
             /* Get credentials from .env */
-            $token = getenv("TWILIO_AUTH_TOKEN");
+            /*$token = getenv("TWILIO_AUTH_TOKEN");
             $twilio_sid = getenv("TWILIO_SID");
             $twilio_verify_sid = getenv("TWILIO_VERIFY_SID");
             $twilio = new Client($twilio_sid, $token);
             $twilio->verify->v2->services($twilio_verify_sid)
                 ->verifications
-                ->create($collection['phone_number'], "sms");
+                ->create($collection['phone_number'], "sms");*/
 
             $created_at = date('Y-m-d');
 
