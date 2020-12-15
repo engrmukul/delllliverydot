@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class RiderPhoneVerificationFormRequest extends FormRequest
+class RiderAddressStoreFormRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,7 +25,9 @@ class RiderPhoneVerificationFormRequest extends FormRequest
     public function rules()
     {
         return [
-            'phone_number' => 'required'
+            'rider_id' =>  'required',
+            'address' =>  'required',
+            'is_current_address' =>  'required',
         ];
     }
 }

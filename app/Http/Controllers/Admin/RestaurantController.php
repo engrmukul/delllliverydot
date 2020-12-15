@@ -41,7 +41,7 @@ class RestaurantController extends BaseController
                 trans('restaurant.status'),
                 trans('restaurant.action')
             ],
-            'dataUrl' => 'admin/restaurants/requested-get-data',
+            'dataUrl' => 'restaurants/requested-get-data',
             'columns' => [
                 ['data' => 'id', 'name' => 'id'],
                 ['data' => 'name', 'name' => 'name'],

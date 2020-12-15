@@ -91,6 +91,18 @@ class RiderRepository extends BaseRepository implements RiderContract
 
             $rider->save($merge->all());
 
+
+            $riderSettings = new RiderSetting();
+
+            $riderSettings->rider_id = $rider->id;
+            $riderSettings->notification = 1;
+            $riderSettings->popup_notification = 1;
+            $riderSettings->sms = 1;
+            $riderSettings->offer_and_promotion = 1;
+
+            $riderSettings->save();
+
+
             $riderProfile = new RiderProfile();
 
             $riderProfile->rider_id = $rider->id;

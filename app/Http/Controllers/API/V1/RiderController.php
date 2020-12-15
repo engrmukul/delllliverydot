@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\API\V1;
 
 use App\Contracts\RiderContract;
+use App\Http\Requests\RiderAddressStoreFormRequest;
+use App\Http\Requests\RiderAddressUpdateFormRequest;
 use App\Http\Requests\RiderDocumentUpdateFormRequest;
 use App\Http\Requests\RiderOTPVerificationFormRequest;
 use App\Http\Requests\RiderPhoneVerificationFormRequest;
@@ -10,6 +12,7 @@ use App\Http\Requests\RiderStoreFormRequest;
 use App\Http\Requests\RiderUpdateFormRequest;
 use App\Models\Order;
 use App\Models\Rider;
+use App\Models\RiderAddress;
 use App\Models\RiderSetting;
 use App\Traits\UploadTrait;
 use Illuminate\Http\Request;
@@ -122,7 +125,7 @@ class RiderController extends BaseController
     {
         $riderLocation = new RiderAddress();
 
-        $riderLocation->restaurant_id = $request->restaurant_id;
+        $riderLocation->rider_id = $request->rider_id;
         $riderLocation->address = $request->address;
         $riderLocation->is_current_address = $request->is_current_address;
 
@@ -206,18 +209,25 @@ class RiderController extends BaseController
     {
         $orderDetail = Order::with('RestaurantDetails', 'orderDetails', 'orderDetails.foods', 'orderDetails.foodVariants')->where('id', $request->order_id)->first();
 
+        //dd($orderDetail->toArray());
+        $orderDataArray = array();
         if ($orderDetail) {
+            $order_details = $orderDetail->toArray();
 
-            $orderData['order_id'] = $orderDetail->id;
-            $orderData['order_status'] = $orderDetail->order_status;
-            $orderData['restaurant_name'] = $orderDetail->RestaurantDetails->name;
-            $orderData['restaurant_address'] = $orderDetail->RestaurantDetails->name;
+            $orderData['order_id'] = $order_details['id'];
+            $orderData['order_status'] = $order_details['order_status'];
+            $orderData['restaurant_name'] = $order_details['restaurant_details']['name'];
+            $orderData['restaurant_address'] = $order_details['restaurant_details']['address'];
 
-            foreach ($orderDetail->orderDetail->foods as $food) {
-                $orderData['food_name'] = $food['name'];
+
+            foreach ($order_details['order_details'] as $order) {
+
+                $orderData['food_name'] = $order['foods']['name'];
+
+                $orderDataArray[] = $orderData;
             }
 
-            return $this->sendResponse($orderData, 'Order data', Response::HTTP_OK);
+            return $this->sendResponse($orderDataArray, 'Order data', Response::HTTP_OK);
         } else {
             return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
         }
@@ -225,10 +235,10 @@ class RiderController extends BaseController
 
     public function orderAccept(Request $request)
     {
-        $orderUpdated = Order::where(["id" => $request->order_id, "order_status" => "food_is_cooking"])->update(
+        $orderUpdated = Order::where(["id" => $request->order_id, "order_status" => "food_ready"])->update(
             [
-                "order_status" => ($request->order_status == 'accept') ? 'delivery_on_the_way' : 'food_is_cooking',
-                "rider_id" => $request->order_id
+                "order_status" => ($request->order_status == 'accept') ? 'delivery_on_the_way' : 'food_ready',
+                "rider_id" => $request->rider_id
             ]
         );
 
@@ -250,9 +260,9 @@ class RiderController extends BaseController
                 $orderData['order_id'] = $order['id'];
                 $orderData['order_status'] = $order['order_status'];
                 $orderData['order_date'] = $order['order_date'];
-                $orderData['restaurant_name'] = $order['RestaurantDetails']['name'];
-                $orderData['restaurant_address'] = $order['RestaurantDetails']['address'];
-                $orderData['delivery_time'] = $order['RestaurantDetails']['delivery_time'];
+                $orderData['restaurant_name'] = $order['restaurant_details']['name'];
+                $orderData['restaurant_address'] = $order['restaurant_details']['address'];
+                $orderData['delivery_time'] = $order['restaurant_details']['delivery_time'];
                 $orderData['restaurant_phone_number'] = $order['restaurant']['phone_number'];
                 $orderData['customer_phone_number'] = $order['customer']['phone_number'];
 
@@ -272,7 +282,7 @@ class RiderController extends BaseController
 
     public function orderHistory(Request $request)
     {
-        $orderHistory = Order::select('order_id','order_date','delivery_address')->where('rider_id', $request->rider_id)->orderBy('order_date', 'ASC')->get();
+        $orderHistory = Order::select('id','order_date','delivery_address')->where('rider_id', $request->rider_id)->orderBy('order_date', 'ASC')->get();
 
         if ($orderHistory->count() > 0) {
             return $this->sendResponse($orderHistory, 'Order List.', Response::HTTP_OK);

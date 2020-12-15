@@ -500,13 +500,19 @@ class CustomerController extends BaseController
             $foodArray = array();
             foreach ($orderData['carts'] as $key => $item) {
 
+                if($item['extraItemId'] == 0 || $item['extraItemId'] == NULL) {
+                    $item['extraItemId'] = NULL;
+                }else{
+                    $item['extraItemId'] = $item['extraItemId'];
+                }
+
                 $foodData['order_id'] = $order->id;
                 $foodData['food_id'] = $item['foodId'];
                 $foodData['food_variant_id'] = $item['foodVariantId'];
                 $foodData['food_price'] = $item['price'];
                 $foodData['food_quantity'] = $item['quantity'];
                 $foodData['extra_id'] = $item['extraItemId'];
-                $foodData['extra_price'] = $item['extraItemPrice'];
+                $foodData['extra_price'] = $item['extraItemPrice'] ? $item['extraItemPrice'] : 0;
                 $foodData['sub_total'] = ($item['price']*$item['quantity']) + $item['extraItemPrice'];
 
                 $foodArray[] = $foodData;
@@ -620,13 +626,18 @@ class CustomerController extends BaseController
     //POINT LIST
     public function point(Request $request)
     {
-        $points = Point::with('orders','orders.RestaurantDetails', 'orders.orderDetails','orders.orderDetails.foods')->where('customer_id', $request->customer_id)->get();
+        $points = Point::with('orders','orders.RestaurantDetails', 'orders.orderDetails','orders.orderDetails.foods')
+            ->where('customer_id', $request->customer_id)
+            ->get();
 
         if ($points->count() > 0) {
             $data = array(
                 'earned_point' => $points->sum('point'),
                 'points_list' => $points
             );
+
+
+
             return $this->sendResponse($data, 'Point list', Response::HTTP_OK);
 
         } else {
