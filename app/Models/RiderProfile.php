@@ -22,6 +22,7 @@ class RiderProfile extends Model
      */
     protected $fillable = [
         'rider_id',
+        'nid',
         'image',
         'dob',
         'spouse_dob',

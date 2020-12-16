@@ -6,6 +6,9 @@ use App\Contracts\RiderContract;
 use App\Http\Requests\RiderAddressStoreFormRequest;
 use App\Http\Requests\RiderAddressUpdateFormRequest;
 use App\Http\Requests\RiderDocumentUpdateFormRequest;
+use App\Http\Requests\RiderOrderDetailFormRequest;
+use App\Http\Requests\RiderOrderListFormRequest;
+use App\Http\Requests\RiderOrderStatusFormRequest;
 use App\Http\Requests\RiderOTPVerificationFormRequest;
 use App\Http\Requests\RiderPhoneVerificationFormRequest;
 use App\Http\Requests\RiderStoreFormRequest;
@@ -205,7 +208,7 @@ class RiderController extends BaseController
         }
     }
 
-    public function orderDetail(Request $request)
+    public function orderDetail(RiderOrderDetailFormRequest $request)
     {
         $orderDetail = Order::with('RestaurantDetails', 'orderDetails', 'orderDetails.foods', 'orderDetails.foodVariants')->where('id', $request->order_id)->first();
 
@@ -233,25 +236,27 @@ class RiderController extends BaseController
         }
     }
 
-    public function orderAccept(Request $request)
+    public function orderStatus(RiderOrderStatusFormRequest $request)
     {
-        $orderUpdated = Order::where(["id" => $request->order_id, "order_status" => "food_ready"])->update(
+        $status = '';
+        if($request->order_status == 'accept'){
+            $status = 'rider_accepted';
+        }
+        if($request->order_status == 'collect'){
+            $status = 'delivery_on_the_way';
+        }
+        if($request->order_status == 'delivered'){
+            $status = 'delivered';
+        }
+
+        $orderUpdated = Order::where("id", $request->order_id)->update(
             [
-                "order_status" => ($request->order_status == 'accept') ? 'delivery_on_the_way' : 'food_ready',
+                "order_status" => $status ? $status : 'food_ready',
                 "rider_id" => $request->rider_id
             ]
         );
 
-        if($orderUpdated){
-            return $this->sendResponse(array(), 'Order accepted.', Response::HTTP_OK);
-        } else {
-            return $this->sendResponse(array(), 'Order already accepted by another rider', Response::HTTP_NOT_FOUND);
-        }
-    }
-
-    public function orderList(Request $request)
-    {
-        $orderList = Order::with('customer','restaurant', 'RestaurantDetails', 'orderDetails', 'orderDetails.foods', 'orderDetails.foodVariants')->whereDate('order_date', '>=', date('Y-m-d'))->where('rider_id', $request->rider_id)->orderBy('order_date', 'ASC')->get();
+        $orderList = Order::with('customer','customerDetails','restaurant', 'RestaurantDetails', 'orderDetails', 'orderDetails.foods', 'orderDetails.foodVariants')->whereDate('order_date', '>=', date('Y-m-d'))->where('rider_id', $request->rider_id)->orderBy('order_date', 'DESC')->get();
 
         $orderDataArray = array();
         if ($orderList->count() > 0) {
@@ -260,12 +265,53 @@ class RiderController extends BaseController
                 $orderData['order_id'] = $order['id'];
                 $orderData['order_status'] = $order['order_status'];
                 $orderData['order_date'] = $order['order_date'];
-                $orderData['restaurant_name'] = $order['restaurant_details']['name'];
-                $orderData['restaurant_address'] = $order['restaurant_details']['address'];
                 $orderData['delivery_time'] = $order['restaurant_details']['delivery_time'];
-                $orderData['restaurant_phone_number'] = $order['restaurant']['phone_number'];
-                $orderData['customer_phone_number'] = $order['customer']['phone_number'];
 
+                if($order['order_status'] == 'rider_accepted') {
+                    $orderData['name'] = $order['restaurant_details']['name'];
+                    $orderData['address'] = $order['restaurant_details']['address'];
+                    $orderData['phone_number'] = $order['restaurant']['phone_number'];
+                }if($order['order_status'] == 'delivery_on_the_way' || $order['order_status'] == 'delivered' ){
+                    $orderData['name'] = $order['customer']['name'];
+                    $orderData['address'] = $order['customer_details']['address'];
+                    $orderData['phone_number'] = $order['customer']['phone_number'];
+                }
+
+                foreach ($order['order_details'] as $orderDetails) {
+                    $orderData['food_name'] = $orderDetails['foods']['name'];
+                }
+
+                $orderDataArray[] = $orderData;
+            }
+
+            return $this->sendResponse($orderDataArray, 'Order List.', Response::HTTP_OK);
+        } else {
+            return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
+        }
+    }
+
+    public function orderList(RiderOrderListFormRequest $request)
+    {
+        $orderList = Order::with('customer','customerDetails','restaurant', 'RestaurantDetails', 'orderDetails', 'orderDetails.foods', 'orderDetails.foodVariants')->whereDate('order_date', '>=', date('Y-m-d'))->where('rider_id', $request->rider_id)->orderBy('order_date', 'DESC')->get();
+
+        $orderDataArray = array();
+        if ($orderList->count() > 0) {
+            foreach ($orderList->toArray() as $order) {
+
+                $orderData['order_id'] = $order['id'];
+                $orderData['order_status'] = $order['order_status'];
+                $orderData['order_date'] = $order['order_date'];
+                $orderData['delivery_time'] = $order['restaurant_details']['delivery_time'];
+
+                if($order['order_status'] == 'rider_accepted') {
+                    $orderData['name'] = $order['restaurant_details']['name'];
+                    $orderData['address'] = $order['restaurant_details']['address'];
+                    $orderData['phone_number'] = $order['restaurant']['phone_number'];
+                }if($order['order_status'] == 'delivery_on_the_way' || $order['order_status'] == 'delivered' ){
+                    $orderData['name'] = $order['customer']['name'];
+                    $orderData['address'] = $order['customer_details']['address'];
+                    $orderData['phone_number'] = $order['customer']['phone_number'];
+                }
 
                 foreach ($order['order_details'] as $orderDetails) {
                     $orderData['food_name'] = $orderDetails['foods']['name'];

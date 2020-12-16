@@ -67,7 +67,7 @@ Route::post('/rider-location-delete', 'API\V1\RiderController@riderLocationDelet
 Route::post('/rider-locations', 'API\V1\RiderController@riderLocation')->name('rider-locations');
 Route::post('/rider-selected-location', 'API\V1\RiderController@riderSelectedLocation')->name('rider-selected-location');
 Route::post('/rider-order-detail', 'API\V1\RiderController@orderDetail')->name('rider-order-detail');
-Route::post('/rider-order-accept', 'API\V1\RiderController@orderAccept')->name('rider-order-accept');
+Route::post('/rider-order-status', 'API\V1\RiderController@orderStatus')->name('rider-order-status');
 Route::post('/rider-order-list', 'API\V1\RiderController@orderList')->name('rider-order-list');
 Route::post('/rider-order-history', 'API\V1\RiderController@orderHistory')->name('rider-order-history');
 Route::post('/rider-profile-update', 'API\V1\RiderController@riderProfileUpdate')->name('rider-profile-update');
