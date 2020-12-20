@@ -16,6 +16,7 @@ use App\Http\Requests\RiderUpdateFormRequest;
 use App\Models\Order;
 use App\Models\Rider;
 use App\Models\RiderAddress;
+use App\Models\RiderProfile;
 use App\Models\RiderSetting;
 use App\Traits\UploadTrait;
 use Illuminate\Http\Request;
@@ -345,7 +346,7 @@ class RiderController extends BaseController
 
         if ($request->has('image')) {
             $image = $request->file('image');
-            $name = Str::slug($request->input('nid')) . '_' . time();
+            $name = Str::slug($request->input('phone_number')) . '_' . time();
             $folder = '/uploads/images/';
             $filePath = $folder . $name . '.' . $image->getClientOriginalExtension();
             $this->uploadOne($image, $folder, 'public', $name);
@@ -353,7 +354,36 @@ class RiderController extends BaseController
             $image = $filePath;
         }
 
-        $rider = $this->riderRepository->updateRiderProfile($params, $image);
+        Rider::where("id", $request->rider_id)->update(
+            [
+                "phone_number" => $request->phone_number,
+                "name" => $request->name,
+                "email" => $request->email,
+                "password" => $request->password,
+            ]
+        );
+
+        if($image !=''){
+            RiderProfile::where("rider_id", $request->rider_id)->update(
+                [
+                    "image" => $image ? url('/').'/public'.$image : url('/').'/public/uploads/images/default.png' ,
+                    "address" => $request->address
+                ]
+            );
+        }else{
+            RiderProfile::where("rider_id", $request->rider_id)->update(
+                [
+                    "address" => $request->address
+                ]
+            );
+        }
+
+
+        $rider = Rider::where('id', $request->rider_id)->first();
+        $riderProfile = RiderProfile::where('rider_id', $request->rider_id)->first();
+
+        $rider->image = $riderProfile->image;
+        $rider->address = $riderProfile->address;
 
         if ($rider) {
             return $this->sendResponse($rider, 'Rider update successfully.', Response::HTTP_OK);
@@ -366,10 +396,12 @@ class RiderController extends BaseController
     {
         $params = $request->except('_token');
 
-        $rider = $this->riderRepository->settingsUpdate($params);
+        $this->riderRepository->settingsUpdate($params);
 
-        if ($rider) {
-            return $this->sendResponse($rider, 'Rider settings update successfully.',Response::HTTP_OK);
+        $settings = RiderSetting::where('rider_id', $request->rider_id)->first();
+
+        if ($settings->count() > 0) {
+            return $this->sendResponse($settings, 'Rider settings update successfully.',Response::HTTP_OK);
         }else {
             return $this->sendResponse(array(), 'Data not updated', Response::HTTP_NOT_FOUND);
         }

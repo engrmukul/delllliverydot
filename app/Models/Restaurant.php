@@ -27,6 +27,7 @@ class Restaurant extends Model
         'email_verified_at',
         'password',
         'status',
+        'device_token',
         'created_at',
         'updated_at',
     ];

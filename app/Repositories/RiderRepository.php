@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Models\Order;
 use App\Models\Rider;
 use App\Contracts\RiderContract;
 use App\Models\RiderAddress;
@@ -85,6 +86,15 @@ class RiderRepository extends BaseRepository implements RiderContract
 
             $merge = $collection->merge(compact('created_at'));
 
+            //DEVICE TOKEN
+            if(isset($collection['device_token'])){
+                Rider::where("phone_number", $collection['phone_number'])->update(
+                    [
+                        "device_token" => $collection['device_token'],
+                    ]
+                );
+            }
+
             if( Rider::where('phone_number','=', $collection['phone_number'])->count() > 0){
                 return $rider = Rider::where('phone_number', $collection['phone_number'])->first();
             }
@@ -156,13 +166,15 @@ class RiderRepository extends BaseRepository implements RiderContract
      * @param array $params
      * @return mixed
      */
-    public function updateRiderProfile(array $params)
+    public function updateRiderProfile(array $params, $image)
     {
         $rider = $this->findRiderById($params['rider_id']);
 
         $collection = collect($params)->except('_token');
 
         $updated_at = date('Y-m-d');
+
+        $image = url('/').$image;
 
         $merge = $collection->merge(compact('updated_at','image'));
 
@@ -204,9 +216,9 @@ class RiderRepository extends BaseRepository implements RiderContract
 
         $collection = collect($params)->except('_token');
 
-        $notification = 1;
+        $rider_id = $collection['rider_id'];
 
-        $merge = $collection->merge(compact('notification'));
+        $merge = $collection->merge(compact('rider_id'));
 
         $affected = $settings->where('rider_id', $params['rider_id'])->update($merge->all());
 

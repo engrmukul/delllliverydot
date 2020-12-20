@@ -69,6 +69,7 @@ class RestaurantRepository extends BaseRepository implements RestaurantContract
     public function allRestaurants(string $order = 'id', string $sort = 'desc', array $columns = ['*'])
     {
         $query = $this->all($columns, $order, $sort);
+        dd($query);
         return Datatables::of($query)
             ->addColumn('action', function ($row) {
                 $actions = '';

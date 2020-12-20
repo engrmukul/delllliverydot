@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Admin\BaseController;
 use App\Models\Restaurant;
 use Illuminate\Http\Request;
 use App\Contracts\RestaurantContract;
@@ -41,7 +40,7 @@ class RestaurantController extends BaseController
                 trans('restaurant.status'),
                 trans('restaurant.action')
             ],
-            'dataUrl' => 'restaurants/requested-get-data',
+            'dataUrl' => 'admin/restaurants/requested-get-data',
             'columns' => [
                 ['data' => 'id', 'name' => 'id'],
                 ['data' => 'name', 'name' => 'name'],

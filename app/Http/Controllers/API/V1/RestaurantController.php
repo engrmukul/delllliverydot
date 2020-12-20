@@ -149,13 +149,20 @@ class RestaurantController extends BaseController
 
     public function orderReady(Request $request)
     {
-        Order::where("id", $request->order_id)->update(
+        $order = Order::where("id", $request->order_id)->update(
             [
                 "order_status" => ($request->order_status == 'food_ready') ? 'food_ready' : 'food_is_cooking',
             ]
         );
 
-        $todaysOrder = Order::with('customer', 'RestaurantDetails', 'orderDetails', 'orderDetails.foods', 'orderDetails.foodVariants')->whereDate('order_date', '>=', date('Y-m-d'))->where('restaurant_id', $request->restaurant_id)->orderBy('order_date', 'ASC')->get();
+        //SEND PUSH NOTIFICATION
+        $notification = \DB::table('riders')->get();
+
+        foreach ($notification as $key => $value) {
+            $this->notification($value->device_token, Order::with('restaurant')->where('id', $request->order_id)->first());
+        }
+
+        $todaysOrder = Order::with('customer', 'RestaurantDetails', 'orderDetails', 'orderDetails.foods', 'orderDetails.foodVariants')->where('restaurant_id', $request->restaurant_id)->orderBy('order_date', 'ASC')->get();
 
         $orderDataArray = array();
         if ($todaysOrder->count() > 0) {
@@ -176,6 +183,46 @@ class RestaurantController extends BaseController
         } else {
             return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
         }
+    }
+
+    public function notification($token, $order)
+    {
+        $fcmUrl = 'https://fcm.googleapis.com/fcm/send';
+        $token = $token;
+
+        $notification = [
+            'id' => $order->id,
+            'message' => $order->restaurant->address,
+            'title' => $order->restaurant->address,
+            'sound' => true,
+        ];
+
+        $extraNotificationData = ["message" => $notification,"moredata" =>'dd'];
+
+        $fcmNotification = [
+            //'registration_ids' => $tokenList, //multple token array
+            'to'        => $token, //single token
+            'notification' => $notification,
+            'data' => $extraNotificationData
+        ];
+
+        $headers = [
+            'Authorization: key=AAAAQu_QfAw:APA91bHZFNbRidS7msp6Ec6PkxMS9RTM_l2lrpexLdm8HLo_fQPn02w9wXbyRBrGTWTNez08wNVNZzysPg2sYi0Q9as_P7q0TWpOlvL1sRKSFZY4GNmrN8BrjvSpcYu4KvWsz0hc_oZj',
+            'Content-Type: application/json'
+        ];
+
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL,$fcmUrl);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($fcmNotification));
+        $result = curl_exec($ch);
+        curl_close($ch);
+
+        return true;
     }
 
     /**

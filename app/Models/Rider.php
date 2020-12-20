@@ -28,6 +28,7 @@ class Rider extends Model
         'password',
         'status',
         'isNew',
+        'device_token',
         'created_at',
         'updated_at',
     ];
@@ -38,5 +39,10 @@ class Rider extends Model
     protected $casts  = [
 
     ];
+
+    public function riderProfile()
+    {
+        return $this->hasOne(RiderProfile::class,'rider_id','id');
+    }
 
 }
