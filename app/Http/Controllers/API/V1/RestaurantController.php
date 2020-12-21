@@ -5,11 +5,13 @@ namespace App\Http\Controllers\API\V1;
 use App\Contracts\RestaurantContract;
 use App\Http\Requests\RestaurantAddressStoreFormRequest;
 use App\Http\Requests\RestaurantAddressUpdateFormRequest;
+use App\Http\Requests\RestaurantDeviceTokenStoreFormRequest;
 use App\Http\Requests\RestaurantDocumentUpdateFormRequest;
 use App\Http\Requests\RestaurantOTPVerificationFormRequest;
 use App\Http\Requests\RestaurantPhoneVerificationFormRequest;
 use App\Http\Requests\RestaurantStoreFormRequest;
 use App\Http\Requests\RestaurantUpdateFormRequest;
+use App\Http\Requests\RiderDeviceTokenStoreFormRequest;
 use App\Models\Order;
 use App\Models\Restaurant;
 use App\Models\RestaurantAddress;
@@ -199,7 +201,11 @@ class RestaurantController extends BaseController
 
         }
 
-        $todaysOrder = Order::with('customer', 'RestaurantDetails', 'orderDetails', 'orderDetails.foods', 'orderDetails.foodVariants')->where('restaurant_id', $request->restaurant_id)->orderBy('order_date', 'ASC')->get();
+        $todaysOrder = Order::with('customer', 'RestaurantDetails', 'orderDetails', 'orderDetails.foods', 'orderDetails.foodVariants')
+            ->where('restaurant_id', $request->restaurant_id)
+            ->orderBy('order_date', 'DESC')
+            ->limit(5)
+            ->get();
 
         $orderDataArray = array();
         if ($todaysOrder->count() > 0) {
@@ -240,7 +246,7 @@ class RestaurantController extends BaseController
             "notification" : {
                  "title": "New order",
                 "body": "New order from '.$restaurantName.'",
-                "click_action": "NEW_ORDER"
+                "click_action": "NEW_ORDER_FOR_DELIVERY"
                },
 
           }';
@@ -634,6 +640,26 @@ class RestaurantController extends BaseController
             return $this->sendResponse($coupon, 'Coupon delete successfully.', Response::HTTP_OK);
         }
         return $this->sendError('Unable to create.', 'Internal Server Error', Response::HTTP_INTERNAL_SERVER_ERROR);
+    }
+
+    //DEVICE TOKEN
+    public function saveDeviceToken(RestaurantDeviceTokenStoreFormRequest $request)
+    {
+        if(isset($request->device_token)){
+            $tokenUpdate = Restaurant::where("phone_number", $request->phone_number)->update(
+                [
+                    "device_token" => $request->device_token
+                ]
+            );
+        }
+
+        $restaurant = Restaurant::where('phone_number', $request->phone_number)->first();
+
+        if ($restaurant) {
+            return $this->sendResponse($restaurant, 'Device token Updated.', Response::HTTP_OK);
+        } else {
+            return $this->sendResponse(array(), 'Device token not updated', Response::HTTP_NOT_FOUND);
+        }
     }
 
 

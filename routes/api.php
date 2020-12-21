@@ -85,6 +85,8 @@ Route::post('/restaurant-order-ready', 'API\V1\RestaurantController@orderReady')
 Route::post('/restaurant-order-history', 'API\V1\RestaurantController@index')->name('restaurant-order-history');
 Route::post('/restaurant-profile-update', 'API\V1\RestaurantController@restaurantProfileUpdate')->name('restaurant-profile-update');
 Route::post('/restaurant-settings', 'API\V1\RestaurantController@settingsUpdate')->name('restaurant-settings');
+Route::post('/restaurant-device-token', 'API\V1\RestaurantController@saveDeviceToken')->name('restaurant-device-token');
+
 
 ##
 Route::post('/restaurant-new-category', 'API\V1\RestauranrController@storeCategory')->name('restaurant-new-category');

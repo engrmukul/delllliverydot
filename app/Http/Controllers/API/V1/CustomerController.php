@@ -560,17 +560,16 @@ class CustomerController extends BaseController
 
         $URL = 'https://fcm.googleapis.com/fcm/send';
 
-
         $post_data = '{
             "to" : "' . $deviceToken . '",
-            "data" : {
+
               "order_id" : "' . $orderId . '",
               "food_name" : "' . $foodName . '",
             },
             "notification" : {
                  "title": "New order",
                 "body": "New order from customer",
-                "click_action": "NEW_ORDER"
+                "click_action": "NEW_ORDER_FOR_RESTAURANT"
                },
 
           }';

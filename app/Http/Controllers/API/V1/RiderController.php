@@ -346,7 +346,6 @@ class RiderController extends BaseController
         } else {
             return $this->sendResponse(array(), 'Device token not updated', Response::HTTP_NOT_FOUND);
         }
-
     }
 
     public function orderHistory(Request $request)
