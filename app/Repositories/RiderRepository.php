@@ -86,21 +86,12 @@ class RiderRepository extends BaseRepository implements RiderContract
 
             $merge = $collection->merge(compact('created_at'));
 
-            //DEVICE TOKEN
-            if(isset($collection['device_token'])){
-                Rider::where("phone_number", $collection['phone_number'])->update(
-                    [
-                        "device_token" => $collection['device_token'],
-                    ]
-                );
-            }
-
             if( Rider::where('phone_number','=', $collection['phone_number'])->count() > 0){
+
                 return $rider = Rider::where('phone_number', $collection['phone_number'])->first();
             }
 
             $rider->save($merge->all());
-
 
             $riderSettings = new RiderSetting();
 

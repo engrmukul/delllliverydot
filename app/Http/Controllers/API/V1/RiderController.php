@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\V1;
 use App\Contracts\RiderContract;
 use App\Http\Requests\RiderAddressStoreFormRequest;
 use App\Http\Requests\RiderAddressUpdateFormRequest;
+use App\Http\Requests\RiderDeviceTokenStoreFormRequest;
 use App\Http\Requests\RiderDocumentUpdateFormRequest;
 use App\Http\Requests\RiderOrderDetailFormRequest;
 use App\Http\Requests\RiderOrderListFormRequest;
@@ -325,6 +326,27 @@ class RiderController extends BaseController
         } else {
             return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
         }
+    }
+
+    //DEVICE TOKEN
+    public function saveDeviceToken(RiderDeviceTokenStoreFormRequest $request)
+    {
+        if(isset($request->device_token)){
+            $tokenUpdate = Rider::where("phone_number", $request->phone_number)->update(
+                [
+                    "device_token" => $request->device_token
+                ]
+            );
+        }
+
+        $rider = Rider::where('phone_number', $request->phone_number)->first();
+
+        if ($rider) {
+            return $this->sendResponse($rider, 'Device token Updated.', Response::HTTP_OK);
+        } else {
+            return $this->sendResponse(array(), 'Device token not updated', Response::HTTP_NOT_FOUND);
+        }
+
     }
 
     public function orderHistory(Request $request)

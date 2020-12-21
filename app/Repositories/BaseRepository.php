@@ -3,8 +3,11 @@
 namespace App\Repositories;
 
 use App\Contracts\BaseContract;
+use App\Models\Coupon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\DB;
+
 /**
  * Class BaseRepository
  *

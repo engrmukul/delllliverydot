@@ -72,6 +72,7 @@ Route::post('/rider-order-list', 'API\V1\RiderController@orderList')->name('ride
 Route::post('/rider-order-history', 'API\V1\RiderController@orderHistory')->name('rider-order-history');
 Route::post('/rider-profile-update', 'API\V1\RiderController@riderProfileUpdate')->name('rider-profile-update');
 Route::post('/rider-settings', 'API\V1\RiderController@settingsUpdate')->name('rider-settings');
+Route::post('/rider-device-token', 'API\V1\RiderController@saveDeviceToken')->name('rider-device-token');
 
 
 //RESTAURANT

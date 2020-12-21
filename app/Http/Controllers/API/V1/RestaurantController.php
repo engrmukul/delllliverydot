@@ -14,6 +14,7 @@ use App\Models\Order;
 use App\Models\Restaurant;
 use App\Models\RestaurantAddress;
 use App\Models\RestaurantSetting;
+use App\Models\Rider;
 use App\Traits\UploadTrait;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -155,11 +156,47 @@ class RestaurantController extends BaseController
             ]
         );
 
-        //SEND PUSH NOTIFICATION
-        $notification = \DB::table('riders')->get();
+        $orderDetails =
 
-        foreach ($notification as $key => $value) {
+            //SEND PUSH NOTIFICATION
+        $riders = Rider::whereNotNull('device_token')->get();
+
+        // dd($riders->toArray());
+
+        //WILL REMOVE LOOP USE ONLY NOTIFICATION METHOD ONE TOME AND PASS TOKEN ARRAY
+        /*foreach ($riders as $key => $value) {
             $this->notification($value->device_token, Order::with('restaurant')->where('id', $request->order_id)->first());
+        }*/
+
+        $orderDetail = Order::with('RestaurantDetails', 'orderDetails', 'orderDetails.foods', 'orderDetails.foodVariants')->where('id', $request->order_id)->first();
+
+        //dd($orderDetail->toArray());
+        $orderDataArray = array();
+
+        $order_details = $orderDetail->toArray();
+
+        $orderData['order_id'] =  $orderId =$order_details['id'];
+        $orderData['order_status'] = $order_details['order_status'];
+        $orderData['restaurant_name'] = $restaurantName = $order_details['restaurant_details']['name'];
+        $orderData['restaurant_address'] = $order_details['restaurant_details']['address'];
+
+
+        foreach ($order_details['order_details'] as $order) {
+
+            $orderData['food_name'] = $foodName =$order['foods']['name'];
+
+            $orderDataArray[] = $orderData;
+        }
+
+        foreach ($riders as $key => $value) {
+            $notification_id = $value->device_token;
+            $title = "Greeting Notification";
+            $message = "Restaurant order";
+            $id = $value->id;
+            $type = "basic";
+
+            $res = $this->send_notification_FCM($notification_id, $title, $message, $id, $type, $orderId, $foodName, $restaurantName);
+
         }
 
         $todaysOrder = Order::with('customer', 'RestaurantDetails', 'orderDetails', 'orderDetails.foods', 'orderDetails.foodVariants')->where('restaurant_id', $request->restaurant_id)->orderBy('order_date', 'ASC')->get();
@@ -185,45 +222,62 @@ class RestaurantController extends BaseController
         }
     }
 
-    public function notification($token, $order)
+
+    function send_notification_FCM($notification_id, $title, $message, $id, $type, $orderId, $foodName, $restaurantName)
     {
-        $fcmUrl = 'https://fcm.googleapis.com/fcm/send';
-        $token = $token;
 
-        $notification = [
-            'id' => $order->id,
-            'message' => $order->restaurant->address,
-            'title' => $order->restaurant->address,
-            'sound' => true,
-        ];
+        $accesstoken = "key=AAAA6DftdWk:APA91bEwkeR1wHImQVk_ryC5Nfk8O1GK2E1dDamgTN-nzTStibnK2SFj5n2qkuXYIr8ZhU7hJlfLADmsq_HctdmEo_r4RJYNHot60RUo-Vmt2_ovvZUfKd3bCDqu-Q1OadOGa-VEisQZ";
 
-        $extraNotificationData = ["message" => $notification,"moredata" =>'dd'];
-
-        $fcmNotification = [
-            //'registration_ids' => $tokenList, //multple token array
-            'to'        => $token, //single token
-            'notification' => $notification,
-            'data' => $extraNotificationData
-        ];
-
-        $headers = [
-            'Authorization: key=AAAAQu_QfAw:APA91bHZFNbRidS7msp6Ec6PkxMS9RTM_l2lrpexLdm8HLo_fQPn02w9wXbyRBrGTWTNez08wNVNZzysPg2sYi0Q9as_P7q0TWpOlvL1sRKSFZY4GNmrN8BrjvSpcYu4KvWsz0hc_oZj',
-            'Content-Type: application/json'
-        ];
+        $URL = 'https://fcm.googleapis.com/fcm/send';
 
 
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL,$fcmUrl);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($fcmNotification));
-        $result = curl_exec($ch);
-        curl_close($ch);
+        $post_data = '{
+            "to" : "' . $notification_id . '",
+            "data" : {
+              "order_id" : "' . $orderId . '",
+              "food_name" : "' . $foodName . '",
+            },
+            "notification" : {
+                 "title": "New order",
+                "body": "New order from '.$restaurantName.'",
+                "click_action": "NEW_ORDER"
+               },
 
-        return true;
+          }';
+
+
+        //print_r($post_data);die;
+
+        $crl = curl_init();
+
+        $headr = array();
+        $headr[] = 'Content-type: application/json';
+        $headr[] = 'Authorization: ' . $accesstoken;
+        curl_setopt($crl, CURLOPT_SSL_VERIFYPEER, false);
+
+        curl_setopt($crl, CURLOPT_URL, $URL);
+        curl_setopt($crl, CURLOPT_HTTPHEADER, $headr);
+
+        curl_setopt($crl, CURLOPT_POST, true);
+        curl_setopt($crl, CURLOPT_POSTFIELDS, $post_data);
+        curl_setopt($crl, CURLOPT_RETURNTRANSFER, true);
+
+        $rest = curl_exec($crl);
+
+        if ($rest === false) {
+            // throw new Exception('Curl error: ' . curl_error($crl));
+            //print_r('Curl error: ' . curl_error($crl));
+            $result_noti = 0;
+        } else {
+
+            $result_noti = 1;
+        }
+
+        //curl_close($crl);
+        //print_r($result_noti);die;
+        return $result_noti;
     }
+
 
     /**
      * @param RestaurantPhoneVerificationFormRequest $request

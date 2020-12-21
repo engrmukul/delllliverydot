@@ -30,7 +30,7 @@ class CouponRepository extends BaseRepository implements CouponContract
     public function listCoupon(string $order = 'id', string $sort = 'desc', array $columns = ['*'])
     {
         $query = $this->all($columns, $order, $sort);
-
+dd($query);
         return Datatables::of($query)
             ->addColumn('action', function ($row) {
                 $actions = '';

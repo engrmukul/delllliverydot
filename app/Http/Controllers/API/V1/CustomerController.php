@@ -20,6 +20,7 @@ use App\Models\Extra;
 use App\Models\FoodVariant;
 use App\Models\Point;
 use App\Models\PromotionalBanner;
+use App\Models\Restaurant;
 use App\Models\Setting;
 use App\Models\Shop;
 use App\Models\ShopItem;
@@ -522,6 +523,14 @@ class CustomerController extends BaseController
             OrderDetail::insert($foodArray);
 
 
+            //SEND NOTIFICATION
+            $orderId = $order->id;
+            $foodName = FoodVariant::where('id', $item['foodVariantId'])->first()->name;
+            $deviceToken = Restaurant::where('id',$orderData['restaurantId'])->first()->device_token;
+
+            $this->send_notification_FCM($deviceToken, $orderId, $foodName);
+
+
             //POINT SAVE
             $pointData['customer_id'] = $orderData['customer_id'];
             $pointData['order_id'] = $order->id;
@@ -542,6 +551,61 @@ class CustomerController extends BaseController
         }else{
             return $this->sendResponse(array(), 'Data not save', Response::HTTP_NOT_FOUND);
         }
+    }
+
+    public function send_notification_FCM($deviceToken, $orderId, $foodName)
+    {
+
+        $accesstoken = "key=AAAA6DftdWk:APA91bEwkeR1wHImQVk_ryC5Nfk8O1GK2E1dDamgTN-nzTStibnK2SFj5n2qkuXYIr8ZhU7hJlfLADmsq_HctdmEo_r4RJYNHot60RUo-Vmt2_ovvZUfKd3bCDqu-Q1OadOGa-VEisQZ";
+
+        $URL = 'https://fcm.googleapis.com/fcm/send';
+
+
+        $post_data = '{
+            "to" : "' . $deviceToken . '",
+            "data" : {
+              "order_id" : "' . $orderId . '",
+              "food_name" : "' . $foodName . '",
+            },
+            "notification" : {
+                 "title": "New order",
+                "body": "New order from customer",
+                "click_action": "NEW_ORDER"
+               },
+
+          }';
+
+
+        //print_r($post_data);die;
+
+        $crl = curl_init();
+
+        $headr = array();
+        $headr[] = 'Content-type: application/json';
+        $headr[] = 'Authorization: ' . $accesstoken;
+        curl_setopt($crl, CURLOPT_SSL_VERIFYPEER, false);
+
+        curl_setopt($crl, CURLOPT_URL, $URL);
+        curl_setopt($crl, CURLOPT_HTTPHEADER, $headr);
+
+        curl_setopt($crl, CURLOPT_POST, true);
+        curl_setopt($crl, CURLOPT_POSTFIELDS, $post_data);
+        curl_setopt($crl, CURLOPT_RETURNTRANSFER, true);
+
+        $rest = curl_exec($crl);
+
+        if ($rest === false) {
+            // throw new Exception('Curl error: ' . curl_error($crl));
+            //print_r('Curl error: ' . curl_error($crl));
+            $result_noti = 0;
+        } else {
+
+            $result_noti = 1;
+        }
+
+        //curl_close($crl);
+        //print_r($result_noti);die;
+        return $result_noti;
     }
 
     public function customerOrderDetails($orderId='')
