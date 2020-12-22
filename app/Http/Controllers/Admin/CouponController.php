@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\Coupon;
-use App\Models\Language;
 use Illuminate\Http\Request;
 use App\Contracts\CouponContract;
 use App\Http\Requests\CouponStoreFormRequest;
@@ -22,7 +21,6 @@ class CouponController extends BaseController
      */
     public function __construct(CouponContract $couponRepository)
     {
-        //$this->middleware('auth');
         $this->couponRepository = $couponRepository;
     }
 
@@ -73,7 +71,6 @@ class CouponController extends BaseController
         $this->setPageTitle('Coupons', 'Create Coupon');
 
         return view('admin.coupons.create');
-
     }
 
     /**
@@ -83,8 +80,6 @@ class CouponController extends BaseController
     public function store(CouponStoreFormRequest $request)
     {
         $params = $request->except('_token');
-
-        $params['image'] = $this->saveImages($request->file('image'), 'site/img/coupon-img/', 715, 715);
 
         $coupon = $this->couponRepository->createCoupon($params);
 
@@ -104,9 +99,7 @@ class CouponController extends BaseController
 
         $coupon = $this->couponRepository->findCouponById($id);
 
-        $languages = Language::all();
-
-        return view('admin.coupons.edit', compact('coupon', 'languages'));
+        return view('admin.coupons.edit', compact('coupon'));
     }
 
     /**
@@ -116,11 +109,6 @@ class CouponController extends BaseController
     public function update(CouponUpdateFormRequest $request, Coupon $couponModel)
     {
         $params = $request->except('_token');
-
-        if ($request->has('image')) {
-
-            $params['image'] = $this->saveImages($request->file('image'), 'site/img/coupon-img/', 715, 715);
-        }
 
         $coupon = $this->couponRepository->updateCoupon($params);
 

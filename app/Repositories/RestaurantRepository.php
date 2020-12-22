@@ -40,7 +40,10 @@ class RestaurantRepository extends BaseRepository implements RestaurantContract
      */
     public function requestedRestaurant(string $order = 'id', string $sort = 'desc', array $columns = ['*'])
     {
-        $query = $this->all($columns, $order, $sort);
+        //$query = $this->all($columns, $order, $sort);
+
+        $query = $this->model::latest()->get();
+
         return Datatables::of($query)
             ->addColumn('action', function ($row) {
                 $actions = '';
@@ -68,8 +71,8 @@ class RestaurantRepository extends BaseRepository implements RestaurantContract
      */
     public function allRestaurants(string $order = 'id', string $sort = 'desc', array $columns = ['*'])
     {
-        $query = $this->all($columns, $order, $sort);
-        dd($query);
+        $query = $this->model::latest()->get();
+
         return Datatables::of($query)
             ->addColumn('action', function ($row) {
                 $actions = '';
@@ -220,6 +223,44 @@ class RestaurantRepository extends BaseRepository implements RestaurantContract
             } else {
                 return false;
             }*/
+
+        } catch (QueryException $exception) {
+            throw new InvalidArgumentException($exception->getMessage());
+        }
+    }
+
+    public function createRestaurantByAdmin(array $params)
+    {
+        try {
+            $collection = collect($params);
+
+            $created_at = date('Y-m-d');
+            $created_by = auth()->user()->id;
+
+            $merge = $collection->merge(compact('created_at','created_by'));
+
+            //SAVE RESTAURANT
+            $restaurant = new Restaurant($merge->all());
+            $restaurant->save();
+
+            //SAVE RESTAURANT PROFILE
+            $restaurantProfile = new RestaurantProfile($merge->all());
+            $restaurantProfile->restaurant_id = $restaurant->id;
+            $restaurantProfile->feature_section = 1;
+            $restaurantProfile->ratting = 5;
+            $restaurantProfile->save();
+
+            //SAVE RESTAURANT SETTINGS
+            $restaurantSettings = new RestaurantSetting($merge->all());
+            $restaurantSettings->restaurant_id = $restaurant->id;
+            $restaurantSettings->save();
+
+            //SAVE RESTAURANT ADDRESS
+            $restaurantAddress = new RestaurantAddress($merge->all());
+            $restaurantAddress->restaurant_id = $restaurant->id;
+            $restaurantAddress->save();
+
+            return $restaurant;
 
         } catch (QueryException $exception) {
             throw new InvalidArgumentException($exception->getMessage());

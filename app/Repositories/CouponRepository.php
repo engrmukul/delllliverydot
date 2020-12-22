@@ -4,10 +4,11 @@ namespace App\Repositories;
 
 use App\Contracts\CouponContract;
 use App\Models\Coupon;
+use App\Models\User;
 use Illuminate\Database\QueryException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Doctrine\Instantiator\Exception\InvalidArgumentException;
-use Yajra\DataTables\Facades\DataTables;
+use Yajra\DataTables\DataTables;
 
 class CouponRepository extends BaseRepository implements CouponContract
 {
@@ -29,8 +30,10 @@ class CouponRepository extends BaseRepository implements CouponContract
      */
     public function listCoupon(string $order = 'id', string $sort = 'desc', array $columns = ['*'])
     {
-        $query = $this->all($columns, $order, $sort);
-dd($query);
+        //$query = $this->all($columns, $order, $sort);
+
+        $query = Coupon::latest()->get();
+
         return Datatables::of($query)
             ->addColumn('action', function ($row) {
                 $actions = '';

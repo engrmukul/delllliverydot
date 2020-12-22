@@ -114,9 +114,4 @@ class BaseRepository implements BaseContract
     {
         return $this->model->find($id)->delete();
     }
-
-    public function restoreOnlyTrashed()
-    {
-        return $this->model->onlyTrashed()->where('shop_id', auth()->user()->shop_id)->restore();
-    }
 }

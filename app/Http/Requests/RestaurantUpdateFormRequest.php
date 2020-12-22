@@ -38,7 +38,6 @@ class RestaurantUpdateFormRequest extends FormRequest
                 }),
             ],
             'email' =>  'required',
-            'password' =>  'required',
             'address' =>  'required',
         ];
     }

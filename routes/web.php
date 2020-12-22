@@ -17,6 +17,8 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('users', ['uses'=>'UserController@index', 'as'=>'users.index']);
+
 Auth::routes();
 require 'admin.php';
 

@@ -109,7 +109,42 @@ class RestaurantController extends BaseController
     {
         $this->setPageTitle('restaurants', 'create restaurant');
 
-        return view('admin.restaurants.create');
+        $deliveryTypes = array(
+            'home' => 'home',
+            'collect' => 'collect',
+        );
+
+        $closedRestaurants = array(
+            '0' => 'No',
+            '1' => 'Yes',
+        );
+
+        $availableForDeliveries = array(
+            '0' => 'No',
+            '1' => 'Yes',
+        );
+
+        $notifications = array(
+            '0' => 'No',
+            '1' => 'Yes',
+        );
+
+        $popupNotifications = array(
+            '0' => 'No',
+            '1' => 'Yes',
+        );
+
+        $smses = array(
+            '0' => 'No',
+            '1' => 'Yes',
+        );
+
+        $offerAndPromotions = array(
+            '0' => 'No',
+            '1' => 'Yes',
+        );
+
+        return view('admin.restaurants.create', compact('deliveryTypes','closedRestaurants','availableForDeliveries','notifications','popupNotifications','smses','offerAndPromotions'));
 
     }
 
@@ -121,9 +156,12 @@ class RestaurantController extends BaseController
     {
         $params = $request->except('_token');
 
-        $params['image'] = $this->saveImages($request->file('image'), 'img/restaurant/', 500, 500);
+        if ($request->file('image') != null){
 
-        $restaurant = $this->restaurantRepository->createRestaurant($params);
+            $params['image'] = $this->saveImages($request->file('image'), 'img/restaurant/', 500, 500);
+        }
+
+        $restaurant = $this->restaurantRepository->createRestaurantByAdmin($params);
 
         if (!$restaurant) {
             return $this->responseRedirectBack(trans('common.create_error'), 'error', true, true);
