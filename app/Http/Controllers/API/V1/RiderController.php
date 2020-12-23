@@ -294,10 +294,11 @@ class RiderController extends BaseController
 
     public function orderList(RiderOrderListFormRequest $request)
     {
-        $orderList = Order::with('customer','customerDetails','restaurant', 'RestaurantDetails', 'orderDetails', 'orderDetails.foods', 'orderDetails.foodVariants')->whereDate('order_date', '>=', date('Y-m-d'))->where('rider_id', $request->rider_id)->orderBy('order_date', 'DESC')->get();
+        $orderList = Order::with('customer','customerDetails','restaurant', 'RestaurantDetails', 'orderDetails', 'orderDetails.foods', 'orderDetails.foodVariants')->where('rider_id', $request->rider_id)->orderBy('order_date', 'DESC')->get();
 
         $orderDataArray = array();
         if ($orderList->count() > 0) {
+
             foreach ($orderList->toArray() as $order) {
 
                 $orderData['order_id'] = $order['id'];
@@ -321,6 +322,8 @@ class RiderController extends BaseController
 
                 $orderDataArray[] = $orderData;
             }
+
+            //dd($orderDataArray);
 
             return $this->sendResponse($orderDataArray, 'Order List.', Response::HTTP_OK);
         } else {

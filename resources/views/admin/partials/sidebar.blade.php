@@ -41,7 +41,7 @@
             <li>
                 <a href="#"><i class="fa fa-book"></i> <span class="nav-label">{{ trans('sidebar.food')}}</span><span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level collapse">
-                    <li class="@if(in_array(Route::current()->getName(), array('restaurants.index', 'restaurants.create', 'restaurants.edit')))  @else  @endif"><a href="{{ route('restaurants.index') }}"><i class="fa fa-list"></i>{{ trans('sidebar.category')}}</a></li>
+                    <li class="@if(in_array(Route::current()->getName(), array('food-categories.index', 'restaurants.create', 'food-categories.edit')))  @else  @endif"><a href="{{ route('food-categories.index') }}"><i class="fa fa-list"></i>{{ trans('sidebar.category')}}</a></li>
                     <li class="@if(in_array(Route::current()->getName(), array('restaurants.index', 'restaurants.create', 'restaurants.edit')))  @else  @endif"><a href="{{ route('restaurants.index') }}"><i class="fa fa-list"></i>{{ trans('sidebar.foods')}}</a></li>
                     <li class="@if(in_array(Route::current()->getName(), array('restaurants.index', 'restaurants.create', 'restaurants.edit')))  @else  @endif"><a href="{{ route('restaurants.index') }}"><i class="fa fa-list"></i>{{ trans('sidebar.extras')}}</a></li>
                     <li class="@if(in_array(Route::current()->getName(), array('restaurants.index', 'restaurants.create', 'restaurants.edit')))  @else  @endif"><a href="{{ route('restaurants.index') }}"><i class="fa fa-list"></i>{{ trans('sidebar.food_reviews')}}</a></li>

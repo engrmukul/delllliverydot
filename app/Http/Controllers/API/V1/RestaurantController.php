@@ -163,21 +163,13 @@ class RestaurantController extends BaseController
             //SEND PUSH NOTIFICATION
         $riders = Rider::whereNotNull('device_token')->get();
 
-        // dd($riders->toArray());
-
-        //WILL REMOVE LOOP USE ONLY NOTIFICATION METHOD ONE TOME AND PASS TOKEN ARRAY
-        /*foreach ($riders as $key => $value) {
-            $this->notification($value->device_token, Order::with('restaurant')->where('id', $request->order_id)->first());
-        }*/
-
         $orderDetail = Order::with('RestaurantDetails', 'orderDetails', 'orderDetails.foods', 'orderDetails.foodVariants')->where('id', $request->order_id)->first();
 
-        //dd($orderDetail->toArray());
         $orderDataArray = array();
 
         $order_details = $orderDetail->toArray();
 
-        $orderData['order_id'] =  $orderId =$order_details['id'];
+        $orderData['order_id'] = $orderId = $order_details['id'];
         $orderData['order_status'] = $order_details['order_status'];
         $orderData['restaurant_name'] = $restaurantName = $order_details['restaurant_details']['name'];
         $orderData['restaurant_address'] = $order_details['restaurant_details']['address'];
@@ -185,20 +177,14 @@ class RestaurantController extends BaseController
 
         foreach ($order_details['order_details'] as $order) {
 
-            $orderData['food_name'] = $foodName =$order['foods']['name'];
+            $orderData['food_name'] = $foodName = $order['foods']['name'];
 
             $orderDataArray[] = $orderData;
         }
 
         foreach ($riders as $key => $value) {
-            $notification_id = $value->device_token;
-            $title = "Greeting Notification";
-            $message = "Restaurant order";
-            $id = $value->id;
-            $type = "basic";
 
-            $res = $this->send_notification_FCM($notification_id, $title, $message, $id, $type, $orderId, $foodName, $restaurantName);
-
+            $this->send_notification_FCM($value->device_token, $orderId, $foodName, $restaurantName);
         }
 
         $todaysOrder = Order::with('customer', 'RestaurantDetails', 'orderDetails', 'orderDetails.foods', 'orderDetails.foodVariants')
@@ -229,28 +215,26 @@ class RestaurantController extends BaseController
     }
 
 
-    function send_notification_FCM($notification_id, $title, $message, $id, $type, $orderId, $foodName, $restaurantName)
+    function send_notification_FCM($deviceToken, $orderId, $foodName, $restaurantName)
     {
 
         $accesstoken = "key=AAAA6DftdWk:APA91bEwkeR1wHImQVk_ryC5Nfk8O1GK2E1dDamgTN-nzTStibnK2SFj5n2qkuXYIr8ZhU7hJlfLADmsq_HctdmEo_r4RJYNHot60RUo-Vmt2_ovvZUfKd3bCDqu-Q1OadOGa-VEisQZ";
 
         $URL = 'https://fcm.googleapis.com/fcm/send';
 
-
         $post_data = '{
-            "to" : "' . $notification_id . '",
+            "to" : "' . $deviceToken . '",
             "data" : {
               "order_id" : "' . $orderId . '",
               "food_name" : "' . $foodName . '",
             },
             "notification" : {
                  "title": "New order",
-                "body": "New order from '.$restaurantName.'",
+                "body": "New order from ' . $restaurantName . '",
                 "click_action": "NEW_ORDER_FOR_DELIVERY"
                },
 
           }';
-
 
         //print_r($post_data);die;
 
@@ -271,16 +255,10 @@ class RestaurantController extends BaseController
         $rest = curl_exec($crl);
 
         if ($rest === false) {
-            // throw new Exception('Curl error: ' . curl_error($crl));
-            //print_r('Curl error: ' . curl_error($crl));
             $result_noti = 0;
         } else {
-
             $result_noti = 1;
         }
-
-        //curl_close($crl);
-        //print_r($result_noti);die;
         return $result_noti;
     }
 
@@ -645,7 +623,7 @@ class RestaurantController extends BaseController
     //DEVICE TOKEN
     public function saveDeviceToken(RestaurantDeviceTokenStoreFormRequest $request)
     {
-        if(isset($request->device_token)){
+        if (isset($request->device_token)) {
             $tokenUpdate = Restaurant::where("phone_number", $request->phone_number)->update(
                 [
                     "device_token" => $request->device_token

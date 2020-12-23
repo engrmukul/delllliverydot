@@ -77,10 +77,10 @@ class FoodCategoryRepository extends BaseRepository implements FoodCategoryContr
             ->addColumn('action', function ($row) {
                 $actions = '';
 
-                $actions.= '<a class="btn btn-primary btn-xs float-left mr-1" href="' . route('restaurants.edit', [$row->id]) . '" title="Course Edit"><i class="fa fa-pencil"></i> '. trans("common.edit") . '</a>';
+                $actions.= '<a class="btn btn-primary btn-xs float-left mr-1" href="' . route('food-categories.edit', [$row->id]) . '" title="Course Edit"><i class="fa fa-pencil"></i> '. trans("common.edit") . '</a>';
 
                 $actions.= '
-                    <form action="'.route('restaurants.destroy', [$row->id]).'" method="POST">
+                    <form action="'.route('food-categories.destroy', [$row->id]).'" method="POST">
                         <input type="hidden" name="_method" value="delete">
                         <input type="hidden" name="_token" value="'.csrf_token().'">
                         <button type="submit" class="btn btn-danger btn-xs"><i class="fa fa-remove"></i> '. trans("common.delete") . '</button>
@@ -143,129 +143,23 @@ class FoodCategoryRepository extends BaseRepository implements FoodCategoryContr
         try {
             $collection = collect($params);
 
-            $restaurant = new FoodCategory($collection->all());
-
-            /* Get credentials from .env */
-            /*$token = getenv("TWILIO_AUTH_TOKEN");
-            $twilio_sid = getenv("TWILIO_SID");
-            $twilio_verify_sid = getenv("TWILIO_VERIFY_SID");
-            $twilio = new Client($twilio_sid, $token);
-            $twilio->verify->v2->services($twilio_verify_sid)
-                ->verifications
-                ->create($collection['phone_number'], "sms");*/
+            $createFoodCategory = new FoodCategory($collection->all());
 
             $created_at = date('Y-m-d');
 
             $merge = $collection->merge(compact('created_at'));
 
-            if( FoodCategory::where('phone_number','=', $collection['phone_number'])->count() > 0){
-                return $restaurant = FoodCategory::where('phone_number', $collection['phone_number'])->first();
-            }
+            $createFoodCategory->save($merge->all());
 
-            $restaurant->save($merge->all());
-
-            $restaurantProfile = new FoodCategoryProfile();
-
-            $restaurantProfile->restaurant_id = $restaurant->id;
-            $restaurantProfile->feature_section = 1;
-            $restaurantProfile->delivery_fee = 0;
-            $restaurantProfile->delivery_time = "30 min";
-            $restaurantProfile->delivery_range = 5;
-            $restaurantProfile->ratting = 5;
-
-            $restaurantProfile->save();
-
-            $restaurantSettings = new FoodCategorySetting();
-            $restaurantSettings->restaurant_id = $restaurant->id;
-            $restaurantSettings->save();
-
-
-            return $restaurant = FoodCategory::where('phone_number', $collection['phone_number'])->first();
+            return $createFoodCategory;
 
         } catch (QueryException $exception) {
             throw new InvalidArgumentException($exception->getMessage());
         }
     }
 
-    /**
-     * @param array $params
-     * @return bool
-     * @throws \Twilio\Exceptions\ConfigurationException
-     * @throws \Twilio\Exceptions\TwilioException
-     */
-    public function restaurantOTPVerify(array $params)
-    {
-        try {
-            $collection = collect($params);
 
-            /* Get credentials from .env */
-            /*$token = getenv("TWILIO_AUTH_TOKEN");
-            $twilio_sid = getenv("TWILIO_SID");
-            $twilio_verify_sid = getenv("TWILIO_VERIFY_SID");
-            $twilio = new Client($twilio_sid, $token);
 
-            $verification = $twilio->verify->v2->services($twilio_verify_sid)
-                ->verificationChecks
-                ->create($collection['verification_code'], array('to' => $collection['phone_number']));*/
-
-            //WILL CHANGE
-            FoodCategory::where('phone_number', $collection['phone_number'])->update(['isVerified' => true]);
-
-            return true;
-
-            /*if ($verification->valid) {
-
-                $otp = tap(FoodCategory::where('phone_number', $collection['phone_number']))->update(['isVerified' => true]);
-
-                //return $this->findFoodCategoryById($params['id']);
-                return $otp;
-
-            } else {
-                return false;
-            }*/
-
-        } catch (QueryException $exception) {
-            throw new InvalidArgumentException($exception->getMessage());
-        }
-    }
-
-    public function createFoodCategoryByAdmin(array $params)
-    {
-        try {
-            $collection = collect($params);
-
-            $created_at = date('Y-m-d');
-            $created_by = auth()->user()->id;
-
-            $merge = $collection->merge(compact('created_at','created_by'));
-
-            //SAVE RESTAURANT
-            $restaurant = new FoodCategory($merge->all());
-            $restaurant->save();
-
-            //SAVE RESTAURANT PROFILE
-            $restaurantProfile = new FoodCategoryProfile($merge->all());
-            $restaurantProfile->restaurant_id = $restaurant->id;
-            $restaurantProfile->feature_section = 1;
-            $restaurantProfile->ratting = 5;
-            $restaurantProfile->save();
-
-            //SAVE RESTAURANT SETTINGS
-            $restaurantSettings = new FoodCategorySetting($merge->all());
-            $restaurantSettings->restaurant_id = $restaurant->id;
-            $restaurantSettings->save();
-
-            //SAVE RESTAURANT ADDRESS
-            $restaurantAddress = new FoodCategoryAddress($merge->all());
-            $restaurantAddress->restaurant_id = $restaurant->id;
-            $restaurantAddress->save();
-
-            return $restaurant;
-
-        } catch (QueryException $exception) {
-            throw new InvalidArgumentException($exception->getMessage());
-        }
-    }
 
     /**
      * @param array $params

@@ -555,20 +555,19 @@ class CustomerController extends BaseController
 
     public function send_notification_FCM($deviceToken, $orderId, $foodName)
     {
-
         $accesstoken = "key=AAAA6DftdWk:APA91bEwkeR1wHImQVk_ryC5Nfk8O1GK2E1dDamgTN-nzTStibnK2SFj5n2qkuXYIr8ZhU7hJlfLADmsq_HctdmEo_r4RJYNHot60RUo-Vmt2_ovvZUfKd3bCDqu-Q1OadOGa-VEisQZ";
 
         $URL = 'https://fcm.googleapis.com/fcm/send';
 
         $post_data = '{
             "to" : "' . $deviceToken . '",
-
+            "data" : {
               "order_id" : "' . $orderId . '",
               "food_name" : "' . $foodName . '",
             },
             "notification" : {
                  "title": "New order",
-                "body": "New order from customer",
+                "body": "New order from  customer",
                 "click_action": "NEW_ORDER_FOR_RESTAURANT"
                },
 
