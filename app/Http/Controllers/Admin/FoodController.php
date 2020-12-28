@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Models\Category;
 use App\Models\Food;
+use App\Models\Restaurant;
 use Illuminate\Http\Request;
 use App\Contracts\FoodContract;
 use App\Http\Requests\FoodStoreFormRequest;
@@ -42,20 +44,18 @@ class FoodController extends BaseController
         $data = [
             'tableHeads' => [
                 trans('food.SN'),
+                trans('food.category'),
                 trans('food.name'),
-                trans('food.email'),
-                trans('food.phone_number'),
-                trans('food.isVerified'),
+                trans('food.restaurant'),
                 trans('food.status'),
                 trans('food.action')
             ],
             'dataUrl' => 'admin/foods/get-data',
             'columns' => [
                 ['data' => 'id', 'name' => 'id'],
+                ['data' => 'category', 'name' => 'category'],
                 ['data' => 'name', 'name' => 'name'],
-                ['data' => 'email', 'name' => 'email'],
-                ['data' => 'phone_number', 'name' => 'phone_number'],
-                ['data' => 'isVerified', 'name' => 'isVerified'],
+                ['data' => 'restaurant', 'name' => 'restaurant'],
                 ['data' => 'status', 'name' => 'status'],
                 ['data' => 'action', 'name' => 'action', 'orderable' => false]
             ],
@@ -69,7 +69,7 @@ class FoodController extends BaseController
      */
     public function getData(Request $request)
     {
-        return $this->foodRepository->allFoods($request);
+        return $this->foodRepository->listFood($request);
     }
 
     /**
@@ -79,42 +79,20 @@ class FoodController extends BaseController
     {
         $this->setPageTitle('foods', 'create food');
 
-        $deliveryTypes = array(
-            'home' => 'home',
-            'collect' => 'collect',
-        );
-
-        $closedFoods = array(
+        $features = array(
             '0' => 'No',
             '1' => 'Yes',
         );
 
-        $availableForDeliveries = array(
+        $deliverableFoods = array(
             '0' => 'No',
             '1' => 'Yes',
         );
 
-        $notifications = array(
-            '0' => 'No',
-            '1' => 'Yes',
-        );
+        $restaurants = Restaurant::all();
+        $categories = Category::all();
 
-        $popupNotifications = array(
-            '0' => 'No',
-            '1' => 'Yes',
-        );
-
-        $smses = array(
-            '0' => 'No',
-            '1' => 'Yes',
-        );
-
-        $offerAndPromotions = array(
-            '0' => 'No',
-            '1' => 'Yes',
-        );
-
-        return view('admin.foods.create', compact('deliveryTypes','closedFoods','availableForDeliveries','notifications','popupNotifications','smses','offerAndPromotions'));
+        return view('admin.foods.create', compact('features','deliverableFoods','restaurants','categories'));
 
     }
 

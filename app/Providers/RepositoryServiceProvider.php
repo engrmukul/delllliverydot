@@ -5,12 +5,14 @@ namespace App\Providers;
 use App\Contracts\CouponContract;
 use App\Contracts\CustomerContract;
 use App\Contracts\FoodCategoryContract;
+use App\Contracts\FoodContract;
 use App\Contracts\OrderContract;
 use App\Contracts\RestaurantContract;
 use App\Contracts\RiderContract;
 use App\Repositories\CouponRepository;
 use App\Repositories\CustomerRepository;
 use App\Repositories\FoodCategoryRepository;
+use App\Repositories\FoodRepository;
 use App\Repositories\OrderRepository;
 use App\Repositories\RestaurantRepository;
 use App\Repositories\RiderRepository;
@@ -24,7 +26,7 @@ class RepositoryServiceProvider extends ServiceProvider
         RestaurantContract::class => RestaurantRepository::class,
         OrderContract::class => OrderRepository::class,
         CouponContract::class => CouponRepository::class,
-        FoodCategoryContract::class => FoodCategoryRepository::class,
+        FoodContract::class => FoodRepository::class,
 
         ];
 

@@ -258,7 +258,11 @@ class RiderController extends BaseController
             ]
         );
 
-        $orderList = Order::with('customer','customerDetails','restaurant', 'RestaurantDetails', 'orderDetails', 'orderDetails.foods', 'orderDetails.foodVariants')->whereDate('order_date', '>=', date('Y-m-d'))->where('rider_id', $request->rider_id)->orderBy('order_date', 'DESC')->get();
+        $orderList = Order::with('customer','customerDetails','restaurant', 'RestaurantDetails', 'orderDetails', 'orderDetails.foods', 'orderDetails.foodVariants')
+            ->where('rider_id', $request->rider_id)
+            ->orderBy('order_date', 'DESC')
+            ->limit(10)
+            ->get();
 
         $orderDataArray = array();
         if ($orderList->count() > 0) {

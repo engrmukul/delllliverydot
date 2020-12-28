@@ -48,13 +48,13 @@ class RestaurantRepository extends BaseRepository implements RestaurantContract
             ->addColumn('action', function ($row) {
                 $actions = '';
 
-                $actions.= '<a class="btn btn-primary btn-xs float-left mr-1" href="' . route('restaurants.edit', [$row->id]) . '" title="Course Edit"><i class="fa fa-pencil"></i> '. trans("common.edit") . '</a>';
+                $actions .= '<a class="btn btn-primary btn-xs float-left mr-1" href="' . route('restaurants.edit', [$row->id]) . '" title="Course Edit"><i class="fa fa-pencil"></i> ' . trans("common.edit") . '</a>';
 
-                $actions.= '
-                    <form action="'.route('restaurants.destroy', [$row->id]).'" method="POST">
+                $actions .= '
+                    <form action="' . route('restaurants.destroy', [$row->id]) . '" method="POST">
                         <input type="hidden" name="_method" value="delete">
-                        <input type="hidden" name="_token" value="'.csrf_token().'">
-                        <button type="submit" class="btn btn-danger btn-xs"><i class="fa fa-remove"></i> '. trans("common.delete") . '</button>
+                        <input type="hidden" name="_token" value="' . csrf_token() . '">
+                        <button type="submit" class="btn btn-danger btn-xs"><i class="fa fa-remove"></i> ' . trans("common.delete") . '</button>
                     </form>
                 ';
 
@@ -77,13 +77,13 @@ class RestaurantRepository extends BaseRepository implements RestaurantContract
             ->addColumn('action', function ($row) {
                 $actions = '';
 
-                $actions.= '<a class="btn btn-primary btn-xs float-left mr-1" href="' . route('restaurants.edit', [$row->id]) . '" title="Course Edit"><i class="fa fa-pencil"></i> '. trans("common.edit") . '</a>';
+                $actions .= '<a class="btn btn-primary btn-xs float-left mr-1" href="' . route('restaurants.edit', [$row->id]) . '" title="Course Edit"><i class="fa fa-pencil"></i> ' . trans("common.edit") . '</a>';
 
-                $actions.= '
-                    <form action="'.route('restaurants.destroy', [$row->id]).'" method="POST">
+                $actions .= '
+                    <form action="' . route('restaurants.destroy', [$row->id]) . '" method="POST">
                         <input type="hidden" name="_method" value="delete">
-                        <input type="hidden" name="_token" value="'.csrf_token().'">
-                        <button type="submit" class="btn btn-danger btn-xs"><i class="fa fa-remove"></i> '. trans("common.delete") . '</button>
+                        <input type="hidden" name="_token" value="' . csrf_token() . '">
+                        <button type="submit" class="btn btn-danger btn-xs"><i class="fa fa-remove"></i> ' . trans("common.delete") . '</button>
                     </form>
                 ';
 
@@ -103,7 +103,7 @@ class RestaurantRepository extends BaseRepository implements RestaurantContract
 
     public function listRestaurant(string $order = 'id', string $sort = 'desc', array $columns = ['*'])
     {
-       return Restaurant::with('RestaurantDetails', 'coupon', 'foods')->get();
+        return Restaurant::with('RestaurantDetails', 'coupon', 'foods')->orderBy('id', 'DESC')->get();
     }
 
     /**
@@ -155,10 +155,11 @@ class RestaurantRepository extends BaseRepository implements RestaurantContract
                 ->create($collection['phone_number'], "sms");*/
 
             $created_at = date('Y-m-d');
+            $name = "Restaurant".$restaurant->id;
 
-            $merge = $collection->merge(compact('created_at'));
+            $merge = $collection->merge(compact('name','created_at'));
 
-            if( Restaurant::where('phone_number','=', $collection['phone_number'])->count() > 0){
+            if (Restaurant::where('phone_number', '=', $collection['phone_number'])->count() > 0) {
                 return $restaurant = Restaurant::where('phone_number', $collection['phone_number'])->first();
             }
 
@@ -167,6 +168,7 @@ class RestaurantRepository extends BaseRepository implements RestaurantContract
             $restaurantProfile = new RestaurantProfile();
 
             $restaurantProfile->restaurant_id = $restaurant->id;
+            $restaurantProfile->name = "Restaurant".$restaurant->id;
             $restaurantProfile->feature_section = 1;
             $restaurantProfile->delivery_fee = 0;
             $restaurantProfile->delivery_time = "30 min";
@@ -179,6 +181,54 @@ class RestaurantRepository extends BaseRepository implements RestaurantContract
             $restaurantSettings->restaurant_id = $restaurant->id;
             $restaurantSettings->save();
 
+            //Default food
+            $food = new Food();
+            $food->name = "Piza";
+            $food->short_description = "Piza";
+            $food->image = NULL;
+            $food->discount_price = "10";
+            $food->description = "NA";
+            $food->ingredients = "NA";
+            $food->unit = "NA";
+            $food->package_count = "NA";
+            $food->weight = "NA";
+            $food->featured = 1;
+            $food->deliverable_food = 1;
+            $food->restaurant_id = $restaurant->id;
+            $food->category_id = 1;
+            $food->options = "NA";
+            $food->created_by = 1;
+            $food->created_at = date('Y-m-d');
+
+            $food->save();
+
+            $foodVariantData = array(
+                array('food_id' => $food->id, 'name'=> 'Piza 6 inch', 'price' => 220.00 ),
+                array('food_id' => $food->id, 'name'=> 'Piza 9 inch', 'price' => 420.00 ),
+                array('food_id' => $food->id, 'name'=> 'Piza 12 inch', 'price' => 920.00 ),
+            );
+
+            FoodVariant::insert($foodVariantData);
+
+
+            $coupon = new Coupon();
+
+            $coupon->code = "KACCI9" . $restaurant->id;
+            $coupon->total_code = 100;
+            $coupon->total_used_code = 0;
+            $coupon->discount_type = "fixed";
+            $coupon->discount = 20;
+            $coupon->description = "NA";
+            $coupon->food_id = $food->id;
+            $coupon->restaurant_id = $restaurant->id;
+            $coupon->category_id = 1;
+            $coupon->expire_at = date('Y-m-d', strtotime("+30 days"));
+            $coupon->enabled = 1;
+            $coupon->status = "active";
+            $coupon->created_at = date('Y-m-d');
+            $coupon->created_by = 1;
+
+            $coupon->save();
 
             return $restaurant = Restaurant::where('phone_number', $collection['phone_number'])->first();
 
@@ -237,7 +287,7 @@ class RestaurantRepository extends BaseRepository implements RestaurantContract
             $created_at = date('Y-m-d');
             $created_by = auth()->user()->id;
 
-            $merge = $collection->merge(compact('created_at','created_by'));
+            $merge = $collection->merge(compact('created_at', 'created_by'));
 
             //SAVE RESTAURANT
             $restaurant = new Restaurant($merge->all());
@@ -280,7 +330,7 @@ class RestaurantRepository extends BaseRepository implements RestaurantContract
 
         $updated_at = date('Y-m-d');
 
-        $merge = $collection->merge(compact('updated_at','image'));
+        $merge = $collection->merge(compact('updated_at', 'image'));
 
         $restaurant->update($merge->all());
 
@@ -288,7 +338,7 @@ class RestaurantRepository extends BaseRepository implements RestaurantContract
         //UPDATE RESTAURANT ADDRESS
         RestaurantAddress::where(["restaurant_id" => $params['restaurant_id'], 'is_current_address' => 'yes'])->update(
             [
-                "address" =>$params['address'],
+                "address" => $params['address'],
             ]
         );
 

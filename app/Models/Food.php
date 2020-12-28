@@ -56,6 +56,11 @@ class Food extends Model
         return $this->hasOne(Category::class,'id','category_id');
     }
 
+    public function restaurants()
+    {
+        return $this->hasOne(Restaurant::class,'id','restaurant_id');
+    }
+
     public function foodVariants()
     {
         return $this->hasMany(FoodVariant::class);
