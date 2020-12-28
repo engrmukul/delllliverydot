@@ -176,10 +176,44 @@ class RestaurantController extends BaseController
     public function edit($id)
     {
         $this->setPageTitle('restaurants', 'Edit Restaurant');
+        $deliveryTypes = array(
+            'home' => 'home',
+            'collect' => 'collect',
+        );
+
+        $closedRestaurants = array(
+            '0' => 'No',
+            '1' => 'Yes',
+        );
+
+        $availableForDeliveries = array(
+            '0' => 'No',
+            '1' => 'Yes',
+        );
+
+        $notifications = array(
+            '0' => 'No',
+            '1' => 'Yes',
+        );
+
+        $popupNotifications = array(
+            '0' => 'No',
+            '1' => 'Yes',
+        );
+
+        $smses = array(
+            '0' => 'No',
+            '1' => 'Yes',
+        );
+
+        $offerAndPromotions = array(
+            '0' => 'No',
+            '1' => 'Yes',
+        );
 
         $restaurant = $this->restaurantRepository->findRestaurantById($id);
 
-        return view('admin.restaurants.edit', compact('restaurant'));
+        return view('admin.restaurants.edit',  compact('restaurant','deliveryTypes','closedRestaurants','availableForDeliveries','notifications','popupNotifications','smses','offerAndPromotions'));
     }
 
     /**

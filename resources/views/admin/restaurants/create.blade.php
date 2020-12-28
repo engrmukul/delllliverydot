@@ -21,8 +21,7 @@
 
                             <!--RESTAURANT--->
                             <div class="row">
-                                <div class="col-md-6">
-
+                                <div class="col-md-6 col-sm-12">
                                     <!---Name--->
                                     <div class="form-group">
                                         <label for="name" class="font-bold">{{ trans('restaurant.name')}}</label>
@@ -43,13 +42,6 @@
                                         <input type="text" name="phone_number" value="{{ old('phone_number') }}" placeholder="{{ trans('restaurant.phone_number')}}" class="form-control" required>
                                         <span class="form-text m-b-none text-danger"> @error('phone_number') {{ $message }} @enderror </span>
                                     </div>
-
-                                </div>
-                            </div>
-
-                            <!---RESTAURANT PROFILE--->
-                            <div class="row">
-                                <div class="col-md-6">
 
                                     <!---NID--->
                                     <div class="form-group">
@@ -129,7 +121,10 @@
                                         <input type="text" name="latitude" value="{{ old('latitude') }}" placeholder="{{ trans('restaurant.latitude')}}" class="form-control" required>
                                         <span class="form-text m-b-none text-danger"> @error('latitude') {{ $message }} @enderror </span>
                                     </div>
+                                </div>
 
+                                <div class="col-md-6 col-sm-12">
+                                    <!---closed_restaurant--->
                                     <!---longitude--->
                                     <div class="form-group">
                                         <label for="longitude" class="font-bold">{{ trans('restaurant.longitude')}}</label>
@@ -137,10 +132,6 @@
                                         <span class="form-text m-b-none text-danger"> @error('longitude') {{ $message }} @enderror </span>
                                     </div>
 
-                                </div>
-
-                                <div class="col-md-6">
-                                    <!---closed_restaurant--->
                                     <div class="form-group">
                                         <label for="closed_restaurant">{{ trans('restaurant.closed_restaurant')}}</label>
                                         <select id="closed_restaurant" class="form-control custom-select mt-15" name="closed_restaurant" required>
@@ -198,12 +189,8 @@
                                                   required>{{ old('information') }}</textarea>
                                         <span class="form-text m-b-none text-danger"> @error('information') {{ $message }} @enderror </span>
                                     </div>
-                                </div>
-                            </div>
 
-                            <!---RESTAURANT SETTINGS--->
-                            <div class="row">
-                                <div class="col-md-6">
+                                    <!---RESTAURANT SETTINGS--->
 
                                     <!---notification--->
                                     <div class="form-group">
