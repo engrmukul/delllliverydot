@@ -170,7 +170,8 @@ class CustomerController extends BaseController
 
     public function promotionalRestaurants(PromotionalRestaurantsRequest $request)
     {
-        $restaurantList = $this->restaurantRepository->listRestaurant();
+        //$restaurantList = $this->restaurantRepository->listRestaurant();
+        $restaurantList = Restaurant::with('RestaurantDetails', 'coupon', 'foods')->get();
 
         $promotionalBanner = PromotionalBanner::where('id', 1)->first();
 
