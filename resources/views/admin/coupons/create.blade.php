@@ -7,7 +7,7 @@
             <div class="col-lg-12">
                 <div class="ibox ">
                     <div class="ibox-title">
-                        <h5><i class="fa fa-book"></i> course {{ trans('common.create')}}</h5>
+                        <h5><i class="fa fa-book"></i> coupon {{ trans('common.create')}}</h5>
                         <div class="ibox-tools">
                             <a style="margin-top: -8px;" href="{{ route( strtolower($pageTitle) . '.index') }}" class="btn btn-primary"><i
                                     class="fa fa-list"></i> {{ trans('common.list')}}</a>
@@ -20,77 +20,120 @@
                                 @csrf
                                 <div class="row">
                                     <div class="col-md-6">
-                                        <!---course Name--->
+                                        <!---coupon code--->
                                         <div class="form-group">
-                                            <label for="name" class="font-bold">{{ trans('course.name')}}</label>
-                                            <input type="text" name="name" value="{{ old('name') }}" placeholder="{{ trans('course.name')}}" class="form-control" required>
-                                            <span class="form-text m-b-none text-danger"> @error('name') {{ $message }} @enderror </span>
+                                            <label for="code" class="font-bold">{{ trans('coupon.code')}}</label>
+                                            <input type="text" name="code" value="{{ old('code') }}" placeholder="{{ trans('coupon.code')}}" class="form-control" required>
+                                            <span class="form-text m-b-none text-danger"> @error('code') {{ $message }} @enderror </span>
                                         </div>
 
-                                        <!--- short description --->
+                                        <!---total code--->
                                         <div class="form-group">
-                                            <label for="short_description" class="font-bold">{{ trans('course.short_description')}}</label>
-                                            <textarea name="short_description" placeholder="{{ trans('course.short_description')}}" class="form-control summernote" required>{{ old('short_description') }}</textarea>
-                                            <span class="form-text m-b-none text-danger"> @error('short_description') {{ $message }} @enderror </span>
+                                            <label for="total_code" class="font-bold">{{ trans('coupon.total_code')}}</label>
+                                            <input type="text" name="total_code" value="{{ old('total_code') }}" placeholder="{{ trans('coupon.total_code')}}" class="form-control" required>
+                                            <span class="form-text m-b-none text-danger"> @error('total_code') {{ $message }} @enderror </span>
                                         </div>
 
-                                        <!--- Course overview --->
+                                        <!---total used code--->
                                         <div class="form-group">
-                                            <label for="overview" class="font-bold">{{ trans('course.overview')}}</label>
-                                            <textarea name="overview" placeholder="{{ trans('course.overview')}}" class="form-control summernote" required>{{ old('overview') }}</textarea>
-                                            <span class="form-text m-b-none text-danger"> @error('overview') {{ $message }} @enderror </span>
+                                            <label for="total_used_code" class="font-bold">{{ trans('coupon.total_used_code')}}</label>
+                                            <input type="text" name="total_used_code" value="{{ old('total_code') }}" placeholder="{{ trans('coupon.total_used_code')}}" class="form-control" required>
+                                            <span class="form-text m-b-none text-danger"> @error('total_used_code') {{ $message }} @enderror </span>
+                                        </div>
+
+                                        <!---discount type--->
+                                        <div class="form-group">
+                                            <label for="discount_type">{{ trans('coupon.discount_type')}}</label>
+                                            <select id="discount_type" class="form-control custom-select mt-15" name="discount_type" required>
+                                                <option value="">{{ trans('coupon.discount_type')}}</option>
+                                                @foreach($discountTypes as $key => $discountType)
+                                                    @if (old('discount_type') == $discountType)
+                                                        <option value="{{ $discountType }}" selected> {{ ucfirst($discountType) }} </option>
+                                                    @else
+                                                        <option value="{{ $discountType }}"> {{ ucfirst($discountType) }} </option>
+                                                    @endif
+                                                @endforeach
+                                            </select>
+                                            <span class="form-text m-b-none text-danger"> @error('discount_type') {{ $message }} @enderror </span>
+                                        </div>
+
+                                        <!---discount--->
+                                        <div class="form-group">
+                                            <label for="discount" class="font-bold">{{ trans('coupon.discount')}}</label>
+                                            <input type="text" name="discount" value="{{ old('discount') }}" placeholder="{{ trans('coupon.discount')}}" class="form-control" required>
+                                            <span class="form-text m-b-none text-danger"> @error('discount') {{ $message }} @enderror </span>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
 
-                                    <!--- Course price --->
-                                    <div class="form-group">
-                                        <label for="price" class="font-bold">{{ trans('course.price')}}</label>
-                                        <input type="text" id="price" name="price" value="{{ old('price') }}" placeholder="{{ trans('course.price')}}" class="form-control" required>
-                                        <span class="form-text m-b-none text-danger"> @error('price') {{ $message }} @enderror </span>
-                                    </div>
-
-                                    <!--- Start date --->
-                                    <div class="form-group" id="dateItem">
-                                        <label for="start_date" class="font-bold">{{ trans('course.start_date')}}</label>
-                                        <div class="input-group date">
-                                            <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                                            <input type="text" id="start_date" name="start_date" value="{{ old('start_date') }}" placeholder="{{ trans('course.start_date')}}" class="form-control datepicker" required>
+                                        <!---description--->
+                                        <div class="form-group">
+                                            <label for="description" class="font-bold">{{ trans('coupon.description')}}</label>
+                                            <textarea name="description"
+                                                      placeholder="{{ trans('coupon.description')}}"
+                                                      class="form-control summernote"
+                                                      required>{{ old('description') }}</textarea>
+                                            <span class="form-text m-b-none text-danger"> @error('description') {{ $message }} @enderror </span>
                                         </div>
-                                        <span class="form-text m-b-none text-danger"> @error('start_date') {{ $message }} @enderror </span>
-                                    </div>
 
-                                    <!--- End date --->
-                                    <div class="form-group" id="dateItem">
-                                        <label for="end_date" class="font-bold">{{ trans('course.end_date')}}</label>
-                                        <div class="input-group date">
-                                            <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                                            <input type="text" id="end_date" name="end_date" value="{{ old('end_date') }}" placeholder="{{ trans('course.end_date')}}" class="form-control datepicker" required>
+                                        <!--- food id --->
+                                        <div class="form-group">
+                                            <label for="food_id">{{ trans('coupon.food_id')}}</label>
+                                            <select id="food_id" class="form-control custom-select mt-15" name="food_id" required>
+                                                <option value="">{{ trans('coupon.food_id')}}</option>
+                                                @foreach($foods as $key => $food)
+                                                    @if (old('food_id') == $food->id)
+                                                        <option value="{{ $food->id }}" selected> {{ $food->name }} </option>
+                                                    @else
+                                                        <option value="{{ $food->id }}"> {{ $food->name }} </option>
+                                                    @endif
+                                                @endforeach
+                                            </select>
+                                            <span class="form-text m-b-none text-danger"> @error('food_id') {{ $message }} @enderror </span>
                                         </div>
-                                        <span class="form-text m-b-none text-danger"> @error('end_date') {{ $message }} @enderror </span>
-                                    </div>
 
-                                    <!--- Total Slot --->
-                                    <div class="form-group">
-                                        <label for="total_slot" class="font-bold">{{ trans('course.total_slot')}}</label>
-                                        <input type="text" id="total_slot" name="total_slot" value="{{ old('total_slot') }}" placeholder="{{ trans('course.total_slot')}}" class="form-control" required>
-                                        <span class="form-text m-b-none text-danger"> @error('total_slot') {{ $message }} @enderror </span>
-                                    </div>
+                                        <!--- restaurant id --->
+                                        <div class="form-group">
+                                            <label for="restaurant_id">{{ trans('coupon.restaurant_id')}}</label>
+                                            <select id="restaurant_id" class="form-control custom-select mt-15" name="restaurant_id" required>
+                                                <option value="">{{ trans('coupon.restaurant_id')}}</option>
+                                                @foreach($restaurants as $key => $restaurant)
+                                                    @if (old('restaurant_id') == $restaurant->id)
+                                                        <option value="{{ $restaurant->id }}" selected> {{ $restaurant->name }} </option>
+                                                    @else
+                                                        <option value="{{ $restaurant->id }}"> {{ $restaurant->name }} </option>
+                                                    @endif
+                                                @endforeach
+                                            </select>
+                                            <span class="form-text m-b-none text-danger"> @error('restaurant_id') {{ $message }} @enderror </span>
+                                        </div>
 
-                                    <!--- Resource website --->
-                                    <div class="form-group">
-                                        <label for="resource_website" class="font-bold">{{ trans('course.resource_website')}}</label>
-                                        <input type="text" id="resource_website" name="resource_website" value="{{ old('resource_website') }}" placeholder="{{ trans('course.resource_website')}}" class="form-control">
-                                        <span class="form-text m-b-none text-danger"> @error('resource_website') {{ $message }} @enderror </span>
-                                    </div>
+                                        <!--- category id --->
+                                        <div class="form-group">
+                                            <label for="category_id">{{ trans('coupon.category_id')}}</label>
+                                            <select id="category_id" class="form-control custom-select mt-15" name="category_id" required>
+                                                <option value="">{{ trans('coupon.category_id')}}</option>
+                                                @foreach($categories as $key => $category)
+                                                    @if (old('category_id') == $category->id)
+                                                        <option value="{{ $category->id }}" selected> {{ $category->name }} </option>
+                                                    @else
+                                                        <option value="{{ $category->id }}"> {{ $category->name }} </option>
+                                                    @endif
+                                                @endforeach
+                                            </select>
+                                            <span class="form-text m-b-none text-danger"> @error('category_id') {{ $message }} @enderror </span>
+                                        </div>
 
-                                    <!---Image--->
-                                    <div class="form-group">
-                                        <label for="images" class="font-bold">{{ trans('course.image')}}</label>
-                                        <input type="file" id="images" name="image" class="form-control">
-                                        <span class="form-text m-b-none text-danger"> @error('images') {{ $message }} @enderror </span>
-                                    </div>
-                                </div>
+                                        <!--- expire datate --->
+                                        <div class="form-group" id="dateItem">
+                                            <label for="expire_at" class="font-bold">{{ trans('coupon.expire_at')}}</label>
+                                            <div class="input-group date">
+                                                <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                                <input type="text" id="expire_at" name="expire_at" value="{{ old('expire_at') }}" placeholder="{{ trans('coupon.expire_at')}}" class="form-control datepicker" required>
+                                            </div>
+                                            <span class="form-text m-b-none text-danger"> @error('expire_at') {{ $message }} @enderror </span>
+                                        </div>
+                                  </div>
                              </div>
                             <div class="row">
                                <div class="col-12">

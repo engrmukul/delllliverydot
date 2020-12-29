@@ -4,10 +4,16 @@ return [
 
     //LIST PAGE
     'SN' => 'SN',
-    'name' => 'Name',
-    'email' => 'Email',
-    'phone_number' => 'Phone',
-    'isVerified' => 'isVerified',
+    'code' => 'Code',
+    'total_code' => 'Total Code',
+    'total_used_code' => 'Total Used Code',
+    'expire_at' => 'Expire at',
+    'discount_type' => 'Discount Type',
+    'discount' => 'Discount',
+    'description' => 'Description',
+    'food_id' => 'Food ID',
+    'restaurant_id' => 'Restaurant ID',
+    'category_id' => 'Category ID',
     'status' => 'Status',
     'action' => 'Action',
 ];

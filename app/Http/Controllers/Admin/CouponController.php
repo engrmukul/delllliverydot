@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Models\Category;
 use App\Models\Coupon;
+use App\Models\Food;
+use App\Models\Restaurant;
 use Illuminate\Http\Request;
 use App\Contracts\CouponContract;
 use App\Http\Requests\CouponStoreFormRequest;
@@ -70,7 +73,16 @@ class CouponController extends BaseController
     {
         $this->setPageTitle('Coupons', 'Create Coupon');
 
-        return view('admin.coupons.create');
+        $discountTypes = array(
+            'percent' => 'percent',
+            'fixed' => 'fixed',
+        );
+
+        $foods = Food::all();
+        $categories = Category::all();
+        $restaurants = Restaurant::all();
+
+        return view('admin.coupons.create', compact('discountTypes','foods','categories','restaurants'));
     }
 
     /**
@@ -97,9 +109,18 @@ class CouponController extends BaseController
     {
         $this->setPageTitle('Coupons', 'Edit Coupon');
 
+        $discountTypes = array(
+            'percent' => 'percent',
+            'fixed' => 'fixed',
+        );
+
+        $foods = Food::all();
+        $categories = Category::all();
+        $restaurants = Restaurant::all();
+
         $coupon = $this->couponRepository->findCouponById($id);
 
-        return view('admin.coupons.edit', compact('coupon'));
+        return view('admin.coupons.edit', compact('coupon','discountTypes','foods','categories','restaurants'));
     }
 
     /**

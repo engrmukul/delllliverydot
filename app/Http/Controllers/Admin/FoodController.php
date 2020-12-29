@@ -115,12 +115,23 @@ class FoodController extends BaseController
     public function edit($id)
     {
         $this->setPageTitle('foods', 'Edit Food');
+        $features = array(
+            '0' => 'No',
+            '1' => 'Yes',
+        );
+
+        $deliverableFoods = array(
+            '0' => 'No',
+            '1' => 'Yes',
+        );
+
+        $restaurants = Restaurant::all();
+        $categories = Category::all();
 
         $food = $this->foodRepository->findFoodById($id);
 
-        return view('admin.foods.edit', compact('food'));
+        return view('admin.foods.edit', compact('food','features','deliverableFoods','restaurants','categories'));
     }
-
     /**
      * @param UpdateFoodFormRequest $request
      * @return \Illuminate\Http\RedirectResponse
