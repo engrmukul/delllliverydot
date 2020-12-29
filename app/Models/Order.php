@@ -15,7 +15,7 @@ class Order extends Model
      * @var string
      */
     protected $table = 'orders';
-    public $timestamps = false;
+    //public $timestamps = false;
 
     /**
      * @var array
@@ -72,6 +72,11 @@ class Order extends Model
     public function customer()
     {
         return $this->hasOne(Customer::class,'id', 'customer_id');
+    }
+
+    public function rider()
+    {
+        return $this->hasOne(Rider::class,'id', 'rider_id');
     }
 
 

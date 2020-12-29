@@ -51,7 +51,7 @@
             <li>
                 <a href="#"><i class="fa fa-book"></i> <span class="nav-label">{{ trans('sidebar.order')}}</span><span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level collapse">
-                    <li class="@if(in_array(Route::current()->getName(), array('restaurants.index', 'restaurants.create', 'restaurants.edit')))  @else  @endif"><a href="{{ route('restaurants.index') }}"><i class="fa fa-list"></i>{{ trans('sidebar.orders')}}</a></li>
+                    <li class="@if(in_array(Route::current()->getName(), array('orders.index', 'orders.create', 'orders.edit')))  @else  @endif"><a href="{{ route('orders.index') }}"><i class="fa fa-list"></i>{{ trans('sidebar.orders')}}</a></li>
                     <li class="@if(in_array(Route::current()->getName(), array('restaurants.index', 'restaurants.create', 'restaurants.edit')))  @else  @endif"><a href="{{ route('restaurants.index') }}"><i class="fa fa-list"></i>{{ trans('sidebar.order_statuses')}}</a></li>
                     <li class="@if(in_array(Route::current()->getName(), array('restaurants.index', 'restaurants.create', 'restaurants.edit')))  @else  @endif"><a href="{{ route('restaurants.index') }}"><i class="fa fa-list"></i>{{ trans('sidebar.delivery_addresses')}}</a></li>
                 </ul>

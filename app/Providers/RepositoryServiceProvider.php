@@ -28,7 +28,7 @@ class RepositoryServiceProvider extends ServiceProvider
         CouponContract::class => CouponRepository::class,
         FoodContract::class => FoodRepository::class,
 
-        ];
+    ];
 
     /**
      * Register services.

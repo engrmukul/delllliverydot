@@ -27,15 +27,6 @@ class FoodController extends BaseController
     }
 
     /**
-     * @param Request $request
-     * @return mixed
-     */
-    public function requestedGetData(Request $request)
-    {
-        return $this->foodRepository->requestedFood($request);
-    }
-
-    /**
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function index()

@@ -2,10 +2,13 @@
 
 namespace App\Repositories;
 
-use App\Models\Order;
 use App\Contracts\OrderContract;
+use App\Models\Order;
+use App\Models\OrderVariant;
+use Illuminate\Database\QueryException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Yajra\DataTables\Facades\DataTables;
+use Doctrine\Instantiator\Exception\InvalidArgumentException;
+use Yajra\DataTables\DataTables;
 
 class OrderRepository extends BaseRepository implements OrderContract
 {
@@ -23,19 +26,46 @@ class OrderRepository extends BaseRepository implements OrderContract
      * @param string $order
      * @param string $sort
      * @param array $columns
-     * @param array $params
      * @return mixed
      */
-    public function listOrder( array $params, string $order = 'id', string $sort = 'desc', array $columns = ['*'])
+    public function listOrder(string $order = 'id', string $sort = 'desc', array $columns = ['*'])
     {
-        try {
-            $collection = collect($params);
+        $query = Order::orderBy('order_date', 'DESC')->get();
 
-            return $this->model->with('orderDetails','RestaurantDetails','orderDetails.foods','orderDetails.foodVariants')->where('customer_id', $collection['customer_id'])->orderBy('id', $sort)->get($columns);
+        return Datatables::of($query)->with('customer','restaurant','rider')
+            ->addColumn('action', function ($row) {
+                $actions = '';
 
-        } catch (QueryException $exception) {
-            throw new InvalidArgumentException($exception->getMessage());
-        }
+                $actions.= '<a class="btn btn-primary btn-xs float-left mr-1" href="' . route('orders.edit', [$row->id]) . '" title="Order Edit"><i class="fa fa-pencil"></i> '. trans("common.edit") . '</a>';
+                $actions.= '<a class="btn btn-success btn-xs float-left mr-1" href="' . route('orders.view', [$row->id]) . '" title="Order View"><i class="fa fa-eye"></i> '. trans("common.view") . '</a>';
+
+                return $actions;
+            })
+            ->editColumn('customer_phone', function ($row) {
+                return $row->customer->phone_number;
+            })
+            ->editColumn('restaurant', function ($row) {
+                return $row->restaurant->name;
+            })
+            ->editColumn('restaurant_phone', function ($row) {
+                return $row->restaurant->phone_number;
+            })
+            ->editColumn('rider', function ($row) {
+                return $row->rider->name;
+            })
+            ->editColumn('rider_phone', function ($row) {
+                return $row->rider->phone_number;
+            })
+            ->editColumn('order_status', function ($row) {
+                return ucfirst(str_replace("_"," ", $row->order_status));
+            })
+            ->editColumn('payment_method', function ($row) {
+                return ucfirst(str_replace("_"," ", $row->payment_method));
+            })
+            ->editColumn('payment_status', function ($row) {
+                return ucfirst(str_replace("_"," ", $row->payment_status));
+            })
+            ->make(true);
     }
 
     /**
@@ -51,6 +81,89 @@ class OrderRepository extends BaseRepository implements OrderContract
 
             throw new ModelNotFoundException($e);
         }
+    }
 
+    public function orderDetails(int $id)
+    {
+        try {
+            return Order::with('orderDetails','customer','restaurant','rider')
+                ->with('orderDetails.foods','orderDetails.foodVariants')
+                ->where('id', $id)
+                ->orderBy('order_date', 'DESC')
+                ->first();
+
+        } catch (ModelNotFoundException $e) {
+
+            throw new ModelNotFoundException($e);
+        }
+    }
+
+    /**
+     * @param array $params
+     * @return Order|mixed
+     */
+    public function createOrder(array $params)
+    {
+        try {
+            $collection = collect($params);
+
+            $created_by = auth()->user()->id;
+
+            $merge = $collection->merge(compact('created_by'));
+
+            $order = new Order($merge->all());
+
+            $order->save();
+
+            //SAVE FOOD VARIANT
+            $variantArray = array();
+
+            foreach ($collection['variant_name'] as $key => $vName){
+                $variantData['order_id'] = $order->id;
+                $variantData['name'] = $vName;
+                $variantData['price'] = $collection['variant_price'][$key];
+
+                $variantArray[] = $variantData;
+            }
+
+            OrderVariant::insert($variantArray);
+
+            return $order;
+
+        } catch (QueryException $exception) {
+            throw new InvalidArgumentException($exception->getMessage());
+        }
+    }
+
+    /**
+     * @param array $params
+     * @return mixed
+     */
+    public function updateOrder(array $params)
+    {
+        $Order = $this->findOrderById($params['id']);
+
+        $collection = collect($params)->except('_token');
+
+        $updated_by = auth()->user()->id;
+
+        $merge = $collection->merge(compact('updated_by'));
+
+        $Order->update($merge->all());
+
+        return $Order;
+    }
+
+    /**
+     * @param $id
+     * @return bool|mixed
+     */
+    public function deleteOrder($id, array $params)
+    {
+        $Order = $this->findOrderById($id);
+
+        $Order->delete();
+
+        return $Order;
     }
 }
