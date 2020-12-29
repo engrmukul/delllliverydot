@@ -39,10 +39,4 @@ class Category extends Model
     protected $casts  = [
 
     ];
-
-    public function items()
-    {
-        return $this->hasMany(Food::class, 'id', 'food_id');
-    }
-
 }

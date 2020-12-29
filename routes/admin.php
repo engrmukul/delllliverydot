@@ -27,14 +27,14 @@ Route::group(['prefix' => 'admin'], function () {
         });
 
         // food category route
-        Route::group(['prefix' => 'food-categories'], function () {
-            Route::get('/', 'Admin\FoodCategoryController@index')->name('food-categories.index');
-            Route::get('/create', 'Admin\FoodCategoryController@create')->name('food-categories.create');
-            Route::post('/store', 'Admin\FoodCategoryController@store')->name('food-categories.store');
-            Route::get('/{id}/edit', 'Admin\FoodCategoryController@edit')->name('food-categories.edit');
-            Route::put('/update', 'Admin\FoodCategoryController@update')->name('food-categories.update');
-            Route::delete('/{id}/delete', 'Admin\FoodCategoryController@delete')->name('food-categories.destroy');
-            Route::get('/get-data', 'Admin\FoodCategoryController@getData')->name('food-categories.get-data');
+        Route::group(['prefix' => 'categories'], function () {
+            Route::get('/', 'Admin\CategoryController@index')->name('categories.index');
+            Route::get('/create', 'Admin\CategoryController@create')->name('categories.create');
+            Route::post('/store', 'Admin\CategoryController@store')->name('categories.store');
+            Route::get('/{id}/edit', 'Admin\CategoryController@edit')->name('categories.edit');
+            Route::put('/update', 'Admin\CategoryController@update')->name('categories.update');
+            Route::delete('/{id}/delete', 'Admin\CategoryController@delete')->name('categories.destroy');
+            Route::get('/get-data', 'Admin\CategoryController@getData')->name('categories.get-data');
         });
 
         // food route
