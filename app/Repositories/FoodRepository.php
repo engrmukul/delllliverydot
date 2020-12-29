@@ -123,9 +123,13 @@ class FoodRepository extends BaseRepository implements FoodContract
      */
     public function updateFood(array $params)
     {
+        $food = $this->findFoodById($params['id']);
+
         $collection = collect($params)->except('_token');
 
         $updated_by = auth()->user()->id;
+
+        $updated_at = date('Y-m-d');
 
         if(isset($params['image'])){
             $image = url('/').'/public/img/food/'.$params['image'];
@@ -133,11 +137,9 @@ class FoodRepository extends BaseRepository implements FoodContract
             $image = url('/').'/public/img/food/default.png';
         }
 
-        $merge = $collection->merge(compact('updated_by','image'));
+        $merge = $collection->merge(compact('updated_at','updated_by','image'));
 
-        //SAVE RESTAURANT
-        $food = new Food($merge->all());
-        $food->update();
+        $food->update($merge->all());
 
         FoodVariant::where('food_id', $collection['id'])->delete();
 

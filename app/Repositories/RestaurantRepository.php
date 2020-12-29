@@ -340,11 +340,14 @@ class RestaurantRepository extends BaseRepository implements RestaurantContract
     public function updateRestaurantByAdmin(array $params)
     {
         try {
-            $collection = collect($params);
+            $restaurant = $this->findRestaurantById($params['id']);
+
+            $collection = collect($params)->except('_token');
 
             $phone_number = (substr($collection['phone_number'],0,3)=='+88') ? $collection['phone_number'] : '+88'.$collection['phone_number'];
-            $created_at = date('Y-m-d');
-            $created_by = auth()->user()->id;
+
+            $updated_at = date('Y-m-d');
+            $updated_by = auth()->user()->id;
 
             if(isset($params['image'])){
                 $image = url('/').'/public/img/restaurant/'.$params['image'];
@@ -352,28 +355,29 @@ class RestaurantRepository extends BaseRepository implements RestaurantContract
                 $image = url('/').'/public/img/restaurant/default.png';
             }
 
-            $merge = $collection->merge(compact('created_at', 'created_by','phone_number','image'));
+            $merge = $collection->merge(compact('updated_at', 'updated_by','phone_number','image'));
 
-            //SAVE RESTAURANT
-            $restaurant = new Restaurant($merge->all());
-            $restaurant->update();
+            $restaurant->update($merge->all());
 
             //SAVE RESTAURANT PROFILE
+            RestaurantProfile::where('restaurant_id',$restaurant->id)->delete();
             $restaurantProfile = new RestaurantProfile($merge->all());
             $restaurantProfile->restaurant_id = $restaurant->id;
             $restaurantProfile->feature_section = 1;
             $restaurantProfile->ratting = 5;
-            $restaurantProfile->update();
+            $restaurantProfile->save();
 
             //SAVE RESTAURANT SETTINGS
+            RestaurantSetting::where('restaurant_id',$restaurant->id)->delete();
             $restaurantSettings = new RestaurantSetting($merge->all());
             $restaurantSettings->restaurant_id = $restaurant->id;
-            $restaurantSettings->update();
+            $restaurantSettings->save();
 
             //SAVE RESTAURANT ADDRESS
+            RestaurantAddress::where('restaurant_id',$restaurant->id)->delete();
             $restaurantAddress = new RestaurantAddress($merge->all());
             $restaurantAddress->restaurant_id = $restaurant->id;
-            $restaurantAddress->update();
+            $restaurantAddress->save();
 
             return $restaurant;
 
