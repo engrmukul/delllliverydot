@@ -172,7 +172,7 @@
 
                              </div>
 
-                             <div class="row">
+                             <div class="row mt-3">
                                <div class="col-12">
                                    <!---CONTROL BUTTON--->
                                    <div class="form-group">
