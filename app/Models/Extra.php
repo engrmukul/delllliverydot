@@ -43,4 +43,14 @@ class Extra extends Model
         'food_id' => 'int',
     ];
 
+    public function group()
+    {
+        return $this->hasOne(ExtraGroup::class,'id','extra_group_id');
+    }
+
+    public function food()
+    {
+        return $this->hasOne(Food::class,'id','food_id');
+    }
+
 }

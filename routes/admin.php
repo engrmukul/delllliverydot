@@ -50,13 +50,13 @@ Route::group(['prefix' => 'admin'], function () {
 
         // extra route
         Route::group(['prefix' => 'extras'], function () {
-            Route::get('/', 'Admin\ExtraFoodController@index')->name('extras.index');
-            Route::get('/create', 'Admin\ExtraFoodController@create')->name('extras.create');
-            Route::post('/store', 'Admin\ExtraFoodController@store')->name('extras.store');
-            Route::get('/{id}/edit', 'Admin\ExtraFoodController@edit')->name('extras.edit');
-            Route::put('/update', 'Admin\ExtraFoodController@update')->name('extras.update');
-            Route::delete('/{id}/delete', 'Admin\ExtraFoodController@delete')->name('extras.destroy');
-            Route::get('/get-data', 'Admin\ExtraFoodController@getData')->name('extras.get-data');
+            Route::get('/', 'Admin\ExtraController@index')->name('extras.index');
+            Route::get('/create', 'Admin\ExtraController@create')->name('extras.create');
+            Route::post('/store', 'Admin\ExtraController@store')->name('extras.store');
+            Route::get('/{id}/edit', 'Admin\ExtraController@edit')->name('extras.edit');
+            Route::put('/update', 'Admin\ExtraController@update')->name('extras.update');
+            Route::delete('/{id}/delete', 'Admin\ExtraController@delete')->name('extras.destroy');
+            Route::get('/get-data', 'Admin\ExtraController@getData')->name('extras.get-data');
         });
 
         // order route

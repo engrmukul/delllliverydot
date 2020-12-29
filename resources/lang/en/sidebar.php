@@ -38,6 +38,7 @@ return [
     'foods' => 'Foods',
     'category' => 'Category',
     'extras' => 'Extras',
+    'groups' => 'Groups',
     'food_reviews' => 'Food Reviews',
     'order' => 'Order',
     'orders' => 'Orders',

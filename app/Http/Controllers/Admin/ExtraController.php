@@ -2,7 +2,11 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Models\Category;
 use App\Models\Extra;
+use App\Models\ExtraGroup;
+use App\Models\Food;
+use App\Models\Restaurant;
 use Illuminate\Http\Request;
 use App\Contracts\ExtraContract;
 use App\Http\Requests\ExtraStoreFormRequest;
@@ -25,15 +29,6 @@ class ExtraController extends BaseController
     }
 
     /**
-     * @param Request $request
-     * @return mixed
-     */
-    public function requestedGetData(Request $request)
-    {
-        return $this->extraRepository->requestedExtra($request);
-    }
-
-    /**
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function index()
@@ -42,20 +37,20 @@ class ExtraController extends BaseController
         $data = [
             'tableHeads' => [
                 trans('extra.SN'),
+                trans('extra.group'),
                 trans('extra.name'),
-                trans('extra.email'),
-                trans('extra.phone_number'),
-                trans('extra.isVerified'),
+                trans('extra.price'),
+                trans('extra.food'),
                 trans('extra.status'),
                 trans('extra.action')
             ],
             'dataUrl' => 'admin/extras/get-data',
             'columns' => [
                 ['data' => 'id', 'name' => 'id'],
+                ['data' => 'group', 'name' => 'group'],
                 ['data' => 'name', 'name' => 'name'],
-                ['data' => 'email', 'name' => 'email'],
-                ['data' => 'phone_number', 'name' => 'phone_number'],
-                ['data' => 'isVerified', 'name' => 'isVerified'],
+                ['data' => 'price', 'name' => 'price'],
+                ['data' => 'food', 'name' => 'food'],
                 ['data' => 'status', 'name' => 'status'],
                 ['data' => 'action', 'name' => 'action', 'orderable' => false]
             ],
@@ -69,7 +64,7 @@ class ExtraController extends BaseController
      */
     public function getData(Request $request)
     {
-        return $this->extraRepository->allExtras($request);
+        return $this->extraRepository->listExtra($request);
     }
 
     /**
@@ -79,43 +74,11 @@ class ExtraController extends BaseController
     {
         $this->setPageTitle('extras', 'create extra');
 
-        $deliveryTypes = array(
-            'home' => 'home',
-            'collect' => 'collect',
-        );
+        $groups = ExtraGroup::all();
 
-        $closedExtras = array(
-            '0' => 'No',
-            '1' => 'Yes',
-        );
+        $foods = Food::all();
 
-        $availableForDeliveries = array(
-            '0' => 'No',
-            '1' => 'Yes',
-        );
-
-        $notifications = array(
-            '0' => 'No',
-            '1' => 'Yes',
-        );
-
-        $popupNotifications = array(
-            '0' => 'No',
-            '1' => 'Yes',
-        );
-
-        $smses = array(
-            '0' => 'No',
-            '1' => 'Yes',
-        );
-
-        $offerAndPromotions = array(
-            '0' => 'No',
-            '1' => 'Yes',
-        );
-
-        return view('admin.extras.create', compact('deliveryTypes','closedExtras','availableForDeliveries','notifications','popupNotifications','smses','offerAndPromotions'));
-
+        return view('admin.extras.create', compact('groups','foods'));
     }
 
     /**
@@ -131,7 +94,7 @@ class ExtraController extends BaseController
             $params['image'] = $this->saveImages($request->file('image'), 'img/extra/', 500, 500);
         }
 
-        $extra = $this->extraRepository->createExtraByAdmin($params);
+        $extra = $this->extraRepository->createExtra($params);
 
         if (!$extra) {
             return $this->responseRedirectBack(trans('common.create_error'), 'error', true, true);
@@ -146,10 +109,13 @@ class ExtraController extends BaseController
     public function edit($id)
     {
         $this->setPageTitle('extras', 'Edit Extra');
+        $groups = ExtraGroup::all();
+
+        $foods = Food::all();
 
         $extra = $this->extraRepository->findExtraById($id);
 
-        return view('admin.extras.edit', compact('extra'));
+        return view('admin.extras.edit', compact('extra','groups','foods'));
     }
 
     /**
