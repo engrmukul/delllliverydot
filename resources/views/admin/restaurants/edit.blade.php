@@ -16,8 +16,10 @@
                     <div class="ibox-content">
 
                         <!---FORM--->
-                        <form role="form" method="post" action="{{route( strtolower($pageTitle) . '.store')}}" enctype="multipart/form-data">
-                        @csrf
+                        <form role="form" method="post" action="{{route( strtolower($pageTitle) . '.update', $restaurant->id )}}" enctype="multipart/form-data">
+                            @method('PUT')
+                            @csrf
+                            <input type="hidden" name="id" value="{{ $restaurant->id }}">
 
                         <!--RESTAURANT--->
                             <div class="row">
@@ -25,35 +27,35 @@
                                     <!---Name--->
                                     <div class="form-group">
                                         <label for="name" class="font-bold">{{ trans('restaurant.name')}}</label>
-                                        <input type="text" name="name" value="{{ old('name') }}" placeholder="{{ trans('restaurant.name')}}" class="form-control" required>
+                                        <input type="text" name="name" value="{{ old('name', $restaurant->name) }}" placeholder="{{ trans('restaurant.name')}}" class="form-control" required>
                                         <span class="form-text m-b-none text-danger"> @error('name') {{ $message }} @enderror </span>
                                     </div>
 
                                     <!---Email--->
                                     <div class="form-group">
                                         <label for="email" class="font-bold">{{ trans('restaurant.email')}}</label>
-                                        <input type="text" name="email" value="{{ old('email') }}" placeholder="{{ trans('restaurant.email')}}" class="form-control" required>
+                                        <input type="text" name="email" value="{{ old('email', $restaurant->email) }}" placeholder="{{ trans('restaurant.email')}}" class="form-control" required>
                                         <span class="form-text m-b-none text-danger"> @error('email') {{ $message }} @enderror </span>
                                     </div>
 
                                     <!---Phone--->
                                     <div class="form-group">
                                         <label for="phone_number" class="font-bold">{{ trans('restaurant.phone_number')}}</label>
-                                        <input type="text" name="phone_number" value="{{ old('phone_number') }}" placeholder="{{ trans('restaurant.phone_number')}}" class="form-control" required>
+                                        <input type="text" name="phone_number" value="{{ old('phone_number', $restaurant->phone_number) }}" placeholder="{{ trans('restaurant.phone_number')}}" class="form-control" required>
                                         <span class="form-text m-b-none text-danger"> @error('phone_number') {{ $message }} @enderror </span>
                                     </div>
 
                                     <!---NID--->
                                     <div class="form-group">
                                         <label for="nid" class="font-bold">{{ trans('restaurant.nid')}}</label>
-                                        <input type="text" name="nid" value="{{ old('nid') }}" placeholder="{{ trans('restaurant.nid')}}" class="form-control" required>
+                                        <input type="text" name="nid" value="{{ old('nid', $restaurant->restaurantDetails->nid) }}" placeholder="{{ trans('restaurant.nid')}}" class="form-control" required>
                                         <span class="form-text m-b-none text-danger"> @error('nid') {{ $message }} @enderror </span>
                                     </div>
 
                                     <!---trade_licence--->
                                     <div class="form-group">
                                         <label for="trade_licence" class="font-bold">{{ trans('restaurant.trade_licence')}}</label>
-                                        <input type="text" name="trade_licence" value="{{ old('trade_licence') }}" placeholder="{{ trans('restaurant.trade_licence')}}" class="form-control" required>
+                                        <input type="text" name="trade_licence" value="{{ old('trade_licence', $restaurant->restaurantDetails->trade_licence) }}" placeholder="{{ trans('restaurant.trade_licence')}}" class="form-control" required>
                                         <span class="form-text m-b-none text-danger"> @error('trade_licence') {{ $message }} @enderror </span>
                                     </div>
 
@@ -63,7 +65,7 @@
                                         <select id="delivery_type" class="form-control custom-select mt-15" name="delivery_type" required>
                                             <option value="">{{ trans('restaurant.delivery_type')}}</option>
                                             @foreach($deliveryTypes as $key => $deliveryType)
-                                                @if (old('delivery_type') == $deliveryType)
+                                                @if (old('delivery_type', $restaurant->restaurantDetails->delivery_type) == $deliveryType)
                                                     <option value="{{ $deliveryType }}" selected> {{ ucfirst($deliveryType) }} </option>
                                                 @else
                                                     <option value="{{ $deliveryType }}"> {{ ucfirst($deliveryType) }} </option>
@@ -76,49 +78,42 @@
                                     <!---delivery_fee--->
                                     <div class="form-group">
                                         <label for="delivery_fee" class="font-bold">{{ trans('restaurant.delivery_fee')}}</label>
-                                        <input type="text" name="delivery_fee" value="{{ old('delivery_fee') }}" placeholder="{{ trans('restaurant.delivery_fee')}}" class="form-control" required>
+                                        <input type="text" name="delivery_fee" value="{{ old('delivery_fee', $restaurant->restaurantDetails->delivery_fee) }}" placeholder="{{ trans('restaurant.delivery_fee')}}" class="form-control" required>
                                         <span class="form-text m-b-none text-danger"> @error('delivery_fee') {{ $message }} @enderror </span>
                                     </div>
 
                                     <!---delivery_time--->
                                     <div class="form-group">
                                         <label for="delivery_time" class="font-bold">{{ trans('restaurant.delivery_time')}}</label>
-                                        <input type="text" name="delivery_time" value="{{ old('delivery_time') }}" placeholder="{{ trans('restaurant.delivery_time')}}" class="form-control" required>
+                                        <input type="text" name="delivery_time" value="{{ old('delivery_time', $restaurant->restaurantDetails->delivery_time) }}" placeholder="{{ trans('restaurant.delivery_time')}}" class="form-control" required>
                                         <span class="form-text m-b-none text-danger"> @error('delivery_time') {{ $message }} @enderror </span>
                                     </div>
 
                                     <!---discount--->
                                     <div class="form-group">
                                         <label for="discount" class="font-bold">{{ trans('restaurant.discount')}}</label>
-                                        <input type="text" name="discount" value="{{ old('discount') }}" placeholder="{{ trans('restaurant.discount')}}" class="form-control" required>
+                                        <input type="text" name="discount" value="{{ old('discount', $restaurant->restaurantDetails->discount) }}" placeholder="{{ trans('restaurant.discount')}}" class="form-control" required>
                                         <span class="form-text m-b-none text-danger"> @error('discount') {{ $message }} @enderror </span>
                                     </div>
 
                                     <!---delivery_range--->
                                     <div class="form-group">
                                         <label for="delivery_range" class="font-bold">{{ trans('restaurant.delivery_range')}}</label>
-                                        <input type="text" name="delivery_range" value="{{ old('delivery_range') }}" placeholder="{{ trans('restaurant.delivery_range')}}" class="form-control" required>
+                                        <input type="text" name="delivery_range" value="{{ old('delivery_range', $restaurant->restaurantDetails->delivery_range) }}" placeholder="{{ trans('restaurant.delivery_range')}}" class="form-control" required>
                                         <span class="form-text m-b-none text-danger"> @error('delivery_range') {{ $message }} @enderror </span>
-                                    </div>
-
-                                    <!---mobile--->
-                                    <div class="form-group">
-                                        <label for="mobile" class="font-bold">{{ trans('restaurant.mobile')}}</label>
-                                        <input type="text" name="mobile" value="{{ old('mobile') }}" placeholder="{{ trans('restaurant.mobile')}}" class="form-control" required>
-                                        <span class="form-text m-b-none text-danger"> @error('mobile') {{ $message }} @enderror </span>
                                     </div>
 
                                     <!---address--->
                                     <div class="form-group">
                                         <label for="address" class="font-bold">{{ trans('restaurant.address')}}</label>
-                                        <input type="text" name="address" value="{{ old('address') }}" placeholder="{{ trans('restaurant.address')}}" class="form-control" required>
+                                        <input type="text" name="address" value="{{ old('address', $restaurant->restaurantDetails->address) }}" placeholder="{{ trans('restaurant.address')}}" class="form-control" required>
                                         <span class="form-text m-b-none text-danger"> @error('address') {{ $message }} @enderror </span>
                                     </div>
 
                                     <!---latitude--->
                                     <div class="form-group">
                                         <label for="latitude" class="font-bold">{{ trans('restaurant.latitude')}}</label>
-                                        <input type="text" name="latitude" value="{{ old('latitude') }}" placeholder="{{ trans('restaurant.latitude')}}" class="form-control" required>
+                                        <input type="text" name="latitude" value="{{ old('latitude', $restaurant->restaurantDetails->latitude) }}" placeholder="{{ trans('restaurant.latitude')}}" class="form-control" required>
                                         <span class="form-text m-b-none text-danger"> @error('latitude') {{ $message }} @enderror </span>
                                     </div>
                                 </div>
@@ -128,7 +123,7 @@
                                     <!---longitude--->
                                     <div class="form-group">
                                         <label for="longitude" class="font-bold">{{ trans('restaurant.longitude')}}</label>
-                                        <input type="text" name="longitude" value="{{ old('longitude') }}" placeholder="{{ trans('restaurant.longitude')}}" class="form-control" required>
+                                        <input type="text" name="longitude" value="{{ old('longitude', $restaurant->restaurantDetails->longitude) }}" placeholder="{{ trans('restaurant.longitude')}}" class="form-control" required>
                                         <span class="form-text m-b-none text-danger"> @error('longitude') {{ $message }} @enderror </span>
                                     </div>
 
@@ -137,7 +132,7 @@
                                         <select id="closed_restaurant" class="form-control custom-select mt-15" name="closed_restaurant" required>
                                             <option value="">{{ trans('restaurant.closed_restaurant')}}</option>
                                             @foreach($closedRestaurants as $key => $closedRestaurant)
-                                                @if (old('closed_restaurant') == $closedRestaurant)
+                                                @if (old('closed_restaurant', $restaurant->restaurantDetails->closed_restaurant) == $key)
                                                     <option value="{{ $closedRestaurant }}" selected> {{ ucfirst($closedRestaurant) }} </option>
                                                 @else
                                                     <option value="{{ $closedRestaurant }}"> {{ ucfirst($closedRestaurant) }} </option>
@@ -153,7 +148,7 @@
                                         <select id="available_for_delivery" class="form-control custom-select mt-15" name="available_for_delivery" required>
                                             <option value="">{{ trans('restaurant.available_for_delivery')}}</option>
                                             @foreach($availableForDeliveries as $key => $availableForDelivery)
-                                                @if (old('available_for_delivery') == $availableForDelivery)
+                                                @if (old('available_for_delivery', $restaurant->restaurantDetails->available_for_delivery) == $key)
                                                     <option value="{{ $availableForDelivery }}" selected> {{ ucfirst($availableForDelivery) }} </option>
                                                 @else
                                                     <option value="{{ $availableForDelivery }}"> {{ ucfirst($availableForDelivery) }} </option>
@@ -176,7 +171,7 @@
                                         <textarea name="description"
                                                   placeholder="{{ trans('restaurant.description')}}"
                                                   class="form-control summernote"
-                                                  required>{{ old('description') }}</textarea>
+                                                  required>{{ old('description', $restaurant->restaurantDetails->description) }}</textarea>
                                         <span class="form-text m-b-none text-danger"> @error('description') {{ $message }} @enderror </span>
                                     </div>
 
@@ -186,7 +181,7 @@
                                         <textarea name="information"
                                                   placeholder="{{ trans('restaurant.information')}}"
                                                   class="form-control summernote"
-                                                  required>{{ old('information') }}</textarea>
+                                                  required>{{ old('information', $restaurant->restaurantDetails->information) }}</textarea>
                                         <span class="form-text m-b-none text-danger"> @error('information') {{ $message }} @enderror </span>
                                     </div>
 
@@ -198,7 +193,7 @@
                                         <select id="notification" class="form-control custom-select mt-15" name="notification" required>
                                             <option value="">{{ trans('restaurant.notification')}}</option>
                                             @foreach($notifications as $key => $notification)
-                                                @if (old('notification') == $notification)
+                                                @if (old('notification', $restaurant->restaurantSetting->notification) == $key)
                                                     <option value="{{ $key }}" selected> {{ ucfirst($notification) }} </option>
                                                 @else
                                                     <option value="{{ $key }}"> {{ ucfirst($notification) }} </option>
@@ -214,7 +209,7 @@
                                         <select id="popup_notification" class="form-control custom-select mt-15" name="popup_notification" required>
                                             <option value="">{{ trans('restaurant.popup_notification')}}</option>
                                             @foreach($popupNotifications as $key => $popupNotification)
-                                                @if (old('popup_notification') == $popupNotification)
+                                                @if (old('popup_notification', $restaurant->restaurantSetting->popup_notification) == $key)
                                                     <option value="{{ $key }}" selected> {{ ucfirst($popupNotification) }} </option>
                                                 @else
                                                     <option value="{{ $key }}"> {{ ucfirst($popupNotification) }} </option>
@@ -230,7 +225,7 @@
                                         <select id="sms" class="form-control custom-select mt-15" name="sms" required>
                                             <option value="">{{ trans('restaurant.sms')}}</option>
                                             @foreach($smses as $key => $sms)
-                                                @if (old('sms') == $sms)
+                                                @if (old('sms', $restaurant->restaurantSetting->sms) == $key)
                                                     <option value="{{ $key }}" selected> {{ ucfirst($sms) }} </option>
                                                 @else
                                                     <option value="{{ $key }}"> {{ ucfirst($sms) }} </option>
@@ -246,7 +241,7 @@
                                         <select id="offer_and_promotion" class="form-control custom-select mt-15" name="offer_and_promotion" required>
                                             <option value="">{{ trans('restaurant.offer_and_promotion')}}</option>
                                             @foreach($offerAndPromotions as $key => $offerAndPromotion)
-                                                @if (old('offer_and_promotion') == $offerAndPromotion)
+                                                @if (old('offer_and_promotion', $restaurant->restaurantSetting->offer_and_promotion) == $key)
                                                     <option value="{{ $key }}" selected> {{ ucfirst($offerAndPromotion) }} </option>
                                                 @else
                                                     <option value="{{ $key }}"> {{ ucfirst($offerAndPromotion) }} </option>

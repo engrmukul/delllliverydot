@@ -100,7 +100,7 @@ class FoodController extends BaseController
             $params['image'] = $this->saveImages($request->file('image'), 'img/food/', 500, 500);
         }
 
-        $food = $this->foodRepository->createFoodByAdmin($params);
+        $food = $this->foodRepository->createFood($params);
 
         if (!$food) {
             return $this->responseRedirectBack(trans('common.create_error'), 'error', true, true);

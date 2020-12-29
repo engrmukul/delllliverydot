@@ -211,7 +211,7 @@ class RestaurantController extends BaseController
             '1' => 'Yes',
         );
 
-        $restaurant = $this->restaurantRepository->findRestaurantById($id);
+        $restaurant = $this->restaurantRepository->findRestaurantByIdByAdmin($id);
 
         return view('admin.restaurants.edit',  compact('restaurant','deliveryTypes','closedRestaurants','availableForDeliveries','notifications','popupNotifications','smses','offerAndPromotions'));
     }
@@ -229,7 +229,7 @@ class RestaurantController extends BaseController
             $params['image'] = $this->saveImages($request->file('image'), 'img/restaurant/', 500, 500);
         }
 
-        $restaurant = $this->restaurantRepository->updateRestaurant($params);
+        $restaurant = $this->restaurantRepository->updateRestaurantByAdmin($params);
 
         if (!$restaurant) {
             return $this->responseRedirectBack(trans('common.update_error'), 'error', true, true);

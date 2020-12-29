@@ -16,35 +16,38 @@
                     <div class="ibox-content">
 
                         <!---FORM--->
-                        <form role="form" method="post" action="{{route( strtolower($pageTitle) . '.store')}}" enctype="multipart/form-data">
+                        <form role="form" method="post" action="{{route( strtolower($pageTitle) . '.update', $food->id )}}" enctype="multipart/form-data">
+                            @method('PUT')
                             @csrf
+                            <input type="hidden" name="id" value="{{$food->id}}">
+
                             <div class="row">
                                 <div class="col-md-6">
                                     <!---food Name--->
                                     <div class="form-group">
                                         <label for="name" class="font-bold">{{ trans('food.name')}}</label>
-                                        <input type="text" name="name" value="{{ old('name') }}" placeholder="{{ trans('food.name')}}" class="form-control" required>
+                                        <input type="text" name="name" value="{{old('name', $food->name)}}" placeholder="{{ trans('food.name')}}" class="form-control" required>
                                         <span class="form-text m-b-none text-danger"> @error('name') {{ $message }} @enderror </span>
                                     </div>
 
                                     <!--- short description --->
                                     <div class="form-group">
                                         <label for="short_description" class="font-bold">{{ trans('food.short_description')}}</label>
-                                        <textarea name="short_description" placeholder="{{ trans('food.short_description')}}" class="form-control summernote" required>{{ old('short_description') }}</textarea>
+                                        <textarea name="short_description" placeholder="{{ trans('food.short_description')}}" class="form-control summernote" required>{{ old('short_description', $food->short_description) }}</textarea>
                                         <span class="form-text m-b-none text-danger"> @error('short_description') {{ $message }} @enderror </span>
                                     </div>
 
                                     <!--- food description --->
                                     <div class="form-group">
                                         <label for="description" class="font-bold">{{ trans('food.description')}}</label>
-                                        <textarea name="description" placeholder="{{ trans('food.description')}}" class="form-control summernote" required>{{ old('description') }}</textarea>
+                                        <textarea name="description" placeholder="{{ trans('food.description')}}" class="form-control summernote" required>{{ old('description', $food->description) }}</textarea>
                                         <span class="form-text m-b-none text-danger"> @error('description') {{ $message }} @enderror </span>
                                     </div>
 
                                     <!--- food ingredients --->
                                     <div class="form-group">
                                         <label for="ingredients" class="font-bold">{{ trans('food.ingredients')}}</label>
-                                        <textarea name="ingredients" placeholder="{{ trans('food.ingredients')}}" class="form-control summernote" required>{{ old('ingredients') }}</textarea>
+                                        <textarea name="ingredients" placeholder="{{ trans('food.ingredients')}}" class="form-control summernote" required>{{ old('ingredients', $food->ingredients) }}</textarea>
                                         <span class="form-text m-b-none text-danger"> @error('ingredients') {{ $message }} @enderror </span>
                                     </div>
                                 </div>
@@ -54,28 +57,28 @@
                                     <!--- food discount_price --->
                                     <div class="form-group">
                                         <label for="discount_price" class="font-bold">{{ trans('food.discount_price')}}</label>
-                                        <input type="text" id="discount_price" name="price" value="{{ old('prdiscount_pricediscount_pricece') }}" placeholder="{{ trans('food.discount_price')}}" class="form-control" required>
+                                        <input type="text" id="discount_price" name="discount_price" value="{{ old('discount_price', $food->discount_price) }}" placeholder="{{ trans('food.discount_price')}}" class="form-control" required>
                                         <span class="form-text m-b-none text-danger"> @error('discount_price') {{ $message }} @enderror </span>
                                     </div>
 
                                     <!--- unit  --->
                                     <div class="form-group">
                                         <label for="unit" class="font-bold">{{ trans('food.unit')}}</label>
-                                        <input type="text" id="unit" name="unit" value="{{ old('unit') }}" placeholder="{{ trans('food.unit')}}" class="form-control" required>
+                                        <input type="text" id="unit" name="unit" value="{{ old('unit', $food->unit) }}" placeholder="{{ trans('food.unit')}}" class="form-control" required>
                                         <span class="form-text m-b-none text-danger"> @error('unit') {{ $message }} @enderror </span>
                                     </div>
 
                                     <!--- package_count --->
                                     <div class="form-group">
                                         <label for="package_count" class="font-bold">{{ trans('food.package_count')}}</label>
-                                        <input type="text" id="package_count" name="package_count" value="{{ old('package_count') }}" placeholder="{{ trans('food.package_count')}}" class="form-control">
+                                        <input type="text" id="package_count" name="package_count" value="{{ old('package_count', $food->package_count) }}" placeholder="{{ trans('food.package_count')}}" class="form-control">
                                         <span class="form-text m-b-none text-danger"> @error('package_count') {{ $message }} @enderror </span>
                                     </div>
 
                                     <!--- weight --->
                                     <div class="form-group">
                                         <label for="weight" class="font-bold">{{ trans('food.weight')}}</label>
-                                        <input type="text" id="weight" name="weight" value="{{ old('package_count') }}" placeholder="{{ trans('food.weight')}}" class="form-control">
+                                        <input type="text" id="weight" name="weight" value="{{ old('weight', $food->weight) }}" placeholder="{{ trans('food.weight')}}" class="form-control">
                                         <span class="form-text m-b-none text-danger"> @error('weight') {{ $message }} @enderror </span>
                                     </div>
 
@@ -85,10 +88,10 @@
                                         <select id="featured" class="form-control custom-select mt-15" name="featured" required>
                                             <option value="">{{ trans('food.featured')}}</option>
                                             @foreach($features as $key => $feature)
-                                                @if (old('featured') == $feature)
-                                                    <option value="{{ $feature }}" selected> {{ ucfirst($feature) }} </option>
+                                                @if (old('featured', $food->featured) == $key)
+                                                    <option value="{{ $key }}" selected> {{ ucfirst($feature) }} </option>
                                                 @else
-                                                    <option value="{{ $feature }}"> {{ ucfirst($feature) }} </option>
+                                                    <option value="{{ $key }}"> {{ ucfirst($feature) }} </option>
                                                 @endif
                                             @endforeach
                                         </select>
@@ -101,10 +104,10 @@
                                         <select id="deliverable_food" class="form-control custom-select mt-15" name="deliverable_food" required>
                                             <option value="">{{ trans('food.deliverable_food')}}</option>
                                             @foreach($deliverableFoods as $key => $deliverableFood)
-                                                @if (old('deliverable_food') == $deliverableFood)
-                                                    <option value="{{ $deliverableFood }}" selected> {{ ucfirst($deliverableFood) }} </option>
+                                                @if (old('deliverable_food', $food->deliverable_food) == $key)
+                                                    <option value="{{ $key }}" selected> {{ ucfirst($deliverableFood) }} </option>
                                                 @else
-                                                    <option value="{{ $deliverableFood }}"> {{ ucfirst($deliverableFood) }} </option>
+                                                    <option value="{{ $key }}"> {{ ucfirst($deliverableFood) }} </option>
                                                 @endif
                                             @endforeach
                                         </select>
@@ -117,7 +120,7 @@
                                         <select id="restaurant_id" class="form-control custom-select mt-15" name="restaurant_id" required>
                                             <option value="">{{ trans('food.restaurant_id')}}</option>
                                             @foreach($restaurants as $key => $restaurant)
-                                                @if (old('restaurant_id') == $restaurant->id)
+                                                @if (old('restaurant_id', $food->restaurant_id) == $restaurant->id)
                                                     <option value="{{ $restaurant->id }}" selected> {{ ucfirst($restaurant->name) }} </option>
                                                 @else
                                                     <option value="{{ $restaurant->id }}"> {{ ucfirst($restaurant->name) }} </option>
@@ -133,7 +136,7 @@
                                         <select id="category_id" class="form-control custom-select mt-15" name="category_id" required>
                                             <option value="">{{ trans('food.category_id')}}</option>
                                             @foreach($categories as $key => $category)
-                                                @if (old('category_id') == $category->id)
+                                                @if (old('category_id', $food->category_id) == $category->id)
                                                     <option value="{{ $category->id }}" selected> {{ ucfirst($category->name) }} </option>
                                                 @else
                                                     <option value="{{ $category->id }}"> {{ ucfirst($category->name) }} </option>
@@ -156,15 +159,18 @@
                             <div class="row">
 
                                 <div class="col-12">
-                                    <div id="inputFormRow">
-                                        <div class="input-group mb-3">
-                                            <input type="text" name="variant_name[]" class="form-control m-input" placeholder="Enter food variant name" autocomplete="off" required>
-                                            <input type="text" name="variant_price[]" class="form-control m-input" placeholder="Enter price" autocomplete="off" required>
-                                            <div class="input-group-append">
-                                                <button type="button" class="btn btn-danger">Remove</button>
+                                    @forelse($food->foodVariants as $key => $foodVariant)
+                                        <div id="inputFormRow">
+                                            <div class="input-group mb-3">
+                                                <input type="text" name="variant_name[]" value="{{ old('variant_name[]', $foodVariant->name) }}" class="form-control m-input" placeholder="Enter food variant name" autocomplete="off" required>
+                                                <input type="number" name="variant_price[]" value="{{ old('variant_price[]', $foodVariant->price) }}" class="form-control m-input" placeholder="Enter price" autocomplete="off" required>
+                                                <div class="input-group-append">
+                                                    <button type="button" @if($key != 0) id="removeRow" @else  @endif class="btn btn-danger">Remove</button>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
+                                    @empty
+                                    @endforelse
 
                                     <div id="newRow"></div>
                                     <button id="addRow" type="button" class="btn btn-info">Add Row</button>
@@ -196,8 +202,8 @@
             var html = '';
             html += '<div id="inputFormRow">';
             html += '<div class="input-group mb-3">';
-            html += '<input type="text" name="name[]" class="form-control m-input" placeholder="Enter food variant name" autocomplete="off">';
-            html += '<input type="text" name="price[]" class="form-control m-input" placeholder="Enter price" autocomplete="off">';
+            html += '<input type="text" name="variant_name[]" class="form-control m-input" placeholder="Enter food variant name" autocomplete="off">';
+            html += '<input type="text" name="variant_price[]" class="form-control m-input" placeholder="Enter price" autocomplete="off">';
             html += '<div class="input-group-append">';
             html += '<button id="removeRow" type="button" class="btn btn-danger">Remove</button>';
             html += '</div>';

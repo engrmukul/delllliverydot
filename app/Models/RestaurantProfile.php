@@ -24,6 +24,8 @@ class RestaurantProfile extends Model
     protected $fillable = [
         'restaurant_id',
         'name',
+        'nid',
+        'trade_licence',
         'delivery_type',
         'delivery_fee',
         'delivery_time',
@@ -41,6 +43,7 @@ class RestaurantProfile extends Model
         'description',
         'information',
         'options',
+        'ratting'
     ];
 
     /**

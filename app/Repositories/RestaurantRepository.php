@@ -134,6 +134,19 @@ class RestaurantRepository extends BaseRepository implements RestaurantContract
 
     }
 
+    public function findRestaurantByIdByAdmin(int $id)
+    {
+        try {
+            //return $this->findOneOrFail($id);
+            return $this->model->with('restaurantDetails','restaurantSetting','restaurantAddress')->findOrFail($id);
+
+        } catch (ModelNotFoundException $e) {
+
+            throw new ModelNotFoundException($e);
+        }
+
+    }
+
     /**
      * @param array $params
      * @return Restaurant|mixed
@@ -284,10 +297,17 @@ class RestaurantRepository extends BaseRepository implements RestaurantContract
         try {
             $collection = collect($params);
 
+            $phone_number = (substr($collection['phone_number'],0,3)=='+88') ? $collection['phone_number'] : '+88'.$collection['phone_number'];
             $created_at = date('Y-m-d');
             $created_by = auth()->user()->id;
 
-            $merge = $collection->merge(compact('created_at', 'created_by'));
+            if(isset($params['image'])){
+                $image = url('/').'/public/img/restaurant/'.$params['image'];
+            }else{
+                $image = url('/').'/public/img/restaurant/default.png';
+            }
+
+            $merge = $collection->merge(compact('created_at', 'created_by','phone_number','image'));
 
             //SAVE RESTAURANT
             $restaurant = new Restaurant($merge->all());
@@ -309,6 +329,51 @@ class RestaurantRepository extends BaseRepository implements RestaurantContract
             $restaurantAddress = new RestaurantAddress($merge->all());
             $restaurantAddress->restaurant_id = $restaurant->id;
             $restaurantAddress->save();
+
+            return $restaurant;
+
+        } catch (QueryException $exception) {
+            throw new InvalidArgumentException($exception->getMessage());
+        }
+    }
+
+    public function updateRestaurantByAdmin(array $params)
+    {
+        try {
+            $collection = collect($params);
+
+            $phone_number = (substr($collection['phone_number'],0,3)=='+88') ? $collection['phone_number'] : '+88'.$collection['phone_number'];
+            $created_at = date('Y-m-d');
+            $created_by = auth()->user()->id;
+
+            if(isset($params['image'])){
+                $image = url('/').'/public/img/restaurant/'.$params['image'];
+            }else{
+                $image = url('/').'/public/img/restaurant/default.png';
+            }
+
+            $merge = $collection->merge(compact('created_at', 'created_by','phone_number','image'));
+
+            //SAVE RESTAURANT
+            $restaurant = new Restaurant($merge->all());
+            $restaurant->update();
+
+            //SAVE RESTAURANT PROFILE
+            $restaurantProfile = new RestaurantProfile($merge->all());
+            $restaurantProfile->restaurant_id = $restaurant->id;
+            $restaurantProfile->feature_section = 1;
+            $restaurantProfile->ratting = 5;
+            $restaurantProfile->update();
+
+            //SAVE RESTAURANT SETTINGS
+            $restaurantSettings = new RestaurantSetting($merge->all());
+            $restaurantSettings->restaurant_id = $restaurant->id;
+            $restaurantSettings->update();
+
+            //SAVE RESTAURANT ADDRESS
+            $restaurantAddress = new RestaurantAddress($merge->all());
+            $restaurantAddress->restaurant_id = $restaurant->id;
+            $restaurantAddress->update();
 
             return $restaurant;
 
