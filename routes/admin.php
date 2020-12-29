@@ -48,6 +48,17 @@ Route::group(['prefix' => 'admin'], function () {
             Route::get('/get-data', 'Admin\FoodController@getData')->name('foods.get-data');
         });
 
+        // extra group route
+        Route::group(['prefix' => 'groups'], function () {
+            Route::get('/', 'Admin\GroupController@index')->name('groups.index');
+            Route::get('/create', 'Admin\GroupController@create')->name('groups.create');
+            Route::post('/store', 'Admin\GroupController@store')->name('groups.store');
+            Route::get('/{id}/edit', 'Admin\GroupController@edit')->name('groups.edit');
+            Route::put('/update', 'Admin\GroupController@update')->name('groups.update');
+            Route::delete('/{id}/delete', 'Admin\GroupController@delete')->name('groups.destroy');
+            Route::get('/get-data', 'Admin\GroupController@getData')->name('groups.get-data');
+        });
+
         // extra route
         Route::group(['prefix' => 'extras'], function () {
             Route::get('/', 'Admin\ExtraController@index')->name('extras.index');

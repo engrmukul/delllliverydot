@@ -43,7 +43,7 @@
                 <ul class="nav nav-second-level collapse">
                     <li class="@if(in_array(Route::current()->getName(), array('categories.index', 'categories.create', 'categories.edit')))  @else  @endif"><a href="{{ route('categories.index') }}"><i class="fa fa-list"></i>{{ trans('sidebar.category')}}</a></li>
                     <li class="@if(in_array(Route::current()->getName(), array('foods.index', 'foods.create', 'foods.edit')))  @else  @endif"><a href="{{ route('foods.index') }}"><i class="fa fa-list"></i>{{ trans('sidebar.foods')}}</a></li>
-{{--                    <li class="@if(in_array(Route::current()->getName(), array('extras.groups', 'extras.group_create', 'extras.group_edit')))  @else  @endif"><a href="{{ route('extras.groups') }}"><i class="fa fa-list"></i>{{ trans('sidebar.groups')}}</a></li>--}}
+                    <li class="@if(in_array(Route::current()->getName(), array('groups.index', 'groups.create', 'groups.edit')))  @else  @endif"><a href="{{ route('groups.index') }}"><i class="fa fa-list"></i>{{ trans('sidebar.groups')}}</a></li>
                     <li class="@if(in_array(Route::current()->getName(), array('extras.index', 'extras.create', 'extras.edit')))  @else  @endif"><a href="{{ route('extras.index') }}"><i class="fa fa-list"></i>{{ trans('sidebar.extras')}}</a></li>
                     <li class="@if(in_array(Route::current()->getName(), array('restaurants.index', 'restaurants.create', 'restaurants.edit')))  @else  @endif"><a href="{{ route('restaurants.index') }}"><i class="fa fa-list"></i>{{ trans('sidebar.food_reviews')}}</a></li>
                 </ul>

@@ -7,6 +7,7 @@ use App\Contracts\CouponContract;
 use App\Contracts\CustomerContract;
 use App\Contracts\ExtraContract;
 use App\Contracts\FoodContract;
+use App\Contracts\GroupContract;
 use App\Contracts\OrderContract;
 use App\Contracts\RestaurantContract;
 use App\Contracts\RiderContract;
@@ -15,6 +16,7 @@ use App\Repositories\CouponRepository;
 use App\Repositories\CustomerRepository;
 use App\Repositories\ExtraRepository;
 use App\Repositories\FoodRepository;
+use App\Repositories\GroupRepository;
 use App\Repositories\OrderRepository;
 use App\Repositories\RestaurantRepository;
 use App\Repositories\RiderRepository;
@@ -30,6 +32,7 @@ class RepositoryServiceProvider extends ServiceProvider
         CouponContract::class => CouponRepository::class,
         FoodContract::class => FoodRepository::class,
         CategoryContract::class => CategoryRepository::class,
+        GroupContract::class => GroupRepository::class,
         ExtraContract::class => ExtraRepository::class,
 
     ];
