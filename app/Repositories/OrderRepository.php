@@ -51,10 +51,10 @@ class OrderRepository extends BaseRepository implements OrderContract
                 return $row->restaurant->phone_number;
             })
             ->editColumn('rider', function ($row) {
-                return $row->rider->name;
+                return $row->rider ? $row->rider->name : "NOT";
             })
             ->editColumn('rider_phone', function ($row) {
-                return $row->rider->phone_number;
+                return $row->rider ? $row->rider->phone_number : "NOT";
             })
             ->editColumn('order_status', function ($row) {
                 return ucfirst(str_replace("_"," ", $row->order_status));

@@ -15,7 +15,7 @@ class Order extends Model
      * @var string
      */
     protected $table = 'orders';
-    //public $timestamps = false;
+    public $timestamps = false;
 
     /**
      * @var array

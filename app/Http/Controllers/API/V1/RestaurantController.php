@@ -90,33 +90,40 @@ class RestaurantController extends BaseController
 
     public function orderAccept(Request $request)
     {
-        Order::where("id", $request->order_id)->update(
-            [
-                "order_status" => ($request->order_status == 'accept') ? 'food_is_cooking' : 'order_placed',
-            ]
-        );
+        //return $this->sendResponse(array(), $request->order_id, Response::HTTP_NOT_FOUND); exit;
 
-        $todaysOrder = Order::with('customer', 'RestaurantDetails', 'orderDetails', 'orderDetails.foods', 'orderDetails.foodVariants')->whereDate('order_date', '>=', date('Y-m-d'))->where('restaurant_id', $request->restaurant_id)->orderBy('order_date', 'ASC')->get();
+        try {
+            Order::where("id", $request->order_id)->update(
+                [
+                    "order_status" => ($request->order_status == 'accept') ? 'food_is_cooking' : 'order_placed',
+                ]
+            );
 
-        $orderDataArray = array();
-        if ($todaysOrder->count() > 0) {
-            foreach ($todaysOrder->toArray() as $order) {
+            $todaysOrder = Order::with('customer', 'RestaurantDetails', 'orderDetails', 'orderDetails.foods', 'orderDetails.foodVariants')->whereDate('order_date', '>=', date('Y-m-d'))->where('restaurant_id', $request->restaurant_id)->orderBy('order_date', 'ASC')->get();
 
-                $orderData['order_id'] = $order['id'];
-                $orderData['order_status'] = $order['order_status'];
-                $orderData['order_date'] = $order['order_date'];
+            $orderDataArray = array();
+            if ($todaysOrder->count() > 0) {
+                foreach ($todaysOrder->toArray() as $order) {
 
-                foreach ($order['order_details'] as $orderDetails) {
-                    $orderData['food_name'] = $orderDetails['foods']['name'];
+                    $orderData['order_id'] = $order['id'];
+                    $orderData['order_status'] = $order['order_status'];
+                    $orderData['order_date'] = $order['order_date'];
+
+                    foreach ($order['order_details'] as $orderDetails) {
+                        $orderData['food_name'] = $orderDetails['foods']['name'];
+                    }
+
+                    $orderDataArray[] = $orderData;
                 }
 
-                $orderDataArray[] = $orderData;
+                return $this->sendResponse($orderDataArray, 'Order List.', Response::HTTP_OK);
+            } else {
+                return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
             }
-
-            return $this->sendResponse($orderDataArray, 'Order List.', Response::HTTP_OK);
-        } else {
+        }catch (\Exception $e){
             return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
         }
+
     }
 
     public function orderCancel(Request $request)

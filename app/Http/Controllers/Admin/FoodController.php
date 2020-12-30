@@ -97,7 +97,7 @@ class FoodController extends BaseController
 
         if ($request->file('image') != null){
 
-            $params['image'] = $this->saveImages($request->file('image'), 'img/food/', 500, 500);
+            $params['image'] = $this->saveImages($request->file('image'), 'img/food/', 100, 100);
         }
 
         $food = $this->foodRepository->createFood($params);
@@ -142,7 +142,7 @@ class FoodController extends BaseController
 
         if ($request->has('image')) {
 
-            $params['image'] = $this->saveImages($request->file('image'), 'img/food/', 500, 500);
+            $params['image'] = $this->saveImages($request->file('image'), 'img/food/', 100, 100);
         }
 
         $food = $this->foodRepository->updateFood($params);
