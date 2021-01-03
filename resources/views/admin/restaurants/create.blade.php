@@ -101,13 +101,6 @@
                                         <span class="form-text m-b-none text-danger"> @error('delivery_range') {{ $message }} @enderror </span>
                                     </div>
 
-                                    <!---mobile--->
-                                    <div class="form-group">
-                                        <label for="mobile" class="font-bold">{{ trans('restaurant.mobile')}}</label>
-                                        <input type="text" name="mobile" value="{{ old('mobile') }}" placeholder="{{ trans('restaurant.mobile')}}" class="form-control" required>
-                                        <span class="form-text m-b-none text-danger"> @error('mobile') {{ $message }} @enderror </span>
-                                    </div>
-
                                     <!---address--->
                                     <div class="form-group">
                                         <label for="address" class="font-bold">{{ trans('restaurant.address')}}</label>
@@ -137,10 +130,10 @@
                                         <select id="closed_restaurant" class="form-control custom-select mt-15" name="closed_restaurant" required>
                                             <option value="">{{ trans('restaurant.closed_restaurant')}}</option>
                                             @foreach($closedRestaurants as $key => $closedRestaurant)
-                                                @if (old('closed_restaurant') == $closedRestaurant)
-                                                    <option value="{{ $closedRestaurant }}" selected> {{ ucfirst($closedRestaurant) }} </option>
+                                                @if (old('closed_restaurant') == $key)
+                                                    <option value="{{ $key }}" selected> {{ ucfirst($closedRestaurant) }} </option>
                                                 @else
-                                                    <option value="{{ $closedRestaurant }}"> {{ ucfirst($closedRestaurant) }} </option>
+                                                    <option value="{{ $key }}"> {{ ucfirst($closedRestaurant) }} </option>
                                                 @endif
                                             @endforeach
                                         </select>
@@ -153,10 +146,10 @@
                                         <select id="available_for_delivery" class="form-control custom-select mt-15" name="available_for_delivery" required>
                                             <option value="">{{ trans('restaurant.available_for_delivery')}}</option>
                                             @foreach($availableForDeliveries as $key => $availableForDelivery)
-                                                @if (old('available_for_delivery') == $availableForDelivery)
-                                                    <option value="{{ $availableForDelivery }}" selected> {{ ucfirst($availableForDelivery) }} </option>
+                                                @if (old('available_for_delivery') == $key)
+                                                    <option value="{{ $key }}" selected> {{ ucfirst($availableForDelivery) }} </option>
                                                 @else
-                                                    <option value="{{ $availableForDelivery }}"> {{ ucfirst($availableForDelivery) }} </option>
+                                                    <option value="{{ $key }}"> {{ ucfirst($availableForDelivery) }} </option>
                                                 @endif
                                             @endforeach
                                         </select>
@@ -198,7 +191,7 @@
                                         <select id="notification" class="form-control custom-select mt-15" name="notification" required>
                                             <option value="">{{ trans('restaurant.notification')}}</option>
                                             @foreach($notifications as $key => $notification)
-                                                @if (old('notification') == $notification)
+                                                @if (old('notification') == $key)
                                                     <option value="{{ $key }}" selected> {{ ucfirst($notification) }} </option>
                                                 @else
                                                     <option value="{{ $key }}"> {{ ucfirst($notification) }} </option>
@@ -214,7 +207,7 @@
                                         <select id="popup_notification" class="form-control custom-select mt-15" name="popup_notification" required>
                                             <option value="">{{ trans('restaurant.popup_notification')}}</option>
                                             @foreach($popupNotifications as $key => $popupNotification)
-                                                @if (old('popup_notification') == $popupNotification)
+                                                @if (old('popup_notification') == $key)
                                                     <option value="{{ $key }}" selected> {{ ucfirst($popupNotification) }} </option>
                                                 @else
                                                     <option value="{{ $key }}"> {{ ucfirst($popupNotification) }} </option>
@@ -230,7 +223,7 @@
                                         <select id="sms" class="form-control custom-select mt-15" name="sms" required>
                                             <option value="">{{ trans('restaurant.sms')}}</option>
                                             @foreach($smses as $key => $sms)
-                                                @if (old('sms') == $sms)
+                                                @if (old('sms') == $key)
                                                     <option value="{{ $key }}" selected> {{ ucfirst($sms) }} </option>
                                                 @else
                                                     <option value="{{ $key }}"> {{ ucfirst($sms) }} </option>
@@ -246,7 +239,7 @@
                                         <select id="offer_and_promotion" class="form-control custom-select mt-15" name="offer_and_promotion" required>
                                             <option value="">{{ trans('restaurant.offer_and_promotion')}}</option>
                                             @foreach($offerAndPromotions as $key => $offerAndPromotion)
-                                                @if (old('offer_and_promotion') == $offerAndPromotion)
+                                                @if (old('offer_and_promotion') == $key)
                                                     <option value="{{ $key }}" selected> {{ ucfirst($offerAndPromotion) }} </option>
                                                 @else
                                                     <option value="{{ $key }}"> {{ ucfirst($offerAndPromotion) }} </option>

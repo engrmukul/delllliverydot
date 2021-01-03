@@ -254,7 +254,8 @@ class RiderController extends BaseController
         $orderUpdated = Order::where("id", $request->order_id)->update(
             [
                 "order_status" => $status ? $status : 'food_ready',
-                "rider_id" => $request->rider_id
+                "rider_id" => $request->rider_id,
+                "payment_status" => $status == 'delivered' ? "paid" : "not_paid"
             ]
         );
 

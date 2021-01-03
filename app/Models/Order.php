@@ -74,5 +74,10 @@ class Order extends Model
         return $this->hasOne(Customer::class,'id', 'customer_id');
     }
 
+    public function rider()
+    {
+        return $this->hasOne(Rider::class,'id', 'rider_id');
+    }
+
 
 }

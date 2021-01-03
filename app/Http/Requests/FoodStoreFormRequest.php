@@ -27,7 +27,6 @@ class FoodStoreFormRequest extends FormRequest
         return [
             'name' => 'required',
             'short_description' => 'required',
-            'image' => 'required',
             'discount_price' => 'required',
             'description' => 'required',
             'ingredients' => 'required',

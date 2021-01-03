@@ -23,7 +23,7 @@
                                         <!---food Name--->
                                         <div class="form-group">
                                             <label for="name" class="font-bold">{{ trans('food.name')}}</label>
-                                            <input type="text" name="name" value="{{ old('name') }}" placeholder="{{ trans('food.name')}}" class="form-control" required>
+                                            <input type="text" name="name" value="{{old('name')}}" placeholder="{{ trans('food.name')}}" class="form-control" required>
                                             <span class="form-text m-b-none text-danger"> @error('name') {{ $message }} @enderror </span>
                                         </div>
 
@@ -54,7 +54,7 @@
                                     <!--- food discount_price --->
                                     <div class="form-group">
                                         <label for="discount_price" class="font-bold">{{ trans('food.discount_price')}}</label>
-                                        <input type="text" id="discount_price" name="price" value="{{ old('prdiscount_pricediscount_pricece') }}" placeholder="{{ trans('food.discount_price')}}" class="form-control" required>
+                                        <input type="text" id="discount_price" name="discount_price" value="{{ old('discount_price') }}" placeholder="{{ trans('food.discount_price')}}" class="form-control" required>
                                         <span class="form-text m-b-none text-danger"> @error('discount_price') {{ $message }} @enderror </span>
                                     </div>
 
@@ -102,9 +102,9 @@
                                             <option value="">{{ trans('food.deliverable_food')}}</option>
                                             @foreach($deliverableFoods as $key => $deliverableFood)
                                                 @if (old('deliverable_food') == $deliverableFood)
-                                                    <option value="{{ $deliverableFood }}" selected> {{ ucfirst($deliverableFood) }} </option>
+                                                    <option value="{{ $key }}" selected> {{ ucfirst($deliverableFood) }} </option>
                                                 @else
-                                                    <option value="{{ $deliverableFood }}"> {{ ucfirst($deliverableFood) }} </option>
+                                                    <option value="{{ $key }}"> {{ ucfirst($deliverableFood) }} </option>
                                                 @endif
                                             @endforeach
                                         </select>
@@ -159,7 +159,7 @@
                                      <div id="inputFormRow">
                                          <div class="input-group mb-3">
                                              <input type="text" name="variant_name[]" class="form-control m-input" placeholder="Enter food variant name" autocomplete="off" required>
-                                             <input type="text" name="variant_price[]" class="form-control m-input" placeholder="Enter price" autocomplete="off" required>
+                                             <input type="number" name="variant_price[]" class="form-control m-input" placeholder="Enter price" autocomplete="off" required>
                                              <div class="input-group-append">
                                                  <button type="button" class="btn btn-danger">Remove</button>
                                              </div>
@@ -196,8 +196,8 @@
             var html = '';
             html += '<div id="inputFormRow">';
             html += '<div class="input-group mb-3">';
-            html += '<input type="text" name="name[]" class="form-control m-input" placeholder="Enter food variant name" autocomplete="off">';
-            html += '<input type="text" name="price[]" class="form-control m-input" placeholder="Enter price" autocomplete="off">';
+            html += '<input type="text" name="variant_name[]" class="form-control m-input" placeholder="Enter food variant name" autocomplete="off">';
+            html += '<input type="text" name="variant_price[]" class="form-control m-input" placeholder="Enter price" autocomplete="off">';
             html += '<div class="input-group-append">';
             html += '<button id="removeRow" type="button" class="btn btn-danger">Remove</button>';
             html += '</div>';

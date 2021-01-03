@@ -64,7 +64,8 @@ class FoodRepository extends BaseRepository implements FoodContract
     public function findFoodById(int $id)
     {
         try {
-            return $this->findOneOrFail($id);
+            //return $this->findOneOrFail($id);
+            return $this->model->with('foodVariants','categories')->findOrFail($id);
 
         } catch (ModelNotFoundException $e) {
 
@@ -84,7 +85,13 @@ class FoodRepository extends BaseRepository implements FoodContract
 
             $created_by = auth()->user()->id;
 
-            $merge = $collection->merge(compact('created_by'));
+            if(isset($params['image'])){
+                $image = url('/').'/public/img/food/'.$params['image'];
+            }else{
+                $image = url('/').'/public/img/food/default.png';
+            }
+
+            $merge = $collection->merge(compact('created_by','image'));
 
             $food = new Food($merge->all());
 
@@ -116,17 +123,40 @@ class FoodRepository extends BaseRepository implements FoodContract
      */
     public function updateFood(array $params)
     {
-        $Food = $this->findFoodById($params['id']);
+        $food = $this->findFoodById($params['id']);
 
         $collection = collect($params)->except('_token');
 
         $updated_by = auth()->user()->id;
 
-        $merge = $collection->merge(compact('updated_by'));
+        $updated_at = date('Y-m-d');
 
-        $Food->update($merge->all());
+        if(isset($params['image'])){
+            $image = url('/').'/public/img/food/'.$params['image'];
+        }else{
+            $image = url('/').'/public/img/food/default.png';
+        }
 
-        return $Food;
+        $merge = $collection->merge(compact('updated_at','updated_by','image'));
+
+        $food->update($merge->all());
+
+        FoodVariant::where('food_id', $collection['id'])->delete();
+
+        //SAVE FOOD VARIANT
+        $variantArray = array();
+
+        foreach ($collection['variant_name'] as $key => $vName){
+            $variantData['food_id'] = $collection['id'];
+            $variantData['name'] = $vName;
+            $variantData['price'] = $collection['variant_price'][$key];
+
+            $variantArray[] = $variantData;
+        }
+
+        FoodVariant::insert($variantArray);
+
+        return $food;
     }
 
     /**

@@ -2,11 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Models\Order;
 use Illuminate\Http\Request;
 use App\Contracts\OrderContract;
-use App\Http\Requests\OrderStoreFormRequest;
-use App\Http\Requests\OrderUpdateFormRequest;
 
 class OrderController extends BaseController
 {
@@ -25,16 +22,7 @@ class OrderController extends BaseController
     }
 
     /**
-     * @param Request $request
-     * @return mixed
-     */
-    public function requestedGetData(Request $request)
-    {
-        return $this->orderRepository->requestedOrder($request);
-    }
-
-    /**
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function index()
     {
@@ -42,21 +30,31 @@ class OrderController extends BaseController
         $data = [
             'tableHeads' => [
                 trans('order.SN'),
-                trans('order.name'),
-                trans('order.email'),
-                trans('order.phone_number'),
-                trans('order.isVerified'),
-                trans('order.status'),
+                trans('order.customer_phone'),
+                trans('order.order_date'),
+                trans('order.order_status'),
+                trans('order.payment_method'),
+                trans('order.payment_status'),
+                trans('order.total_price'),
+                trans('order.restaurant'),
+                trans('order.restaurant_phone'),
+                trans('order.rider'),
+                trans('order.rider_phone'),
                 trans('order.action')
             ],
             'dataUrl' => 'admin/orders/get-data',
             'columns' => [
                 ['data' => 'id', 'name' => 'id'],
-                ['data' => 'name', 'name' => 'name'],
-                ['data' => 'email', 'name' => 'email'],
-                ['data' => 'phone_number', 'name' => 'phone_number'],
-                ['data' => 'isVerified', 'name' => 'isVerified'],
-                ['data' => 'status', 'name' => 'status'],
+                ['data' => 'customer_phone', 'name' => 'customer_phone'],
+                ['data' => 'order_date', 'name' => 'order_date'],
+                ['data' => 'order_status', 'name' => 'order_status'],
+                ['data' => 'payment_method', 'name' => 'payment_method'],
+                ['data' => 'payment_status', 'name' => 'payment_status'],
+                ['data' => 'total_price', 'name' => 'total_price'],
+                ['data' => 'restaurant', 'name' => 'restaurant'],
+                ['data' => 'restaurant_phone', 'name' => 'restaurant_phone'],
+                ['data' => 'rider', 'name' => 'rider'],
+                ['data' => 'rider_phone', 'name' => 'rider_phone'],
                 ['data' => 'action', 'name' => 'action', 'orderable' => false]
             ],
         ];
@@ -69,122 +67,13 @@ class OrderController extends BaseController
      */
     public function getData(Request $request)
     {
-        return $this->orderRepository->allOrders($request);
+        return $this->orderRepository->listOrder($request);
     }
 
-    /**
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
-     */
-    public function create()
+    public function view($id)
     {
-        $this->setPageTitle('orders', 'create order');
-
-        $deliveryTypes = array(
-            'home' => 'home',
-            'collect' => 'collect',
-        );
-
-        $closedOrders = array(
-            '0' => 'No',
-            '1' => 'Yes',
-        );
-
-        $availableForDeliveries = array(
-            '0' => 'No',
-            '1' => 'Yes',
-        );
-
-        $notifications = array(
-            '0' => 'No',
-            '1' => 'Yes',
-        );
-
-        $popupNotifications = array(
-            '0' => 'No',
-            '1' => 'Yes',
-        );
-
-        $smses = array(
-            '0' => 'No',
-            '1' => 'Yes',
-        );
-
-        $offerAndPromotions = array(
-            '0' => 'No',
-            '1' => 'Yes',
-        );
-
-        return view('admin.orders.create', compact('deliveryTypes','closedOrders','availableForDeliveries','notifications','popupNotifications','smses','offerAndPromotions'));
-
-    }
-
-    /**
-     * @param StoreOrderFormRequest $request
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function store(OrderStoreFormRequest $request)
-    {
-        $params = $request->except('_token');
-
-        if ($request->file('image') != null){
-
-            $params['image'] = $this->saveImages($request->file('image'), 'img/order/', 500, 500);
-        }
-
-        $order = $this->orderRepository->createOrderByAdmin($params);
-
-        if (!$order) {
-            return $this->responseRedirectBack(trans('common.create_error'), 'error', true, true);
-        }
-        return $this->responseRedirect('orders.index', trans('common.create_success'), 'success', false, false);
-    }
-
-    /**
-     * @param $id
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
-     */
-    public function edit($id)
-    {
-        $this->setPageTitle('orders', 'Edit Order');
-
-        $order = $this->orderRepository->findOrderById($id);
-
-        return view('admin.orders.edit', compact('order'));
-    }
-
-    /**
-     * @param UpdateOrderFormRequest $request
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function update(OrderUpdateFormRequest $request, Order $OrderModel)
-    {
-        $params = $request->except('_token');
-
-        if ($request->has('image')) {
-
-            $params['image'] = $this->saveImages($request->file('image'), 'img/order/', 500, 500);
-        }
-
-        $order = $this->orderRepository->updateOrder($params);
-
-        if (!$order) {
-            return $this->responseRedirectBack(trans('common.update_error'), 'error', true, true);
-        }
-        return $this->responseRedirect('orders.index', trans('common.update_success'), 'success', false, false);
-    }
-
-    /**
-     * @param $id
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function delete(Request $request, $id)
-    {
-        $params = $request->except('_token');
-        $order = $this->orderRepository->deleteOrder($id, $params);
-
-        if (!$order) {
-            return $this->responseRedirectBack(trans('common.delete_error'), 'error', true, true);
-        }
-        return $this->responseRedirect('orders.index', trans('common.delete_success'), 'success', false, false);
+        $orderDetails =  $this->orderRepository->orderDetails($id);
+        dd($orderDetails->toArray());
+        return view('admin.orders.view', compact('orderDetails'));
     }
 }

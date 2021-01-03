@@ -21,6 +21,8 @@ class Coupon extends Model
      */
     protected $fillable = [
         'code',
+        'total_code',
+        'total_used_code',
         'discount_type',
         'discount',
         'description',
@@ -30,12 +32,12 @@ class Coupon extends Model
         'expire_at',
         'enabled',
         'status',
-        'created_by',
         'created_at',
-        'updated_by',
         'updated_at',
-        'deleted_by',
         'deleted_at',
+        'created_by',
+        'updated_by',
+        'deleted_by',
     ];
 
     /**

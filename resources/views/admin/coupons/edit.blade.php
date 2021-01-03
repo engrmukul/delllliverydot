@@ -16,28 +16,31 @@
                     <div class="ibox-content">
 
                         <!---FORM--->
-                        <form role="form" method="post" action="{{route( strtolower($pageTitle) . '.store')}}" enctype="multipart/form-data">
+                        <form role="form" method="post" action="{{route( strtolower($pageTitle) . '.update', $coupon->id )}}" enctype="multipart/form-data">
+                            @method('PUT')
                             @csrf
+                            <input type="hidden" name="id" value="{{$coupon->id}}">
+
                             <div class="row">
                                 <div class="col-md-6">
                                     <!---coupon code--->
                                     <div class="form-group">
                                         <label for="code" class="font-bold">{{ trans('coupon.code')}}</label>
-                                        <input type="text" name="code" value="{{ old('code') }}" placeholder="{{ trans('coupon.code')}}" class="form-control" required>
+                                        <input type="text" name="code" value="{{ old('code', $coupon->code) }}" placeholder="{{ trans('coupon.code')}}" class="form-control" required>
                                         <span class="form-text m-b-none text-danger"> @error('code') {{ $message }} @enderror </span>
                                     </div>
 
                                     <!---total code--->
                                     <div class="form-group">
                                         <label for="total_code" class="font-bold">{{ trans('coupon.total_code')}}</label>
-                                        <input type="text" name="total_code" value="{{ old('total_code') }}" placeholder="{{ trans('coupon.total_code')}}" class="form-control" required>
+                                        <input type="text" name="total_code" value="{{ old('total_code', $coupon->total_code) }}" placeholder="{{ trans('coupon.total_code')}}" class="form-control" required>
                                         <span class="form-text m-b-none text-danger"> @error('total_code') {{ $message }} @enderror </span>
                                     </div>
 
                                     <!---total used code--->
                                     <div class="form-group">
                                         <label for="total_used_code" class="font-bold">{{ trans('coupon.total_used_code')}}</label>
-                                        <input type="text" name="total_used_code" value="{{ old('total_code') }}" placeholder="{{ trans('coupon.total_used_code')}}" class="form-control" required>
+                                        <input type="text" name="total_used_code" value="{{ old('total_used_code', $coupon->total_used_code) }}" placeholder="{{ trans('coupon.total_used_code')}}" class="form-control" required>
                                         <span class="form-text m-b-none text-danger"> @error('total_used_code') {{ $message }} @enderror </span>
                                     </div>
 
@@ -47,7 +50,7 @@
                                         <select id="discount_type" class="form-control custom-select mt-15" name="discount_type" required>
                                             <option value="">{{ trans('coupon.discount_type')}}</option>
                                             @foreach($discountTypes as $key => $discountType)
-                                                @if (old('discount_type',$coupon->food_id) == $discountType)
+                                                @if (old('discount_type',$coupon->discount_type) == $discountType)
                                                     <option value="{{ $discountType }}" selected> {{ ucfirst($discountType) }} </option>
                                                 @else
                                                     <option value="{{ $discountType }}"> {{ ucfirst($discountType) }} </option>
@@ -60,7 +63,7 @@
                                     <!---discount--->
                                     <div class="form-group">
                                         <label for="discount" class="font-bold">{{ trans('coupon.discount')}}</label>
-                                        <input type="text" name="discount" value="{{ old('discount') }}" placeholder="{{ trans('coupon.discount')}}" class="form-control" required>
+                                        <input type="text" name="discount" value="{{ old('discount', $coupon->discount) }}" placeholder="{{ trans('coupon.discount')}}" class="form-control" required>
                                         <span class="form-text m-b-none text-danger"> @error('discount') {{ $message }} @enderror </span>
                                     </div>
                                 </div>
@@ -72,7 +75,7 @@
                                         <textarea name="description"
                                                   placeholder="{{ trans('coupon.description')}}"
                                                   class="form-control summernote"
-                                                  required>{{ old('description') }}</textarea>
+                                                  required>{{ old('description', $coupon->description) }}</textarea>
                                         <span class="form-text m-b-none text-danger"> @error('description') {{ $message }} @enderror </span>
                                     </div>
 
@@ -100,7 +103,7 @@
                                         <select id="restaurant_id" class="form-control custom-select mt-15" name="restaurant_id" required>
                                             <option value="">{{ trans('coupon.restaurant_id')}}</option>
                                             @foreach($restaurants as $key => $restaurant)
-                                                @if (old('restaurant_id', $coupon->food_id) == $restaurant->id)
+                                                @if (old('restaurant_id', $coupon->restaurant_id) == $restaurant->id)
                                                     <option value="{{ $restaurant->id }}" selected> {{ $restaurant->name }} </option>
                                                 @else
                                                     <option value="{{ $restaurant->id }}"> {{ $restaurant->name }} </option>
@@ -132,7 +135,7 @@
                                         <label for="expire_at" class="font-bold">{{ trans('coupon.expire_at')}}</label>
                                         <div class="input-group date">
                                             <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                                            <input type="text" id="expire_at" name="expire_at" value="{{ old('expire_at') }}" placeholder="{{ trans('coupon.expire_at')}}" class="form-control datepicker" required>
+                                            <input type="text" id="expire_at" name="expire_at" value="{{ old('expire_at', $coupon->expire_at) }}" placeholder="{{ trans('coupon.expire_at')}}" class="form-control datepicker" required>
                                         </div>
                                         <span class="form-text m-b-none text-danger"> @error('expire_at') {{ $message }} @enderror </span>
                                     </div>

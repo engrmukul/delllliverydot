@@ -43,6 +43,14 @@ class Restaurant extends Model
         return $this->hasOne('App\Models\RestaurantProfile');
     }
 
+    public function restaurantSetting(){
+        return $this->hasOne('App\Models\RestaurantSetting');
+    }
+
+    public function restaurantAddress(){
+        return $this->hasOne('App\Models\RestaurantAddress');
+    }
+
     public function coupon(){
         return $this->hasOne('App\Models\Coupon');
     }

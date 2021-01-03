@@ -134,6 +134,19 @@ class RestaurantRepository extends BaseRepository implements RestaurantContract
 
     }
 
+    public function findRestaurantByIdByAdmin(int $id)
+    {
+        try {
+            //return $this->findOneOrFail($id);
+            return $this->model->with('restaurantDetails','restaurantSetting','restaurantAddress')->findOrFail($id);
+
+        } catch (ModelNotFoundException $e) {
+
+            throw new ModelNotFoundException($e);
+        }
+
+    }
+
     /**
      * @param array $params
      * @return Restaurant|mixed
@@ -141,9 +154,9 @@ class RestaurantRepository extends BaseRepository implements RestaurantContract
     public function createRestaurant(array $params)
     {
         try {
-            $collection = collect($params);
+            DB::beginTransaction();
 
-            $restaurant = new Restaurant($collection->all());
+            $collection = collect($params);
 
             /* Get credentials from .env */
             /*$token = getenv("TWILIO_AUTH_TOKEN");
@@ -154,21 +167,26 @@ class RestaurantRepository extends BaseRepository implements RestaurantContract
                 ->verifications
                 ->create($collection['phone_number'], "sms");*/
 
+            $maxCat = Category::where('id', '!=', '')->get()->max('id');
+            $maxId = Restaurant::where('id', '!=', '')->get()->count() + 1;
             $created_at = date('Y-m-d');
-            $name = "Restaurant".$restaurant->id;
+            $name = "Restaurant". $maxId;
+            $email = 'restaurant'. $maxId .'@dd.com';
 
-            $merge = $collection->merge(compact('name','created_at'));
+            $merge = $collection->merge(compact('name','email','created_at'));
 
             if (Restaurant::where('phone_number', '=', $collection['phone_number'])->count() > 0) {
                 return $restaurant = Restaurant::where('phone_number', $collection['phone_number'])->first();
             }
 
-            $restaurant->save($merge->all());
+            $restaurant = new Restaurant($merge->all());
+
+            $restaurant->save();
 
             $restaurantProfile = new RestaurantProfile();
 
             $restaurantProfile->restaurant_id = $restaurant->id;
-            $restaurantProfile->name = "Restaurant".$restaurant->id;
+            $restaurantProfile->name = "Restaurant".$maxId;
             $restaurantProfile->feature_section = 1;
             $restaurantProfile->delivery_fee = 0;
             $restaurantProfile->delivery_time = "30 min";
@@ -185,7 +203,7 @@ class RestaurantRepository extends BaseRepository implements RestaurantContract
             $food = new Food();
             $food->name = "Piza";
             $food->short_description = "Piza";
-            $food->image = NULL;
+            $food->image = url('/').'/public/img/restaurant/default.png';
             $food->discount_price = "10";
             $food->description = "NA";
             $food->ingredients = "NA";
@@ -195,7 +213,7 @@ class RestaurantRepository extends BaseRepository implements RestaurantContract
             $food->featured = 1;
             $food->deliverable_food = 1;
             $food->restaurant_id = $restaurant->id;
-            $food->category_id = 1;
+            $food->category_id = $maxCat;
             $food->options = "NA";
             $food->created_by = 1;
             $food->created_at = date('Y-m-d');
@@ -213,7 +231,7 @@ class RestaurantRepository extends BaseRepository implements RestaurantContract
 
             $coupon = new Coupon();
 
-            $coupon->code = "KACCI9" . $restaurant->id;
+            $coupon->code = "DD" . $restaurant->id;
             $coupon->total_code = 100;
             $coupon->total_used_code = 0;
             $coupon->discount_type = "fixed";
@@ -221,7 +239,7 @@ class RestaurantRepository extends BaseRepository implements RestaurantContract
             $coupon->description = "NA";
             $coupon->food_id = $food->id;
             $coupon->restaurant_id = $restaurant->id;
-            $coupon->category_id = 1;
+            $coupon->category_id = $maxCat;
             $coupon->expire_at = date('Y-m-d', strtotime("+30 days"));
             $coupon->enabled = 1;
             $coupon->status = "active";
@@ -230,9 +248,12 @@ class RestaurantRepository extends BaseRepository implements RestaurantContract
 
             $coupon->save();
 
+            DB::commit();
+
             return $restaurant = Restaurant::where('phone_number', $collection['phone_number'])->first();
 
         } catch (QueryException $exception) {
+            DB::rollback();
             throw new InvalidArgumentException($exception->getMessage());
         }
     }
@@ -282,12 +303,22 @@ class RestaurantRepository extends BaseRepository implements RestaurantContract
     public function createRestaurantByAdmin(array $params)
     {
         try {
+            DB::beginTransaction();
+
             $collection = collect($params);
 
+            $phone_number = (substr($collection['phone_number'],0,3)=='+88') ? $collection['phone_number'] : '+88'.$collection['phone_number'];
             $created_at = date('Y-m-d');
             $created_by = auth()->user()->id;
+            $maxCat = Category::where('id', '!=', '')->get()->max('id');
 
-            $merge = $collection->merge(compact('created_at', 'created_by'));
+            if(isset($params['image'])){
+                $image = url('/').'/public/img/restaurant/'.$params['image'];
+            }else{
+                $image = url('/').'/public/img/restaurant/default.png';
+            }
+
+            $merge = $collection->merge(compact('created_at', 'created_by','phone_number','image'));
 
             //SAVE RESTAURANT
             $restaurant = new Restaurant($merge->all());
@@ -310,9 +341,115 @@ class RestaurantRepository extends BaseRepository implements RestaurantContract
             $restaurantAddress->restaurant_id = $restaurant->id;
             $restaurantAddress->save();
 
+            //Default food
+            $food = new Food();
+            $food->name = "Piza";
+            $food->short_description = "Piza";
+            $food->image = url('/').'/public/img/restaurant/default.png';
+            $food->discount_price = "10";
+            $food->description = "NA";
+            $food->ingredients = "NA";
+            $food->unit = "NA";
+            $food->package_count = "NA";
+            $food->weight = "NA";
+            $food->featured = 1;
+            $food->deliverable_food = 1;
+            $food->restaurant_id = $restaurant->id;
+            $food->category_id = $maxCat;
+            $food->options = "NA";
+            $food->created_by = 1;
+            $food->created_at = date('Y-m-d');
+
+            $food->save();
+
+            $foodVariantData = array(
+                array('food_id' => $food->id, 'name'=> 'Piza 6 inch', 'price' => 220.00 ),
+                array('food_id' => $food->id, 'name'=> 'Piza 9 inch', 'price' => 420.00 ),
+                array('food_id' => $food->id, 'name'=> 'Piza 12 inch', 'price' => 920.00 ),
+            );
+
+            FoodVariant::insert($foodVariantData);
+
+            //SAVE COUPON
+            $coupon = new Coupon();
+            $coupon->code = "DD" . $restaurant->id;
+            $coupon->total_code = 100;
+            $coupon->total_used_code = 0;
+            $coupon->discount_type = "fixed";
+            $coupon->discount = 20;
+            $coupon->description = "NA";
+            $coupon->food_id = $food->id;
+            $coupon->restaurant_id = $restaurant->id;
+            $coupon->category_id = $maxCat;
+            $coupon->expire_at = date('Y-m-d', strtotime("+30 days"));
+            $coupon->enabled = 1;
+            $coupon->status = "active";
+            $coupon->created_at = date('Y-m-d');
+            $coupon->created_by = 1;
+
+            $coupon->save();
+
+            DB::commit();
+
             return $restaurant;
 
         } catch (QueryException $exception) {
+            DB::rollback();
+            throw new InvalidArgumentException($exception->getMessage());
+        }
+    }
+
+    public function updateRestaurantByAdmin(array $params)
+    {
+        try {
+            DB::beginTransaction();
+
+            $restaurant = $this->findRestaurantById($params['id']);
+
+            $collection = collect($params)->except('_token');
+
+            $phone_number = (substr($collection['phone_number'],0,3)=='+88') ? $collection['phone_number'] : '+88'.$collection['phone_number'];
+
+            $updated_at = date('Y-m-d');
+            $updated_by = auth()->user()->id;
+
+            if(isset($params['image'])){
+                $image = url('/').'/public/img/restaurant/'.$params['image'];
+            }else{
+                $image = url('/').'/public/img/restaurant/default.png';
+            }
+
+            $merge = $collection->merge(compact('updated_at', 'updated_by','phone_number','image'));
+
+            $restaurant->update($merge->all());
+
+            //SAVE RESTAURANT PROFILE
+            RestaurantProfile::where('restaurant_id',$restaurant->id)->delete();
+            $restaurantProfile = new RestaurantProfile($merge->all());
+            $restaurantProfile->restaurant_id = $restaurant->id;
+            $restaurantProfile->feature_section = 1;
+            $restaurantProfile->ratting = 5;
+            $restaurantProfile->save();
+
+            //SAVE RESTAURANT SETTINGS
+            RestaurantSetting::where('restaurant_id',$restaurant->id)->delete();
+            $restaurantSettings = new RestaurantSetting($merge->all());
+            $restaurantSettings->restaurant_id = $restaurant->id;
+            $restaurantSettings->save();
+
+            //SAVE RESTAURANT ADDRESS
+            RestaurantAddress::where('restaurant_id',$restaurant->id)->delete();
+            $restaurantAddress = new RestaurantAddress($merge->all());
+            $restaurantAddress->restaurant_id = $restaurant->id;
+            $restaurantAddress->save();
+
+            DB::commit();
+
+            return $restaurant;
+
+        } catch (QueryException $exception) {
+            DB::rollBack();
+
             throw new InvalidArgumentException($exception->getMessage());
         }
     }

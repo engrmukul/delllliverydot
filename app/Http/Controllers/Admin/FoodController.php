@@ -27,15 +27,6 @@ class FoodController extends BaseController
     }
 
     /**
-     * @param Request $request
-     * @return mixed
-     */
-    public function requestedGetData(Request $request)
-    {
-        return $this->foodRepository->requestedFood($request);
-    }
-
-    /**
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function index()
@@ -106,10 +97,10 @@ class FoodController extends BaseController
 
         if ($request->file('image') != null){
 
-            $params['image'] = $this->saveImages($request->file('image'), 'img/food/', 500, 500);
+            $params['image'] = $this->saveImages($request->file('image'), 'img/food/', 100, 100);
         }
 
-        $food = $this->foodRepository->createFoodByAdmin($params);
+        $food = $this->foodRepository->createFood($params);
 
         if (!$food) {
             return $this->responseRedirectBack(trans('common.create_error'), 'error', true, true);
@@ -151,7 +142,7 @@ class FoodController extends BaseController
 
         if ($request->has('image')) {
 
-            $params['image'] = $this->saveImages($request->file('image'), 'img/food/', 500, 500);
+            $params['image'] = $this->saveImages($request->file('image'), 'img/food/', 100, 100);
         }
 
         $food = $this->foodRepository->updateFood($params);

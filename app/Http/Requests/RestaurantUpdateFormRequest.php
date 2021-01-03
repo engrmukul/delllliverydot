@@ -24,9 +24,9 @@ class RestaurantUpdateFormRequest extends FormRequest
      */
     public function rules()
     {
-       if ($this->request->has('phone_number')){
+        if ($this->request->has('phone_number')){
             $phone_number = $this->phone_number;
-            $restaurantId = $this->restaurant_id;
+            $restaurantId = $this->id;
         }
 
         return [

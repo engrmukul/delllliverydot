@@ -171,7 +171,7 @@ class CustomerController extends BaseController
     public function promotionalRestaurants(PromotionalRestaurantsRequest $request)
     {
         //$restaurantList = $this->restaurantRepository->listRestaurant();
-        $restaurantList = Restaurant::with('RestaurantDetails', 'coupon', 'foods')->get();
+        $restaurantList = Restaurant::with('RestaurantDetails', 'coupon', 'foods')->orderBy('id', 'DESC')->get();
 
         $promotionalBanner = PromotionalBanner::where('id', 1)->first();
 
@@ -568,7 +568,7 @@ class CustomerController extends BaseController
             },
             "notification" : {
                  "title": "New order",
-                "body": "New order from  customer",
+                "body": "New order from  customer ' . $orderId . ' ",
                 "click_action": "NEW_ORDER_FOR_RESTAURANT"
                },
 
