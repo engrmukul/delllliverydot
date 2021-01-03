@@ -47,6 +47,23 @@ class RiderRepository extends BaseRepository implements RiderContract
         return RiderOrder::with('order','order.customer','order.RestaurantDetails','order.orderDetails', 'order.orderDetails.foods', 'order.orderDetails.foodVariants')->whereDate('ride_date','>=', date('Y-m-d'))->where('rider_id', $riderId)->get();
     }
 
+
+    public function allRider()
+    {
+        $query = $this->model::latest()->get();
+
+        return Datatables::of($query)
+            ->addColumn('action', function ($row) {
+                $actions = '';
+
+                $actions .= '<a class="btn btn-primary btn-xs float-left mr-1" href="' . route('riders.edit', [$row->id]) . '" title="Rider Edit"><i class="fa fa-pencil"></i> ' . trans("common.edit") . '</a>';
+
+                return $actions;
+            })
+            ->make(true);
+    }
+
+
     /**
      * @param int $id
      * @return mixed
@@ -55,6 +72,18 @@ class RiderRepository extends BaseRepository implements RiderContract
     {
         try {
             return $this->findOneOrFail($id);
+
+        } catch (ModelNotFoundException $e) {
+
+            throw new ModelNotFoundException($e);
+        }
+
+    }
+
+    public function findRiderByIdByAdmin(int $id)
+    {
+        try {
+            return $this->model->with('riderProfile','riderSetting','riderAddress')->findOrFail($id);
 
         } catch (ModelNotFoundException $e) {
 

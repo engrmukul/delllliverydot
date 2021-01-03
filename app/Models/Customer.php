@@ -42,4 +42,12 @@ class Customer extends Model
         return $this->hasOne('App\Models\CustomerProfile');
     }
 
+    public function customerSetting(){
+        return $this->hasOne('App\Models\CustomerSetting');
+    }
+
+    public function customerAddress(){
+        return $this->hasOne('App\Models\CustomerAddress');
+    }
+
 }

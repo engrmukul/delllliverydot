@@ -51,5 +51,13 @@ class Rider extends Model
         $this->attributes['name'] = ucfirst($value);
     }
 
+    public function riderSetting(){
+        return $this->hasOne('App\Models\RiderSetting');
+    }
+
+    public function riderAddress(){
+        return $this->hasOne('App\Models\RiderAddress');
+    }
+
 
 }

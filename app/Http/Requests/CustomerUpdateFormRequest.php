@@ -24,17 +24,17 @@ class CustomerUpdateFormRequest extends FormRequest
      */
     public function rules()
     {
-        if ($this->request->has('mobile')){
-            $mobile = $this->mobile;
+        if ($this->request->has('phone_number')){
+            $phone_number = $this->phone_number;
             $customerId = $this->id;
         }
 
         return [
             'name' =>  'required',
-            'mobile' => [
+            'phone_number' => [
                 'required',
-                Rule::unique('customers')->where(function ($query) use($mobile, $customerId) {
-                    return $query->where('mobile', $mobile)->where('id', '<>', $customerId);
+                Rule::unique('customers')->where(function ($query) use($phone_number, $customerId) {
+                    return $query->where('phone_number', $phone_number)->where('id', '<>', $customerId);
                 }),
             ],
             'email' =>  'required',

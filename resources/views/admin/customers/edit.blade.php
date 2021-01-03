@@ -16,29 +16,31 @@
                     <div class="ibox-content">
 
                         <!---FORM--->
-                        <form role="form" method="post" action="{{route( strtolower($pageTitle) . '.store')}}" enctype="multipart/form-data">
+                        <form role="form" method="post" action="{{route( strtolower($pageTitle) . '.update', $customer->id )}}" enctype="multipart/form-data">
+                            @method('PUT')
                             @csrf
+                            <input type="hidden" name="id" value="{{$customer->id}}">
 
                             <div class="row">
                                 <div class="col-md-6">
                                     <!---name--->
                                     <div class="form-group">
                                         <label for="name" class="font-bold">{{ trans('customer.name')}}</label>
-                                        <input type="text" name="name" value="{{ old('name') }}" placeholder="{{ trans('customer.name')}}" class="form-control" required>
+                                        <input type="text" name="name" value="{{ old('name',$customer->name) }}" placeholder="{{ trans('customer.name')}}" class="form-control" required>
                                         <span class="form-text m-b-none text-danger"> @error('name') {{ $message }} @enderror </span>
                                     </div>
 
                                     <!---email--->
                                     <div class="form-group">
                                         <label for="email" class="font-bold">{{ trans('customer.email')}}</label>
-                                        <input type="text" name="email" value="{{ old('email') }}" placeholder="{{ trans('customer.email')}}" class="form-control" required>
+                                        <input type="text" name="email" value="{{ old('email',$customer->email) }}" placeholder="{{ trans('customer.email')}}" class="form-control" required>
                                         <span class="form-text m-b-none text-danger"> @error('email') {{ $message }} @enderror </span>
                                     </div>
 
                                     <!---phone number--->
                                     <div class="form-group">
                                         <label for="phone_number" class="font-bold">{{ trans('customer.phone_number')}}</label>
-                                        <input type="text" name="phone_number" value="{{ old('phone_number') }}" placeholder="{{ trans('customer.phone_number')}}" class="form-control" required>
+                                        <input type="text" name="phone_number" value="{{ old('phone_number',$customer->phone_number) }}" placeholder="{{ trans('customer.phone_number')}}" class="form-control" required>
                                         <span class="form-text m-b-none text-danger"> @error('phone_number') {{ $message }} @enderror </span>
                                     </div>
 
@@ -47,7 +49,7 @@
                                         <label for="dob" class="font-bold">{{ trans('customer.dob')}}</label>
                                         <div class="input-group date">
                                             <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                                            <input type="text" id="dob" name="dob" value="{{ old('dob') }}" placeholder="{{ trans('customer.dob')}}" class="form-control datepicker" required>
+                                            <input type="text" id="dob" name="dob" value="{{ old('dob',$customer->customerProfile->dob) }}" placeholder="{{ trans('customer.dob')}}" class="form-control datepicker" required>
                                         </div>
                                         <span class="form-text m-b-none text-danger"> @error('dob') {{ $message }} @enderror </span>
                                     </div>
@@ -57,7 +59,7 @@
                                         <label for="spouse_dob" class="font-bold">{{ trans('customer.spouse_dob')}}</label>
                                         <div class="input-group date">
                                             <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                                            <input type="text" id="spouse_dob" name="spouse_dob" value="{{ old('spouse_dob') }}" placeholder="{{ trans('customer.spouse_dob')}}" class="form-control datepicker" required>
+                                            <input type="text" id="spouse_dob" name="spouse_dob" value="{{ old('spouse_dob',$customer->customerProfile->spouse_dob) }}" placeholder="{{ trans('customer.spouse_dob')}}" class="form-control datepicker" required>
                                         </div>
                                         <span class="form-text m-b-none text-danger"> @error('spouse_dob') {{ $message }} @enderror </span>
                                     </div>
@@ -67,7 +69,7 @@
                                         <label for="father_dob" class="font-bold">{{ trans('customer.father_dob')}}</label>
                                         <div class="input-group date">
                                             <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                                            <input type="text" id="father_dob" name="father_dob" value="{{ old('father_dob') }}" placeholder="{{ trans('customer.father_dob')}}" class="form-control datepicker" required>
+                                            <input type="text" id="father_dob" name="father_dob" value="{{ old('father_dob',$customer->customerProfile->father_dob) }}" placeholder="{{ trans('customer.father_dob')}}" class="form-control datepicker" required>
                                         </div>
                                         <span class="form-text m-b-none text-danger"> @error('father_dob') {{ $message }} @enderror </span>
                                     </div>
@@ -77,7 +79,7 @@
                                         <label for="mother_dob" class="font-bold">{{ trans('customer.mother_dob')}}</label>
                                         <div class="input-group date">
                                             <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                                            <input type="text" id="mother_dob" name="mother_dob" value="{{ old('mother_dob') }}" placeholder="{{ trans('customer.mother_dob')}}" class="form-control datepicker" required>
+                                            <input type="text" id="mother_dob" name="mother_dob" value="{{ old('mother_dob',$customer->customerProfile->mother_dob) }}" placeholder="{{ trans('customer.mother_dob')}}" class="form-control datepicker" required>
                                         </div>
                                         <span class="form-text m-b-none text-danger"> @error('mother_dob') {{ $message }} @enderror </span>
                                     </div>
@@ -87,7 +89,7 @@
                                         <label for="anniversary" class="font-bold">{{ trans('customer.anniversary')}}</label>
                                         <div class="input-group date">
                                             <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                                            <input type="text" id="anniversary" name="anniversary" value="{{ old('anniversary') }}" placeholder="{{ trans('customer.anniversary')}}" class="form-control datepicker" required>
+                                            <input type="text" id="anniversary" name="anniversary" value="{{ old('anniversary',$customer->customerProfile->anniversary) }}" placeholder="{{ trans('customer.anniversary')}}" class="form-control datepicker" required>
                                         </div>
                                         <span class="form-text m-b-none text-danger"> @error('anniversary') {{ $message }} @enderror </span>
                                     </div>
@@ -97,7 +99,7 @@
                                         <label for="first_child_dob" class="font-bold">{{ trans('customer.first_child_dob')}}</label>
                                         <div class="input-group date">
                                             <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                                            <input type="text" id="first_child_dob" name="first_child_dob" value="{{ old('first_child_dob') }}" placeholder="{{ trans('customer.first_child_dob')}}" class="form-control datepicker" required>
+                                            <input type="text" id="first_child_dob" name="first_child_dob" value="{{ old('first_child_dob',$customer->customerProfile->first_child_dob) }}" placeholder="{{ trans('customer.first_child_dob')}}" class="form-control datepicker" required>
                                         </div>
                                         <span class="form-text m-b-none text-danger"> @error('first_child_dob') {{ $message }} @enderror </span>
                                     </div>
@@ -109,7 +111,7 @@
                                         <label for="second_child_dob" class="font-bold">{{ trans('customer.second_child_dob')}}</label>
                                         <div class="input-group date">
                                             <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                                            <input type="text" id="second_child_dob" name="second_child_dob" value="{{ old('second_child_dob') }}" placeholder="{{ trans('customer.second_child_dob')}}" class="form-control datepicker" required>
+                                            <input type="text" id="second_child_dob" name="second_child_dob" value="{{ old('second_child_dob',$customer->customerProfile->second_child_dob) }}" placeholder="{{ trans('customer.second_child_dob')}}" class="form-control datepicker" required>
                                         </div>
                                         <span class="form-text m-b-none text-danger"> @error('second_child_dob') {{ $message }} @enderror </span>
                                     </div>
@@ -120,7 +122,7 @@
                                         <textarea name="address"
                                                   placeholder="{{ trans('customer.address')}}"
                                                   class="form-control summernote"
-                                                  required>{{ old('address') }}</textarea>
+                                                  required>{{ old('address',$customer->customerProfile->address) }}</textarea>
                                         <span class="form-text m-b-none text-danger"> @error('address') {{ $message }} @enderror </span>
                                     </div>
 
@@ -130,25 +132,8 @@
                                         <textarea name="short_biography"
                                                   placeholder="{{ trans('customer.short_biography')}}"
                                                   class="form-control summernote"
-                                                  required>{{ old('short_biography') }}</textarea>
+                                                  required>{{ old('short_biography',$customer->customerProfile->short_biography) }}</textarea>
                                         <span class="form-text m-b-none text-danger"> @error('short_biography') {{ $message }} @enderror </span>
-                                    </div>
-
-                                    <!--- restaurant id --->
-                                    <div class="form-group">
-                                        <label for="restaurant_id">{{ trans('customer.restaurant_id')}}</label>
-                                        <input type="hidden" name="id" value="{{ $coupon->id }}">
-                                        <select id="restaurant_id" class="form-control custom-select mt-15" name="restaurant_id" required>
-                                            <option value="">{{ trans('customer.restaurant_id')}}</option>
-                                            @foreach($restaurants as $key => $restaurant)
-                                                @if (old('restaurant_id', $restaurant->restaurant_id) == $restaurant->id)
-                                                    <option value="{{ $restaurant->id }}" selected> {{ $restaurant->name }} </option>
-                                                @else
-                                                    <option value="{{ $restaurant->id }}"> {{ $restaurant->name }} </option>
-                                                @endif
-                                            @endforeach
-                                        </select>
-                                        <span class="form-text m-b-none text-danger"> @error('restaurant_id') {{ $message }} @enderror </span>
                                     </div>
 
                                     <!---notification--->
@@ -157,7 +142,7 @@
                                         <select id="notification" class="form-control custom-select mt-15" name="notification" required>
                                             <option value="">{{ trans('customer.notification')}}</option>
                                             @foreach($notifications as $key => $notification)
-                                                @if (old('notification') == $notification)
+                                                @if (old('notification',$customer->customerSetting->notification) == $key)
                                                     <option value="{{ $key }}" selected> {{ ucfirst($notification) }} </option>
                                                 @else
                                                     <option value="{{ $key }}"> {{ ucfirst($notification) }} </option>
@@ -167,29 +152,13 @@
                                         <span class="form-text m-b-none text-danger"> @error('notification') {{ $message }} @enderror </span>
                                     </div>
 
-                                    <!---popup_notification--->
-                                    <div class="form-group">
-                                        <label for="popup_notification">{{ trans('customer.popup_notification')}}</label>
-                                        <select id="popup_notification" class="form-control custom-select mt-15" name="popup_notification" required>
-                                            <option value="">{{ trans('customer.popup_notification')}}</option>
-                                            @foreach($popupNotifications as $key => $popupNotification)
-                                                @if (old('popup_notification') == $popupNotification)
-                                                    <option value="{{ $key }}" selected> {{ ucfirst($popupNotification) }} </option>
-                                                @else
-                                                    <option value="{{ $key }}"> {{ ucfirst($popupNotification) }} </option>
-                                                @endif
-                                            @endforeach
-                                        </select>
-                                        <span class="form-text m-b-none text-danger"> @error('popup_notification') {{ $message }} @enderror </span>
-                                    </div>
-
                                     <!---sms--->
                                     <div class="form-group">
                                         <label for="sms">{{ trans('customer.sms')}}</label>
                                         <select id="sms" class="form-control custom-select mt-15" name="sms" required>
                                             <option value="">{{ trans('customer.sms')}}</option>
                                             @foreach($smses as $key => $sms)
-                                                @if (old('sms') == $sms)
+                                                @if (old('sms',$customer->customerSetting->sms) == $key)
                                                     <option value="{{ $key }}" selected> {{ ucfirst($sms) }} </option>
                                                 @else
                                                     <option value="{{ $key }}"> {{ ucfirst($sms) }} </option>
@@ -199,16 +168,16 @@
                                         <span class="form-text m-b-none text-danger"> @error('sms') {{ $message }} @enderror </span>
                                     </div>
 
-                                    <!---sms--->
+                                    <!---offer_and_promotion--->
                                     <div class="form-group">
                                         <label for="offer_and_promotion">{{ trans('customer.offer_and_promotion')}}</label>
                                         <select id="offer_and_promotion" class="form-control custom-select mt-15" name="offer_and_promotion" required>
                                             <option value="">{{ trans('customer.offer_and_promotion')}}</option>
-                                            @foreach($smses as $key => $sms)
-                                                @if (old('offer_and_promotion') == $sms)
-                                                    <option value="{{ $key }}" selected> {{ ucfirst($sms) }} </option>
+                                            @foreach($offerAndPromotions as $key => $offerAndPromotion)
+                                                @if (old('offer_and_promotion', $customer->customerSetting->offer_and_promotion) == $key)
+                                                    <option value="{{ $key }}" selected> {{ ucfirst($offerAndPromotion) }} </option>
                                                 @else
-                                                    <option value="{{ $key }}"> {{ ucfirst($sms) }} </option>
+                                                    <option value="{{ $key }}"> {{ ucfirst($offerAndPromotion) }} </option>
                                                 @endif
                                             @endforeach
                                         </select>

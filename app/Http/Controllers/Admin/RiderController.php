@@ -17,9 +17,9 @@ class RiderController extends BaseController
      * riderController constructor.
      * @param riderContract $riderRepository
      */
-    public function __construct(riderContract $RiderRepository)
+    public function __construct(riderContract $riderRepository)
     {
-        $this->RiderRepository = $RiderRepository;
+        $this->riderRepository = $riderRepository;
     }
 
     /**
@@ -43,12 +43,7 @@ class RiderController extends BaseController
                 ['data' => 'name', 'name' => 'name'],
                 ['data' => 'email', 'name' => 'email'],
                 ['data' => 'phone_number', 'name' => 'phone_number'],
-                ['data' => 'isVerified', 'name' => 'isVerified'],
-                ['data' => 'email_verified_at', 'name' => 'email_verified_at'],
-                ['data' => 'password', 'name' => 'password'],
-                ['data' => 'remember_token', 'name' => 'remember_token'],
                 ['data' => 'status', 'name' => 'status'],
-                ['data' => 'device_token', 'name' => 'device_token'],
                 ['data' => 'action', 'name' => 'action', 'orderable' => false]
             ],
         ];
@@ -61,7 +56,7 @@ class RiderController extends BaseController
      */
     public function getData(Request $request)
     {
-        return $this->riderRepository->listRider($request);
+        return $this->riderRepository->allRider($request);
     }
 
     /**
@@ -104,7 +99,7 @@ class RiderController extends BaseController
     {
         $params = $request->except('_token');
 
-        $rider = $this->RiderRepository->createRider($params);
+        $rider = $this->riderRepository->createRider($params);
 
         if (!$rider) {
             return $this->responseRedirectBack(trans('common.create_error'), 'error', true, true);
@@ -119,11 +114,6 @@ class RiderController extends BaseController
     public function edit($id)
     {
         $this->setPageTitle('Riders', 'Edit Rider');
-
-        $currentAddresses = array(
-            '0' => 'No',
-            '1' => 'Yes',
-        );
 
         $notifications  = array(
             '0' => 'No',
@@ -140,11 +130,14 @@ class RiderController extends BaseController
             '1' => 'Yes',
         );
 
-        $orders = Order::all();
+        $offerAndPromotions = array(
+            '0' => 'No',
+            '1' => 'Yes',
+        );
 
-        $rider = $this->riderRepository->findRiderById($id);
+        $rider = $this->riderRepository->findRiderByIdByAdmin($id);
 
-        return view('admin.riders.edit', compact('currentAddresses','notifications','popupNotifications','smses','orders','rider'));
+        return view('admin.riders.edit', compact('notifications','popupNotifications','smses','offerAndPromotions','rider'));
     }
 
     /**

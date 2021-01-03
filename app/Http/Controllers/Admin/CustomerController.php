@@ -18,15 +18,13 @@ class CustomerController extends BaseController
     /**
      * @var CustomerContract
      */
-    private $CustomerRepository;
-
     /**
      * customerController constructor.
      * @param customerContract $customerRepository
      */
-    public function __construct(CustomerContract $CustomerRepository)
+    public function __construct(CustomerContract $customerRepository)
     {
-        $this->CustomerRepository = $CustomerRepository;
+        $this->customerRepository = $customerRepository;
     }
 
     /**
@@ -50,12 +48,7 @@ class CustomerController extends BaseController
                 ['data' => 'name', 'name' => 'name'],
                 ['data' => 'email', 'name' => 'email'],
                 ['data' => 'phone_number', 'name' => 'phone_number'],
-                ['data' => 'isVerified', 'name' => 'isVerified'],
-                ['data' => 'email_verified_at', 'name' => 'email_verified_at'],
-                ['data' => 'password', 'name' => 'password'],
-                ['data' => 'remember_token', 'name' => 'remember_token'],
                 ['data' => 'status', 'name' => 'status'],
-                ['data' => 'device_token', 'name' => 'device_token'],
                 ['data' => 'action', 'name' => 'action', 'orderable' => false]
             ],
         ];
@@ -83,7 +76,7 @@ class CustomerController extends BaseController
             '1' => 'Yes',
         );
 
-        $popupNotifications = array(
+        $offerAndPromotions = array(
             '0' => 'No',
             '1' => 'Yes',
         );
@@ -93,9 +86,7 @@ class CustomerController extends BaseController
             '1' => 'Yes',
         );
 
-        $restaurants = Restaurant::all();
-
-        return view('admin.customers.create', compact('notifications','popupNotifications', 'smses', 'restaurants'));
+        return view('admin.customers.create', compact('notifications','offerAndPromotions', 'smses'));
     }
 
     /**
@@ -106,7 +97,7 @@ class CustomerController extends BaseController
     {
         $params = $request->except('_token');
 
-        $customer = $this->CustomerRepository->createCustomer($params);
+        $customer = $this->customerRepository->createCustomer($params);
 
         if (!$customer) {
             return $this->responseRedirectBack(trans('common.create_error'), 'error', true, true);
@@ -127,7 +118,7 @@ class CustomerController extends BaseController
             '1' => 'Yes',
         );
 
-        $popupNotifications = array(
+        $offerAndPromotions = array(
             '0' => 'No',
             '1' => 'Yes',
         );
@@ -137,11 +128,9 @@ class CustomerController extends BaseController
             '1' => 'Yes',
         );
 
-        $restaurants = Restaurant::all();
+        $customer = $this->customerRepository->findCustomerByIdByAdmin($id);
 
-        $customer = $this->customerRepository->findCustomerById($id);
-
-        return view('admin.customers.edit',compact('customer','notifications','popupNotifications', 'smses', 'restaurants'));
+        return view('admin.customers.edit',compact('customer','notifications','offerAndPromotions', 'smses'));
     }
 
     /**

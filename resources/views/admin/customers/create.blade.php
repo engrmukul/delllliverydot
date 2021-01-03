@@ -133,29 +133,13 @@
                                         <span class="form-text m-b-none text-danger"> @error('short_biography') {{ $message }} @enderror </span>
                                     </div>
 
-                                    <!--- restaurant id --->
-                                    <div class="form-group">
-                                        <label for="restaurant_id">{{ trans('customer.restaurant_id')}}</label>
-                                        <select id="restaurant_id" class="form-control custom-select mt-15" name="restaurant_id" required>
-                                            <option value="">{{ trans('customer.restaurant_id')}}</option>
-                                            @foreach($restaurants as $key => $restaurant)
-                                                @if (old('restaurant_id') == $restaurant->id)
-                                                    <option value="{{ $restaurant->id }}" selected> {{ $restaurant->name }} </option>
-                                                @else
-                                                    <option value="{{ $restaurant->id }}"> {{ $restaurant->name }} </option>
-                                                @endif
-                                            @endforeach
-                                        </select>
-                                        <span class="form-text m-b-none text-danger"> @error('restaurant_id') {{ $message }} @enderror </span>
-                                    </div>
-
                                     <!---notification--->
                                     <div class="form-group">
                                         <label for="notification">{{ trans('customer.notification')}}</label>
                                         <select id="notification" class="form-control custom-select mt-15" name="notification" required>
                                             <option value="">{{ trans('customer.notification')}}</option>
                                             @foreach($notifications as $key => $notification)
-                                                @if (old('notification') == $notification)
+                                                @if (old('notification') == $key)
                                                     <option value="{{ $key }}" selected> {{ ucfirst($notification) }} </option>
                                                 @else
                                                     <option value="{{ $key }}"> {{ ucfirst($notification) }} </option>
@@ -165,20 +149,20 @@
                                         <span class="form-text m-b-none text-danger"> @error('notification') {{ $message }} @enderror </span>
                                     </div>
 
-                                    <!---popup_notification--->
+                                    <!---offer_and_promotion--->
                                     <div class="form-group">
-                                        <label for="popup_notification">{{ trans('customer.popup_notification')}}</label>
-                                        <select id="popup_notification" class="form-control custom-select mt-15" name="popup_notification" required>
-                                            <option value="">{{ trans('customer.popup_notification')}}</option>
-                                            @foreach($popupNotifications as $key => $popupNotification)
-                                                @if (old('popup_notification') == $popupNotification)
-                                                    <option value="{{ $key }}" selected> {{ ucfirst($popupNotification) }} </option>
+                                        <label for="offer_and_promotion">{{ trans('customer.offer_and_promotion')}}</label>
+                                        <select id="offer_and_promotion" class="form-control custom-select mt-15" name="offer_and_promotion" required>
+                                            <option value="">{{ trans('customer.offer_and_promotion')}}</option>
+                                            @foreach($offerAndPromotions as $key => $offerAndPromotion)
+                                                @if (old('offer_and_promotion') == $key)
+                                                    <option value="{{ $key }}" selected> {{ ucfirst($offerAndPromotion) }} </option>
                                                 @else
-                                                    <option value="{{ $key }}"> {{ ucfirst($popupNotification) }} </option>
+                                                    <option value="{{ $key }}"> {{ ucfirst($offerAndPromotion) }} </option>
                                                 @endif
                                             @endforeach
                                         </select>
-                                        <span class="form-text m-b-none text-danger"> @error('popup_notification') {{ $message }} @enderror </span>
+                                        <span class="form-text m-b-none text-danger"> @error('offer_and_promotion') {{ $message }} @enderror </span>
                                     </div>
 
                                     <!---sms--->
@@ -187,7 +171,7 @@
                                         <select id="sms" class="form-control custom-select mt-15" name="sms" required>
                                             <option value="">{{ trans('customer.sms')}}</option>
                                             @foreach($smses as $key => $sms)
-                                                @if (old('sms') == $sms)
+                                                @if (old('sms') == $key)
                                                     <option value="{{ $key }}" selected> {{ ucfirst($sms) }} </option>
                                                 @else
                                                     <option value="{{ $key }}"> {{ ucfirst($sms) }} </option>
@@ -195,22 +179,6 @@
                                             @endforeach
                                         </select>
                                         <span class="form-text m-b-none text-danger"> @error('sms') {{ $message }} @enderror </span>
-                                    </div>
-
-                                    <!---sms--->
-                                    <div class="form-group">
-                                        <label for="offer_and_promotion">{{ trans('customer.offer_and_promotion')}}</label>
-                                        <select id="offer_and_promotion" class="form-control custom-select mt-15" name="offer_and_promotion" required>
-                                            <option value="">{{ trans('customer.offer_and_promotion')}}</option>
-                                            @foreach($smses as $key => $sms)
-                                                @if (old('offer_and_promotion') == $sms)
-                                                    <option value="{{ $key }}" selected> {{ ucfirst($sms) }} </option>
-                                                @else
-                                                    <option value="{{ $key }}"> {{ ucfirst($sms) }} </option>
-                                                @endif
-                                            @endforeach
-                                        </select>
-                                        <span class="form-text m-b-none text-danger"> @error('offer_and_promotion') {{ $message }} @enderror </span>
                                     </div>
                                 </div>
                             </div>

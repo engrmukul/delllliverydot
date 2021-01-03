@@ -14,16 +14,15 @@ class CustomerSetting extends Model
     /**
      * @var string
      */
-    protected $table = 'restaurant_settings';
+    protected $table = 'settings';
     public $timestamps = false;
 
     /**
      * @var array
      */
     protected $fillable = [
-        'restaurant_id',
+        'customer_id',
         'notification',
-        'popup_notification',
         'sms',
         'offer_and_promotion',
     ];

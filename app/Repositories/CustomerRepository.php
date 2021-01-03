@@ -30,7 +30,17 @@ class CustomerRepository extends BaseRepository implements CustomerContract
      */
     public function listCustomer(string $order = 'id', string $sort = 'desc', array $columns = ['*'])
     {
-        return $this->all($columns, $order, $sort);
+        $query = $this->model::latest()->get();
+
+        return Datatables::of($query)
+            ->addColumn('action', function ($row) {
+                $actions = '';
+
+                $actions .= '<a class="btn btn-primary btn-xs float-left mr-1" href="' . route('customers.edit', [$row->id]) . '" title="Customer Edit"><i class="fa fa-pencil"></i> ' . trans("common.edit") . '</a>';
+
+                return $actions;
+            })
+            ->make(true);
     }
 
     /**
@@ -41,6 +51,18 @@ class CustomerRepository extends BaseRepository implements CustomerContract
     {
         try {
             return $this->findOneOrFail($id);
+
+        } catch (ModelNotFoundException $e) {
+
+            throw new ModelNotFoundException($e);
+        }
+
+    }
+
+    public function findCustomerByIdByAdmin(int $id)
+    {
+        try {
+            return $this->model->with('customerProfile','customerSetting','customerAddress')->findOrFail($id);
 
         } catch (ModelNotFoundException $e) {
 
