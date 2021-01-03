@@ -36,4 +36,6 @@ interface RiderContract
      */
     public function deleteRider($id, array $params);
 
+    public function updateRider(array $params);
+
 }

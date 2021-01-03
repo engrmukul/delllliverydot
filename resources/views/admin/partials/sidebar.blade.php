@@ -58,8 +58,11 @@
                 </ul>
             </li>
 
-            <li class="@if(in_array(Route::current()->getName(), array('coupons.index', 'coupons.create', 'coupons.edit')))  active @else  @endif"><a href="{{ route('coupons.index') }}"><i class="fa fa-list"></i>{{ trans('sidebar.coupons')}}</a></li>
-            <li class="@if(in_array(Route::current()->getName(), array('restaurants.index', 'restaurants.create', 'restaurants.edit')))  active @else  @endif"><a href="{{ route('restaurants.index') }}"><i class="fa fa-list"></i>{{ trans('sidebar.payments')}}</a></li>
+            <li class="@if(in_array(Route::current()->getName(), array('coupons.index', 'coupons.create', 'coupons.edit')))  @else  @endif"><a href="{{ route('coupons.index') }}"><i class="fa fa-list"></i>{{ trans('sidebar.coupons')}}</a></li>
+            <li class="@if(in_array(Route::current()->getName(), array('restaurants.index', 'restaurants.create', 'restaurants.edit')))  @else  @endif"><a href="{{ route('restaurants.index') }}"><i class="fa fa-list"></i>{{ trans('sidebar.payments')}}</a></li>
+            <li class="@if(in_array(Route::current()->getName(), array('customers.index', 'customers.create', 'customers.edit')))  @else  @endif"><a href="{{ route('customers.index') }}"><i class="fa fa-list"></i>{{ trans('sidebar.customers')}}</a></li>
+            <li class="@if(in_array(Route::current()->getName(), array('riders.index', 'riders.create', 'riders.edit')))  @else  @endif"><a href="{{ route('riders.index') }}"><i class="fa fa-list"></i>{{ trans('sidebar.riders')}}</a></li>
+
 
         </ul>
 

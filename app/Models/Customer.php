@@ -38,4 +38,8 @@ class Customer extends Model
 
     ];
 
+    public function customerProfile(){
+        return $this->hasOne('App\Models\CustomerProfile');
+    }
+
 }

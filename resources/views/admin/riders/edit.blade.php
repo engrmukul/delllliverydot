@@ -7,10 +7,10 @@
             <div class="col-lg-12">
                 <div class="ibox ">
                     <div class="ibox-title">
-                        <h5><i class="fa fa-book"></i> food {{ trans('common.create')}}</h5>
+                        <h5><i class="fa fa-book"></i> rider {{ trans('common.create')}}</h5>
                         <div class="ibox-tools">
-                            <a style="margin-top: -8px;" href="{{ route( strtolower($pageTitle) . '.index') }}" class="btn btn-primary"><i
-                                    class="fa fa-list"></i> {{ trans('common.list')}}</a>
+                            <a style="margin-top: -8px;" href="{{ route( strtolower($pageTitle) . '.index') }}"
+                               class="btn btn-primary"><i class="fa fa-list"></i> {{ trans('common.list')}}</a>
                         </div>
                     </div>
                     <div class="ibox-content">
@@ -18,161 +18,245 @@
                         <!---FORM--->
                         <form role="form" method="post" action="{{route( strtolower($pageTitle) . '.store')}}" enctype="multipart/form-data">
                             @csrf
+
                             <div class="row">
                                 <div class="col-md-6">
-                                    <!---food Name--->
+                                    <!---name--->
                                     <div class="form-group">
-                                        <label for="name" class="font-bold">{{ trans('food.name')}}</label>
-                                        <input type="text" name="name" value="{{ old('name') }}" placeholder="{{ trans('food.name')}}" class="form-control" required>
+                                        <label for="name" class="font-bold">{{ trans('rider.name')}}</label>
+                                        <input type="text" name="name" value="{{ old('name') }}" placeholder="{{ trans('rider.name')}}" class="form-control" required>
                                         <span class="form-text m-b-none text-danger"> @error('name') {{ $message }} @enderror </span>
                                     </div>
 
-                                    <!--- short description --->
+                                    <!---email--->
                                     <div class="form-group">
-                                        <label for="short_description" class="font-bold">{{ trans('food.short_description')}}</label>
-                                        <textarea name="short_description" placeholder="{{ trans('food.short_description')}}" class="form-control summernote" required>{{ old('short_description') }}</textarea>
-                                        <span class="form-text m-b-none text-danger"> @error('short_description') {{ $message }} @enderror </span>
+                                        <label for="email" class="font-bold">{{ trans('rider.email')}}</label>
+                                        <input type="text" name="email" value="{{ old('email') }}" placeholder="{{ trans('rider.email')}}" class="form-control" required>
+                                        <span class="form-text m-b-none text-danger"> @error('email') {{ $message }} @enderror </span>
                                     </div>
 
-                                    <!--- food description --->
+                                    <!---phone number--->
                                     <div class="form-group">
-                                        <label for="description" class="font-bold">{{ trans('food.description')}}</label>
-                                        <textarea name="description" placeholder="{{ trans('food.description')}}" class="form-control summernote" required>{{ old('description') }}</textarea>
-                                        <span class="form-text m-b-none text-danger"> @error('description') {{ $message }} @enderror </span>
+                                        <label for="phone_number" class="font-bold">{{ trans('rider.phone_number')}}</label>
+                                        <input type="text" name="phone_number" value="{{ old('phone_number') }}" placeholder="{{ trans('rider.phone_number')}}" class="form-control" required>
+                                        <span class="form-text m-b-none text-danger"> @error('phone_number') {{ $message }} @enderror </span>
                                     </div>
 
-                                    <!--- food ingredients --->
+                                    <!---NID--->
                                     <div class="form-group">
-                                        <label for="ingredients" class="font-bold">{{ trans('food.ingredients')}}</label>
-                                        <textarea name="ingredients" placeholder="{{ trans('food.ingredients')}}" class="form-control summernote" required>{{ old('ingredients') }}</textarea>
-                                        <span class="form-text m-b-none text-danger"> @error('ingredients') {{ $message }} @enderror </span>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-6">
-
-                                    <!--- food discount_price --->
-                                    <div class="form-group">
-                                        <label for="discount_price" class="font-bold">{{ trans('food.discount_price')}}</label>
-                                        <input type="text" id="discount_price" name="price" value="{{ old('prdiscount_pricediscount_pricece') }}" placeholder="{{ trans('food.discount_price')}}" class="form-control" required>
-                                        <span class="form-text m-b-none text-danger"> @error('discount_price') {{ $message }} @enderror </span>
-                                    </div>
-
-                                    <!--- unit  --->
-                                    <div class="form-group">
-                                        <label for="unit" class="font-bold">{{ trans('food.unit')}}</label>
-                                        <input type="text" id="unit" name="unit" value="{{ old('unit') }}" placeholder="{{ trans('food.unit')}}" class="form-control" required>
-                                        <span class="form-text m-b-none text-danger"> @error('unit') {{ $message }} @enderror </span>
-                                    </div>
-
-                                    <!--- package_count --->
-                                    <div class="form-group">
-                                        <label for="package_count" class="font-bold">{{ trans('food.package_count')}}</label>
-                                        <input type="text" id="package_count" name="package_count" value="{{ old('package_count') }}" placeholder="{{ trans('food.package_count')}}" class="form-control">
-                                        <span class="form-text m-b-none text-danger"> @error('package_count') {{ $message }} @enderror </span>
-                                    </div>
-
-                                    <!--- weight --->
-                                    <div class="form-group">
-                                        <label for="weight" class="font-bold">{{ trans('food.weight')}}</label>
-                                        <input type="text" id="weight" name="weight" value="{{ old('package_count') }}" placeholder="{{ trans('food.weight')}}" class="form-control">
-                                        <span class="form-text m-b-none text-danger"> @error('weight') {{ $message }} @enderror </span>
-                                    </div>
-
-                                    <!--- featured --->
-                                    <div class="form-group">
-                                        <label for="featured" class="font-bold">{{ trans('food.featured')}}</label>
-                                        <select id="featured" class="form-control custom-select mt-15" name="featured" required>
-                                            <option value="">{{ trans('food.featured')}}</option>
-                                            @foreach($features as $key => $feature)
-                                                @if (old('featured') == $feature)
-                                                    <option value="{{ $feature }}" selected> {{ ucfirst($feature) }} </option>
-                                                @else
-                                                    <option value="{{ $feature }}"> {{ ucfirst($feature) }} </option>
-                                                @endif
-                                            @endforeach
-                                        </select>
-                                        <span class="form-text m-b-none text-danger"> @error('featured') {{ $message }} @enderror </span>
-                                    </div>
-
-                                    <!--- deliverable_food --->
-                                    <div class="form-group">
-                                        <label for="deliverable_food" class="font-bold">{{ trans('food.deliverable_food')}}</label>
-                                        <select id="deliverable_food" class="form-control custom-select mt-15" name="deliverable_food" required>
-                                            <option value="">{{ trans('food.deliverable_food')}}</option>
-                                            @foreach($deliverableFoods as $key => $deliverableFood)
-                                                @if (old('deliverable_food') == $deliverableFood)
-                                                    <option value="{{ $deliverableFood }}" selected> {{ ucfirst($deliverableFood) }} </option>
-                                                @else
-                                                    <option value="{{ $deliverableFood }}"> {{ ucfirst($deliverableFood) }} </option>
-                                                @endif
-                                            @endforeach
-                                        </select>
-                                        <span class="form-text m-b-none text-danger"> @error('deliverable_food') {{ $message }} @enderror </span>
-                                    </div>
-
-                                    <!--- restaurant_id --->
-                                    <div class="form-group">
-                                        <label for="restaurant_id" class="font-bold">{{ trans('food.restaurant_id')}}</label>
-                                        <select id="restaurant_id" class="form-control custom-select mt-15" name="restaurant_id" required>
-                                            <option value="">{{ trans('food.restaurant_id')}}</option>
-                                            @foreach($restaurants as $key => $restaurant)
-                                                @if (old('restaurant_id') == $restaurant->id)
-                                                    <option value="{{ $restaurant->id }}" selected> {{ ucfirst($restaurant->name) }} </option>
-                                                @else
-                                                    <option value="{{ $restaurant->id }}"> {{ ucfirst($restaurant->name) }} </option>
-                                                @endif
-                                            @endforeach
-                                        </select>
-                                        <span class="form-text m-b-none text-danger"> @error('restaurant_id') {{ $message }} @enderror </span>
-                                    </div>
-
-                                    <!--- category_id --->
-                                    <div class="form-group">
-                                        <label for="category_id" class="font-bold">{{ trans('food.category_id')}}</label>
-                                        <select id="category_id" class="form-control custom-select mt-15" name="category_id" required>
-                                            <option value="">{{ trans('food.category_id')}}</option>
-                                            @foreach($categories as $key => $category)
-                                                @if (old('category_id') == $category->id)
-                                                    <option value="{{ $category->id }}" selected> {{ ucfirst($category->name) }} </option>
-                                                @else
-                                                    <option value="{{ $category->id }}"> {{ ucfirst($category->name) }} </option>
-                                                @endif
-                                            @endforeach
-                                        </select>
-                                        <span class="form-text m-b-none text-danger"> @error('category_id') {{ $message }} @enderror </span>
+                                        <label for="nid" class="font-bold">{{ trans('rider.nid')}}</label>
+                                        <input type="text" name="nid" value="{{ old('nid') }}" placeholder="{{ trans('rider.nid')}}" class="form-control" required>
+                                        <span class="form-text m-b-none text-danger"> @error('nid') {{ $message }} @enderror </span>
                                     </div>
 
                                     <!---Image--->
                                     <div class="form-group">
-                                        <label for="images" class="font-bold">{{ trans('food.image')}}</label>
-                                        <input type="file" id="images" name="image" class="form-control">
-                                        <span class="form-text m-b-none text-danger"> @error('images') {{ $message }} @enderror </span>
+                                        <label for="image" class="font-bold">{{ trans('rider.image')}}</label>
+                                        <input type="file" id="image" name="image" class="form-control">
+                                        <span class="form-text m-b-none text-danger"> @error('image') {{ $message }} @enderror </span>
                                     </div>
-                                </div>
-                            </div>
 
-                            <!---ADD MORE FOOD VARIANT--->
-                            <div class="row">
-
-                                <div class="col-12">
-                                    <div id="inputFormRow">
-                                        <div class="input-group mb-3">
-                                            <input type="text" name="variant_name[]" class="form-control m-input" placeholder="Enter food variant name" autocomplete="off" required>
-                                            <input type="text" name="variant_price[]" class="form-control m-input" placeholder="Enter price" autocomplete="off" required>
-                                            <div class="input-group-append">
-                                                <button type="button" class="btn btn-danger">Remove</button>
-                                            </div>
+                                    <!--- dob --->
+                                    <div class="form-group" id="dateItem">
+                                        <label for="dob" class="font-bold">{{ trans('rider.dob')}}</label>
+                                        <div class="input-group date">
+                                            <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                            <input type="text" id="dob" name="dob" value="{{ old('dob') }}" placeholder="{{ trans('rider.dob')}}" class="form-control datepicker" required>
                                         </div>
+                                        <span class="form-text m-b-none text-danger"> @error('dob') {{ $message }} @enderror </span>
                                     </div>
 
-                                    <div id="newRow"></div>
-                                    <button id="addRow" type="button" class="btn btn-info">Add Row</button>
+                                    <!--- spouse dob --->
+                                    <div class="form-group" id="dateItem">
+                                        <label for="spouse_dob" class="font-bold">{{ trans('rider.spouse_dob')}}</label>
+                                        <div class="input-group date">
+                                            <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                            <input type="text" id="spouse_dob" name="spouse_dob" value="{{ old('spouse_dob') }}" placeholder="{{ trans('rider.spouse_dob')}}" class="form-control datepicker" required>
+                                        </div>
+                                        <span class="form-text m-b-none text-danger"> @error('spouse_dob') {{ $message }} @enderror </span>
+                                    </div>
+
+                                    <!--- father dob --->
+                                    <div class="form-group" id="dateItem">
+                                        <label for="father_dob" class="font-bold">{{ trans('rider.father_dob')}}</label>
+                                        <div class="input-group date">
+                                            <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                            <input type="text" id="father_dob" name="father_dob" value="{{ old('father_dob') }}" placeholder="{{ trans('rider.father_dob')}}" class="form-control datepicker" required>
+                                        </div>
+                                        <span class="form-text m-b-none text-danger"> @error('father_dob') {{ $message }} @enderror </span>
+                                    </div>
+
+                                    <!--- mother dob --->
+                                    <div class="form-group" id="dateItem">
+                                        <label for="mother_dob" class="font-bold">{{ trans('rider.mother_dob')}}</label>
+                                        <div class="input-group date">
+                                            <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                            <input type="text" id="mother_dob" name="mother_dob" value="{{ old('mother_dob') }}" placeholder="{{ trans('rider.mother_dob')}}" class="form-control datepicker" required>
+                                        </div>
+                                        <span class="form-text m-b-none text-danger"> @error('mother_dob') {{ $message }} @enderror </span>
+                                    </div>
+
+                                    <!--- anniversary --->
+                                    <div class="form-group" id="dateItem">
+                                        <label for="anniversary" class="font-bold">{{ trans('rider.anniversary')}}</label>
+                                        <div class="input-group date">
+                                            <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                            <input type="text" id="anniversary" name="anniversary" value="{{ old('anniversary') }}" placeholder="{{ trans('rider.anniversary')}}" class="form-control datepicker" required>
+                                        </div>
+                                        <span class="form-text m-b-none text-danger"> @error('anniversary') {{ $message }} @enderror </span>
+                                    </div>
+
+                                    <!--- first child dob --->
+                                    <div class="form-group" id="dateItem">
+                                        <label for="first_child_dob" class="font-bold">{{ trans('rider.first_child_dob')}}</label>
+                                        <div class="input-group date">
+                                            <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                            <input type="text" id="first_child_dob" name="first_child_dob" value="{{ old('first_child_dob') }}" placeholder="{{ trans('rider.first_child_dob')}}" class="form-control datepicker" required>
+                                        </div>
+                                        <span class="form-text m-b-none text-danger"> @error('first_child_dob') {{ $message }} @enderror </span>
+                                    </div>
                                 </div>
 
+                                <div class="col-md-6">
+                                    <!--- second child dob --->
+                                    <div class="form-group" id="dateItem">
+                                        <label for="second_child_dob" class="font-bold">{{ trans('rider.second_child_dob')}}</label>
+                                        <div class="input-group date">
+                                            <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                            <input type="text" id="second_child_dob" name="second_child_dob" value="{{ old('second_child_dob') }}" placeholder="{{ trans('rider.second_child_dob')}}" class="form-control datepicker" required>
+                                        </div>
+                                        <span class="form-text m-b-none text-danger"> @error('second_child_dob') {{ $message }} @enderror </span>
+                                    </div>
+
+                                    <!---address--->
+                                    <div class="form-group">
+                                        <label for="address" class="font-bold">{{ trans('rider.address')}}</label>
+                                        <textarea name="address"
+                                                  placeholder="{{ trans('rider.address')}}"
+                                                  class="form-control summernote"
+                                                  required>{{ old('address') }}</textarea>
+                                        <span class="form-text m-b-none text-danger"> @error('address') {{ $message }} @enderror </span>
+                                    </div>
+
+                                    <!---is current address--->
+                                    <div class="form-group">
+                                        <label for="is_current_address">{{ trans('rider.is_current_address')}}</label>
+                                        <select id="is_current_address" class="form-control custom-select mt-15" name="is_current_address" required>
+                                            <option value="">{{ trans('rider.is_current_address')}}</option>
+                                            @foreach($currentAddresses as $key => $currentAddresse)
+                                                @if (old('is_current_address') == $currentAddresse)
+                                                    <option value="{{ $key }}" selected> {{ ucfirst($currentAddresse) }} </option>
+                                                @else
+                                                    <option value="{{ $key }}"> {{ ucfirst($currentAddresse) }} </option>
+                                                @endif
+                                            @endforeach
+                                        </select>
+                                        <span class="form-text m-b-none text-danger"> @error('is_current_address') {{ $message }} @enderror </span>
+                                    </div>
+
+                                    <!---short biography--->
+                                    <div class="form-group">
+                                        <label for="short_biography" class="font-bold">{{ trans('rider.short_biography')}}</label>
+                                        <textarea name="short_biography"
+                                                  placeholder="{{ trans('rider.short_biography')}}"
+                                                  class="form-control summernote"
+                                                  required>{{ old('short_biography') }}</textarea>
+                                        <span class="form-text m-b-none text-danger"> @error('short_biography') {{ $message }} @enderror </span>
+                                    </div>
+
+                                    <!---notification--->
+                                    <div class="form-group">
+                                        <label for="notification">{{ trans('rider.notification')}}</label>
+                                        <select id="notification" class="form-control custom-select mt-15" name="notification" required>
+                                            <option value="">{{ trans('rider.notification')}}</option>
+                                            @foreach($notifications as $key => $notification)
+                                                @if (old('notification') == $notification)
+                                                    <option value="{{ $key }}" selected> {{ ucfirst($notification) }} </option>
+                                                @else
+                                                    <option value="{{ $key }}"> {{ ucfirst($notification) }} </option>
+                                                @endif
+                                            @endforeach
+                                        </select>
+                                        <span class="form-text m-b-none text-danger"> @error('notification') {{ $message }} @enderror </span>
+                                    </div>
+
+                                    <!---popup_notification--->
+                                    <div class="form-group">
+                                        <label for="popup_notification">{{ trans('rider.popup_notification')}}</label>
+                                        <select id="popup_notification" class="form-control custom-select mt-15" name="popup_notification" required>
+                                            <option value="">{{ trans('rider.popup_notification')}}</option>
+                                            @foreach($popupNotifications as $key => $popupNotification)
+                                                @if (old('popup_notification') == $popupNotification)
+                                                    <option value="{{ $key }}" selected> {{ ucfirst($popupNotification) }} </option>
+                                                @else
+                                                    <option value="{{ $key }}"> {{ ucfirst($popupNotification) }} </option>
+                                                @endif
+                                            @endforeach
+                                        </select>
+                                        <span class="form-text m-b-none text-danger"> @error('popup_notification') {{ $message }} @enderror </span>
+                                    </div>
+
+                                    <!--- order id --->
+                                    <div class="form-group">
+                                        <label for="order_id">{{ trans('rider.order_id')}}</label>
+                                        <select id="order_id" class="form-control custom-select mt-15" name="order_id" required>
+                                            <option value="">{{ trans('rider.order_id')}}</option>
+                                            @foreach($orders as $key => $order)
+                                                @if (old('order_id', $order->order_id) == $order->id)
+                                                    <option value="{{ $order->id }}" selected> {{ $order->name }} </option>
+                                                @else
+                                                    <option value="{{ $order->id }}"> {{ $order->name }} </option>
+                                                @endif
+                                            @endforeach
+                                        </select>
+                                        <span class="form-text m-b-none text-danger"> @error('order_id') {{ $message }} @enderror </span>
+                                    </div>
+
+                                    <!--- ride date --->
+                                    <div class="form-group" id="dateItem">
+                                        <label for="ride_date" class="font-bold">{{ trans('rider.ride_date')}}</label>
+                                        <div class="input-group date">
+                                            <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                            <input type="text" id="ride_date" name="ride_date" value="{{ old('ride_date') }}" placeholder="{{ trans('rider.ride_date')}}" class="form-control datepicker" required>
+                                        </div>
+                                        <span class="form-text m-b-none text-danger"> @error('ride_date') {{ $message }} @enderror </span>
+                                    </div>
+
+                                    <!---sms--->
+                                    <div class="form-group">
+                                        <label for="sms">{{ trans('rider.sms')}}</label>
+                                        <select id="sms" class="form-control custom-select mt-15" name="sms" required>
+                                            <option value="">{{ trans('rider.sms')}}</option>
+                                            @foreach($smses as $key => $sms)
+                                                @if (old('sms') == $sms)
+                                                    <option value="{{ $key }}" selected> {{ ucfirst($sms) }} </option>
+                                                @else
+                                                    <option value="{{ $key }}"> {{ ucfirst($sms) }} </option>
+                                                @endif
+                                            @endforeach
+                                        </select>
+                                        <span class="form-text m-b-none text-danger"> @error('sms') {{ $message }} @enderror </span>
+                                    </div>
+
+                                    <!---offer and promotion--->
+                                    <div class="form-group">
+                                        <label for="offer_and_promotion">{{ trans('rider.offer_and_promotion')}}</label>
+                                        <select id="offer_and_promotion" class="form-control custom-select mt-15" name="offer_and_promotion" required>
+                                            <option value="">{{ trans('rider.offer_and_promotion')}}</option>
+                                            @foreach($smses as $key => $sms)
+                                                @if (old('offer_and_promotion') == $sms)
+                                                    <option value="{{ $key }}" selected> {{ ucfirst($sms) }} </option>
+                                                @else
+                                                    <option value="{{ $key }}"> {{ ucfirst($sms) }} </option>
+                                                @endif
+                                            @endforeach
+                                        </select>
+                                        <span class="form-text m-b-none text-danger"> @error('offer_and_promotion') {{ $message }} @enderror </span>
+                                    </div>
+                                </div>
                             </div>
 
-                            <div class="row mt-3">
+                            <div class="row">
                                 <div class="col-12">
                                     <!---CONTROL BUTTON--->
                                     <div class="form-group">
@@ -188,27 +272,3 @@
         </div>
     </div>
 @endsection
-
-@push('scripts')
-    <script type="text/javascript">
-        // add row
-        $("#addRow").click(function () {
-            var html = '';
-            html += '<div id="inputFormRow">';
-            html += '<div class="input-group mb-3">';
-            html += '<input type="text" name="name[]" class="form-control m-input" placeholder="Enter food variant name" autocomplete="off">';
-            html += '<input type="text" name="price[]" class="form-control m-input" placeholder="Enter price" autocomplete="off">';
-            html += '<div class="input-group-append">';
-            html += '<button id="removeRow" type="button" class="btn btn-danger">Remove</button>';
-            html += '</div>';
-            html += '</div>';
-
-            $('#newRow').append(html);
-        });
-
-        // remove row
-        $(document).on('click', '#removeRow', function () {
-            $(this).closest('#inputFormRow').remove();
-        });
-    </script>
-@endpush

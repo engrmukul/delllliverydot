@@ -46,4 +46,6 @@ return [
     'delivery_addresses' => 'Delivery Addresses',
     'coupons' => 'Coupons',
     'payments' => 'Payments',
+    'customers'=>'Customers',
+    'riders'=>'Riders',
 ];

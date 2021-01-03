@@ -99,6 +99,28 @@ Route::group(['prefix' => 'admin'], function () {
             Route::get('/get-data', 'Admin\PaymentController@getData')->name('coupons.get-data');
         });
 
+        // Customers route
+        Route::group(['prefix' => 'customers'], function (){
+            Route::get('/', 'Admin\CustomerController@index')->name('customers.index');
+            Route::get('/create', 'Admin\CustomerController@create')->name('customers.create');
+            Route::post('/store', 'Admin\CustomerController@store')->name('customers.store');
+            Route::get('/{id}/edit', 'Admin\CustomerController@edit')->name('customers.edit');
+            Route::put('/update', 'Admin\CustomerController@update')->name('customers.update');
+            Route::delete('/{id}/delete', 'Admin\CustomerController@delete')->name('customers.destroy');
+            Route::get('/get-data', 'Admin\CustomerController@getData')->name('customers.get-data');
+        });
+
+        // Riders route
+        Route::group(['prefix' => 'riders'], function (){
+            Route::get('/', 'Admin\RiderController@index')->name('riders.index');
+            Route::get('/create', 'Admin\RiderController@create')->name('riders.create');
+            Route::post('/store', 'Admin\RiderController@store')->name('riders.store');
+            Route::get('/{id}/edit', 'Admin\RiderController@edit')->name('riders.edit');
+            Route::put('/update', 'Admin\RiderController@update')->name('riders.update');
+            Route::delete('/{id}/delete', 'Admin\RiderController@delete')->name('riders.destroy');
+            Route::get('/get-data', 'Admin\RiderController@getData')->name('riders.get-data');
+        });
+
 
     });
 });

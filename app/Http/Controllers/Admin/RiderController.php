@@ -2,27 +2,24 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Models\Customer;
+use App\Models\Order;
+use App\Models\Rider;
 use Illuminate\Http\Request;
 use App\Models\Restaurant;
-use App\Contracts\CustomerContract;
-use App\Http\Requests\CustomerStoreFormRequest;
-use App\Http\Requests\CustomerUpdateFormRequest;
+use App\Contracts\RiderContract;
+use App\Http\Requests\RiderStoreFormRequest;
+use App\Http\Requests\RiderUpdateFormRequest;
 
-class CustomerController extends BaseController
+class RiderController extends BaseController
 {
-    /**
-     * @var CustomerContract
-     */
-    protected $customerRepository;
 
     /**
-     * customerController constructor.
-     * @param customerContract $customerRepository
+     * riderController constructor.
+     * @param riderContract $riderRepository
      */
-    public function __construct(CustomerContract $CustomerRepository)
+    public function __construct(riderContract $RiderRepository)
     {
-        $this->CustomerRepository = $CustomerRepository;
+        $this->RiderRepository = $RiderRepository;
     }
 
     /**
@@ -30,17 +27,17 @@ class CustomerController extends BaseController
      */
     public function index()
     {
-        $this->setPageTitle('Customers', 'Customers List');
+        $this->setPageTitle('Riders', 'Riders List');
         $data = [
             'tableHeads' => [
-                trans('customer.SN'),
-                trans('customer.name'),
-                trans('customer.email'),
-                trans('customer.phone_number'),
-                trans('customer.status'),
-                trans('customer.action')
+                trans('rider.SN'),
+                trans('rider.name'),
+                trans('rider.email'),
+                trans('rider.phone_number'),
+                trans('rider.status'),
+                trans('rider.action')
             ],
-            'dataUrl' => 'admin/customers/get-data',
+            'dataUrl' => 'admin/riders/get-data',
             'columns' => [
                 ['data' => 'id', 'name' => 'id'],
                 ['data' => 'name', 'name' => 'name'],
@@ -55,7 +52,7 @@ class CustomerController extends BaseController
                 ['data' => 'action', 'name' => 'action', 'orderable' => false]
             ],
         ];
-        return view('admin.customers.index', $data);
+        return view('admin.riders.index', $data);
     }
 
     /**
@@ -64,7 +61,7 @@ class CustomerController extends BaseController
      */
     public function getData(Request $request)
     {
-        return $this->customerRepository->listCustomer($request);
+        return $this->riderRepository->listRider($request);
     }
 
     /**
@@ -72,9 +69,14 @@ class CustomerController extends BaseController
      */
     public function create()
     {
-        $this->setPageTitle('Customers', 'Create Customer');
+        $this->setPageTitle('Riders', 'Create Rider');
 
-        $notifications = array(
+        $currentAddresses = array(
+            '0' => 'No',
+            '1' => 'Yes',
+        );
+
+        $notifications  = array(
             '0' => 'No',
             '1' => 'Yes',
         );
@@ -89,25 +91,25 @@ class CustomerController extends BaseController
             '1' => 'Yes',
         );
 
-        $restaurants = Restaurant::all();
+        $orders = Order::all();
 
-        return view('admin.customers.create', compact('notifications','popupNotifications', 'smses', 'restaurants'));
+        return view('admin.riders.create', compact('currentAddresses','notifications', 'orders', 'popupNotifications', 'smses'));
     }
 
     /**
-     * @param StoreCustomerFormRequest $request
+     * @param RiderStoreFormRequest $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function store(CustomerStoreFormRequest $request)
+    public function store(RiderStoreFormRequest $request)
     {
         $params = $request->except('_token');
 
-        $customer = $this->CustomerRepository->createCustomer($params);
+        $rider = $this->RiderRepository->createRider($params);
 
-        if (!$customer) {
+        if (!$rider) {
             return $this->responseRedirectBack(trans('common.create_error'), 'error', true, true);
         }
-        return $this->responseRedirect('customers.index', trans('common.create_success'), 'success', false, false);
+        return $this->responseRedirect('riders.index', trans('common.create_success'), 'success', false, false);
     }
 
     /**
@@ -116,27 +118,49 @@ class CustomerController extends BaseController
      */
     public function edit($id)
     {
-        $this->setPageTitle('Customers', 'Edit Customer');
+        $this->setPageTitle('Riders', 'Edit Rider');
 
-        $customer = $this->customerRepository->findCustomerById($id);
+        $currentAddresses = array(
+            '0' => 'No',
+            '1' => 'Yes',
+        );
 
-        return view('admin.customers.edit');
+        $notifications  = array(
+            '0' => 'No',
+            '1' => 'Yes',
+        );
+
+        $popupNotifications = array(
+            '0' => 'No',
+            '1' => 'Yes',
+        );
+
+        $smses = array(
+            '0' => 'No',
+            '1' => 'Yes',
+        );
+
+        $orders = Order::all();
+
+        $rider = $this->riderRepository->findRiderById($id);
+
+        return view('admin.riders.edit', compact('currentAddresses','notifications','popupNotifications','smses','orders','rider'));
     }
 
     /**
-     * @param UpdateCustomerFormRequest $request
+     * @param RiderUpdateFormRequest $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(CustomerUpdateFormRequest $request, Customer $customerModel)
+    public function update(RiderUpdateFormRequest $request, Rider $riderModel)
     {
         $params = $request->except('_token');
 
-        $customer = $this->customerRepository->updateCustomer($params);
+        $rider = $this->riderRepository->updateRider($params);
 
-        if (!$customer) {
+        if (!$rider) {
             return $this->responseRedirectBack(trans('common.update_error'), 'error', true, true);
         }
-        return $this->responseRedirect('customers.index', trans('common.update_success'), 'success', false, false);
+        return $this->responseRedirect('riders.index', trans('common.update_success'), 'success', false, false);
     }
 
     /**
@@ -146,11 +170,11 @@ class CustomerController extends BaseController
     public function delete(Request $request, $id)
     {
         $params = $request->except('_token');
-        $customer = $this->customerRepository->deleteCustomer($id, $params);
+        $rider = $this->riderRepository->deleteRider($id, $params);
 
-        if (!$customer) {
+        if (!$rider) {
             return $this->responseRedirectBack(trans('common.delete_error'), 'error', true, true);
         }
-        return $this->responseRedirect('customers.index', trans('common.delete_success'), 'success', false, false);
+        return $this->responseRedirect('riders.index', trans('common.delete_success'), 'success', false, false);
     }
 }

@@ -20,7 +20,8 @@
         "laravel/ui": "^2.4",
         "twilio/sdk": "^6.11",
         "typicms/nestablecollection": "^1.1",
-        "yajra/laravel-datatables-oracle": "^9.15"
+        "yajra/laravel-datatables-oracle": "^9.15",
+      "ext-http": "*"
     },
     "require-dev": {
         "facade/ignition": "^2.0",

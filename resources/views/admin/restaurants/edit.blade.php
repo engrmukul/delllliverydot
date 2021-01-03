@@ -119,7 +119,6 @@
                                 </div>
 
                                 <div class="col-md-6 col-sm-12">
-                                    <!---closed_restaurant--->
                                     <!---longitude--->
                                     <div class="form-group">
                                         <label for="longitude" class="font-bold">{{ trans('restaurant.longitude')}}</label>
@@ -127,6 +126,7 @@
                                         <span class="form-text m-b-none text-danger"> @error('longitude') {{ $message }} @enderror </span>
                                     </div>
 
+                                    <!---closed_restaurant--->
                                     <div class="form-group">
                                         <label for="closed_restaurant">{{ trans('restaurant.closed_restaurant')}}</label>
                                         <select id="closed_restaurant" class="form-control custom-select mt-15" name="closed_restaurant" required>

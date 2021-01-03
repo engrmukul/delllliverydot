@@ -245,17 +245,10 @@ class RiderRepository extends BaseRepository implements RiderContract
         return $this->restoreOnlyTrashed();
     }
 
-    /**
-     * @return mixed
-     */
-    public function getRiderList()
+
+    public function updateRider(array $params)
     {
-        return $this->shopWiseAllData();
+        // TODO: Implement updateRider() method.
     }
-
-
-
-
-
 
 }

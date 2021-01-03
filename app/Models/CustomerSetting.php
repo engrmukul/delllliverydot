@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * Class Attribute
  * @package App\Models
  */
-class RestaurantSetting extends Model
+class CustomerSetting extends Model
 {
     /**
      * @var string
