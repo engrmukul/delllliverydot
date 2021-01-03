@@ -13,6 +13,7 @@ use http\Env\Request;
 use Illuminate\Database\QueryException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Doctrine\Instantiator\Exception\InvalidArgumentException;
+use Illuminate\Support\Facades\DB;
 use Twilio\Rest\Client;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -69,9 +70,9 @@ class RiderRepository extends BaseRepository implements RiderContract
     public function createRider(array $params)
     {
         try {
-            $collection = collect($params);
+            DB::beginTransaction();
 
-            $rider = new Rider($collection->all());
+            $collection = collect($params);
 
             /* Get credentials from .env */
             /*$token = getenv("TWILIO_AUTH_TOKEN");
@@ -83,15 +84,19 @@ class RiderRepository extends BaseRepository implements RiderContract
                 ->create($collection['phone_number'], "sms");*/
 
             $created_at = date('Y-m-d');
+            $name = 'Rider' . (Rider::where('id', '!=', '')->get()->max('id') + 1);
+            $email = 'rider' . (Rider::where('id', '!=', '')->get()->max('id') + 1).'@dd.com';
 
-            $merge = $collection->merge(compact('created_at'));
+            $merge = $collection->merge(compact('created_at','name','email'));
 
             if( Rider::where('phone_number','=', $collection['phone_number'])->count() > 0){
 
                 return $rider = Rider::where('phone_number', $collection['phone_number'])->first();
             }
 
-            $rider->save($merge->all());
+            $rider = new Rider($merge->all());
+
+            $rider->save();
 
             $riderSettings = new RiderSetting();
 
@@ -110,9 +115,12 @@ class RiderRepository extends BaseRepository implements RiderContract
 
             $riderProfile->save();
 
+            DB::commit();
+
             return $rider;
 
         } catch (QueryException $exception) {
+            DB::rollback();
             throw new InvalidArgumentException($exception->getMessage());
         }
     }
@@ -165,7 +173,11 @@ class RiderRepository extends BaseRepository implements RiderContract
 
         $updated_at = date('Y-m-d');
 
-        $image = url('/').$image;
+        if(isset($image)){
+            $image = url('/').'/public/img/rider/'.$image;
+        }else{
+            $image = url('/').'/public/img/rider/default.png';
+        }
 
         $merge = $collection->merge(compact('updated_at','image'));
 
@@ -182,11 +194,17 @@ class RiderRepository extends BaseRepository implements RiderContract
         return $rider;
     }
 
-    public function updateDocument(array $params, $image)
+    public function updateDocument(array $params)
     {
         $document = new RiderProfile();
 
         $collection = collect($params)->except('_token');
+
+        if(isset($params['image'])){
+            $image = url('/').'/public/img/rider/'.$params['image'];
+        }else{
+            $image = url('/').'/public/img/rider/default.png';
+        }
 
         $merge = $collection->merge(compact('image'));
 

@@ -45,4 +45,11 @@ class Rider extends Model
         return $this->hasOne(RiderProfile::class,'rider_id','id');
     }
 
+    //SET MUTATOR
+    public function setNameAttribute($value)
+    {
+        $this->attributes['name'] = ucfirst($value);
+    }
+
+
 }

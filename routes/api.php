@@ -73,6 +73,8 @@ Route::post('/rider-order-history', 'API\V1\RiderController@orderHistory')->name
 Route::post('/rider-profile-update', 'API\V1\RiderController@riderProfileUpdate')->name('rider-profile-update');
 Route::post('/rider-settings', 'API\V1\RiderController@settingsUpdate')->name('rider-settings');
 Route::post('/rider-device-token', 'API\V1\RiderController@saveDeviceToken')->name('rider-device-token');
+Route::get('/rider-help-and-support', 'API\V1\RiderController@helpAndSupport')->name('rider-help-and-support');
+Route::get('/rider-terms-and-condition', 'API\V1\RiderController@termsAndCondition')->name('rider-terms-and-condition');
 
 
 //RESTAURANT

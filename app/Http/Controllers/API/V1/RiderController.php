@@ -14,14 +14,19 @@ use App\Http\Requests\RiderOTPVerificationFormRequest;
 use App\Http\Requests\RiderPhoneVerificationFormRequest;
 use App\Http\Requests\RiderStoreFormRequest;
 use App\Http\Requests\RiderUpdateFormRequest;
+use App\Models\HelpAndSupport;
 use App\Models\Order;
 use App\Models\Rider;
 use App\Models\RiderAddress;
 use App\Models\RiderProfile;
 use App\Models\RiderSetting;
+use App\Models\TermsAndCondition;
 use App\Traits\UploadTrait;
+use Doctrine\Instantiator\Exception\InvalidArgumentException;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 
@@ -93,22 +98,26 @@ class RiderController extends BaseController
     public function documentUpdate(RiderDocumentUpdateFormRequest $request)
     {
         $params = $request->except('_token');
-        $image = '';
 
-        if ($request->has('image')) {
-            $image = $request->file('image');
-            $name = Str::slug($request->input('nid')).'_'.time();
-            $folder = '/uploads/images/';
-            $filePath = $folder . $name. '.' . $image->getClientOriginalExtension();
-            $this->uploadOne($image, $folder, 'public', $name);
+        if ($request->file('image') != null){
 
-            $image = $filePath;
+            $params['image'] = $this->saveImages($request->file('image'), 'img/rider/', 100, 100);
         }
 
-        $document = $this->riderRepository->updateDocument($params, $image);
+        $document = $this->riderRepository->updateDocument($params);
 
-        if ($document) {
-            return $this->sendResponse($document, 'Rider update successfully.', Response::HTTP_OK);
+        $rider = Rider::where('id', $request->rider_id)->first();
+
+        $riderProfile = RiderProfile::where('rider_id', $request->rider_id)->first();
+
+
+        if ($document && $rider && $riderProfile) {
+
+            $rider->image = $riderProfile->image;
+            $rider->nid = $riderProfile->nid;
+            $rider->address = $riderProfile->address;
+
+            return $this->sendResponse($rider, 'Rider update successfully.', Response::HTTP_OK);
         } else {
             return $this->sendResponse(array(), 'Data not updated', Response::HTTP_NOT_FOUND);
         }
@@ -369,55 +378,66 @@ class RiderController extends BaseController
 
     public function riderProfileUpdate(RiderUpdateFormRequest $request, Rider $riderModel)
     {
-        $params = $request->except('_token');
+        try {
+            DB::beginTransaction();
 
-        $image = '';
+            if ($request->file('image') != null) {
 
-        if ($request->has('image')) {
-            $image = $request->file('image');
-            $name = Str::slug($request->input('phone_number')) . '_' . time();
-            $folder = '/uploads/images/';
-            $filePath = $folder . $name . '.' . $image->getClientOriginalExtension();
-            $this->uploadOne($image, $folder, 'public', $name);
+                $imageName = $this->saveImages($request->file('image'), 'img/rider/', 100, 100);
 
-            $image = $filePath;
-        }
+                $image = url('/') . '/public/img/rider/' . $imageName;
+            } else {
+                $image = url('/') . '/public/img/rider/default.png';
+            }
 
-        Rider::where("id", $request->rider_id)->update(
-            [
-                "phone_number" => $request->phone_number,
-                "name" => $request->name,
-                "email" => $request->email,
-                "password" => $request->password,
-            ]
-        );
-
-        if($image !=''){
-            RiderProfile::where("rider_id", $request->rider_id)->update(
+            Rider::where("id", $request->rider_id)->update(
                 [
-                    "image" => $image ? url('/').'/public'.$image : url('/').'/public/uploads/images/default.png' ,
-                    "address" => $request->address
+                    "phone_number" => $request->phone_number,
+                    "name" => $request->name,
+                    "email" => $request->email,
+                    "password" => $request->password,
                 ]
             );
-        }else{
-            RiderProfile::where("rider_id", $request->rider_id)->update(
+
+            if ($request->file('image') != null) {
+                RiderProfile::where("rider_id", $request->rider_id)->update(
+                    [
+                        "image" => $image,
+                        "address" => $request->address
+                    ]
+                );
+            } else {
+                RiderProfile::where("rider_id", $request->rider_id)->update(
+                    [
+                        "address" => $request->address
+                    ]
+                );
+            }
+
+            RiderAddress::where("rider_id", $request->rider_id)->update(
                 [
-                    "address" => $request->address
+                    "address" => $request->address,
+                    "is_current_address" => "yes"
                 ]
             );
-        }
 
 
-        $rider = Rider::where('id', $request->rider_id)->first();
-        $riderProfile = RiderProfile::where('rider_id', $request->rider_id)->first();
+            $rider = Rider::where('id', $request->rider_id)->first();
+            $riderProfile = RiderProfile::where('rider_id', $request->rider_id)->first();
 
-        $rider->image = $riderProfile->image;
-        $rider->address = $riderProfile->address;
+            $rider->image = $riderProfile->image;
+            $rider->address = $riderProfile->address;
 
-        if ($rider) {
-            return $this->sendResponse($rider, 'Rider update successfully.', Response::HTTP_OK);
-        } else {
-            return $this->sendResponse(array(), 'Data not updated', Response::HTTP_NOT_FOUND);
+            DB::commit();
+
+            if ($rider) {
+                return $this->sendResponse($rider, 'Rider update successfully.', Response::HTTP_OK);
+            } else {
+                return $this->sendResponse(array(), 'Data not updated', Response::HTTP_NOT_FOUND);
+            }
+        } catch (QueryException $exception) {
+            DB::rollback();
+            throw new InvalidArgumentException($exception->getMessage());
         }
     }
 
@@ -432,6 +452,28 @@ class RiderController extends BaseController
         if ($settings->count() > 0) {
             return $this->sendResponse($settings, 'Rider settings update successfully.',Response::HTTP_OK);
         }else {
+            return $this->sendResponse(array(), 'Data not updated', Response::HTTP_NOT_FOUND);
+        }
+    }
+
+    public function helpAndSupport()
+    {
+        $helpAndSupport = HelpAndSupport::select('question','answer')->where('type','rider')->get();
+
+        if($helpAndSupport->count() > 0){
+            return $this->sendResponse($helpAndSupport, 'Help and support list',Response::HTTP_OK);
+        }else{
+            return $this->sendResponse(array(), 'Data not updated', Response::HTTP_NOT_FOUND);
+        }
+    }
+
+    public function termsAndCondition()
+    {
+        $termsAndCondition = TermsAndCondition::where('type','rider')->first();
+
+        if($termsAndCondition){
+            return $this->sendResponse(strip_tags($termsAndCondition->description), 'Terms and condition list',Response::HTTP_OK);
+        }else{
             return $this->sendResponse(array(), 'Data not updated', Response::HTTP_NOT_FOUND);
         }
     }
