@@ -2,29 +2,31 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Models\Category;
-use App\Models\Coupon;
-use App\Models\Food;
-use App\Models\Restaurant;
+use App\Models\Customer;
 use Illuminate\Http\Request;
-use App\Contracts\CouponContract;
-use App\Http\Requests\CouponStoreFormRequest;
-use App\Http\Requests\CouponUpdateFormRequest;
+use App\Models\Restaurant;
+use App\Contracts\CustomerContract;
+use App\Http\Requests\CustomerStoreFormRequest;
+use App\Http\Requests\CustomerUpdateFormRequest;
 
-class CouponController extends BaseController
+class CustomerController extends BaseController
 {
     /**
-     * @var CouponContract
+     * @var CustomerContract
      */
-    protected $couponRepository;
+    protected $customerRepository;
+    /**
+     * @var CustomerContract
+     */
+    private $CustomerRepository;
 
     /**
-     * CouponController constructor.
-     * @param CouponContract $couponRepository
+     * customerController constructor.
+     * @param customerContract $customerRepository
      */
-    public function __construct(CouponContract $couponRepository)
+    public function __construct(CustomerContract $CustomerRepository)
     {
-        $this->couponRepository = $couponRepository;
+        $this->CustomerRepository = $CustomerRepository;
     }
 
     /**
@@ -32,29 +34,32 @@ class CouponController extends BaseController
      */
     public function index()
     {
-        $this->setPageTitle('Coupons', 'Coupons List');
+        $this->setPageTitle('Customers', 'Customers List');
         $data = [
             'tableHeads' => [
-                trans('coupon.SN'),
-                trans('coupon.code'),
-                trans('coupon.total_code'),
-                trans('coupon.total_used_code'),
-                trans('coupon.expire_at'),
-                trans('coupon.status'),
-                trans('coupon.action')
+                trans('customer.SN'),
+                trans('customer.name'),
+                trans('customer.email'),
+                trans('customer.phone_number'),
+                trans('customer.status'),
+                trans('customer.action')
             ],
-            'dataUrl' => 'admin/coupons/get-data',
+            'dataUrl' => 'admin/customers/get-data',
             'columns' => [
                 ['data' => 'id', 'name' => 'id'],
-                ['data' => 'code', 'name' => 'code'],
-                ['data' => 'total_code', 'name' => 'total_code'],
-                ['data' => 'total_used_code', 'name' => 'total_used_code'],
-                ['data' => 'expire_at', 'name' => 'expire_at'],
+                ['data' => 'name', 'name' => 'name'],
+                ['data' => 'email', 'name' => 'email'],
+                ['data' => 'phone_number', 'name' => 'phone_number'],
+                ['data' => 'isVerified', 'name' => 'isVerified'],
+                ['data' => 'email_verified_at', 'name' => 'email_verified_at'],
+                ['data' => 'password', 'name' => 'password'],
+                ['data' => 'remember_token', 'name' => 'remember_token'],
                 ['data' => 'status', 'name' => 'status'],
+                ['data' => 'device_token', 'name' => 'device_token'],
                 ['data' => 'action', 'name' => 'action', 'orderable' => false]
             ],
         ];
-        return view('admin.coupons.index', $data);
+        return view('admin.customers.index', $data);
     }
 
     /**
@@ -63,7 +68,7 @@ class CouponController extends BaseController
      */
     public function getData(Request $request)
     {
-        return $this->couponRepository->listCoupon($request);
+        return $this->customerRepository->listCustomer($request);
     }
 
     /**
@@ -71,34 +76,42 @@ class CouponController extends BaseController
      */
     public function create()
     {
-        $this->setPageTitle('Coupons', 'Create Coupon');
+        $this->setPageTitle('Customers', 'Create Customer');
 
-        $discountTypes = array(
-            'percent' => 'percent',
-            'fixed' => 'fixed',
+        $notifications = array(
+            '0' => 'No',
+            '1' => 'Yes',
         );
 
-        $foods = Food::all();
-        $categories = Category::all();
+        $popupNotifications = array(
+            '0' => 'No',
+            '1' => 'Yes',
+        );
+
+        $smses = array(
+            '0' => 'No',
+            '1' => 'Yes',
+        );
+
         $restaurants = Restaurant::all();
 
-        return view('admin.coupons.create', compact('discountTypes','foods','categories','restaurants'));
+        return view('admin.customers.create', compact('notifications','popupNotifications', 'smses', 'restaurants'));
     }
 
     /**
-     * @param StoreCouponFormRequest $request
+     * @param CustomerStoreFormRequest $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function store(CouponStoreFormRequest $request)
+    public function store(CustomerStoreFormRequest $request)
     {
         $params = $request->except('_token');
 
-        $coupon = $this->couponRepository->createCoupon($params);
+        $customer = $this->CustomerRepository->createCustomer($params);
 
-        if (!$coupon) {
+        if (!$customer) {
             return $this->responseRedirectBack(trans('common.create_error'), 'error', true, true);
         }
-        return $this->responseRedirect('coupons.index', trans('common.create_success'), 'success', false, false);
+        return $this->responseRedirect('customers.index', trans('common.create_success'), 'success', false, false);
     }
 
     /**
@@ -107,36 +120,44 @@ class CouponController extends BaseController
      */
     public function edit($id)
     {
-        $this->setPageTitle('Coupons', 'Edit Coupon');
+        $this->setPageTitle('Customers', 'Edit Customer');
 
-        $discountTypes = array(
-            'percent' => 'percent',
-            'fixed' => 'fixed',
+        $notifications = array(
+            '0' => 'No',
+            '1' => 'Yes',
         );
 
-        $foods = Food::all();
-        $categories = Category::all();
+        $popupNotifications = array(
+            '0' => 'No',
+            '1' => 'Yes',
+        );
+
+        $smses = array(
+            '0' => 'No',
+            '1' => 'Yes',
+        );
+
         $restaurants = Restaurant::all();
 
-        $coupon = $this->couponRepository->findCouponById($id);
+        $customer = $this->customerRepository->findCustomerById($id);
 
-        return view('admin.coupons.edit', compact('coupon','discountTypes','foods','categories','restaurants'));
+        return view('admin.customers.edit',compact('customer','notifications','popupNotifications', 'smses', 'restaurants'));
     }
 
     /**
-     * @param UpdateCouponFormRequest $request
+     * @param CustomerUpdateFormRequest $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(CouponUpdateFormRequest $request, Coupon $couponModel)
+    public function update(CustomerUpdateFormRequest $request, Customer $customerModel)
     {
         $params = $request->except('_token');
 
-        $coupon = $this->couponRepository->updateCoupon($params);
+        $customer = $this->customerRepository->updateCustomer($params);
 
-        if (!$coupon) {
+        if (!$customer) {
             return $this->responseRedirectBack(trans('common.update_error'), 'error', true, true);
         }
-        return $this->responseRedirect('coupons.index', trans('common.update_success'), 'success', false, false);
+        return $this->responseRedirect('customers.index', trans('common.update_success'), 'success', false, false);
     }
 
     /**
@@ -146,11 +167,11 @@ class CouponController extends BaseController
     public function delete(Request $request, $id)
     {
         $params = $request->except('_token');
-        $coupon = $this->couponRepository->deleteCoupon($id, $params);
+        $customer = $this->customerRepository->deleteCustomer($id, $params);
 
-        if (!$coupon) {
+        if (!$customer) {
             return $this->responseRedirectBack(trans('common.delete_error'), 'error', true, true);
         }
-        return $this->responseRedirect('coupons.index', trans('common.delete_success'), 'success', false, false);
+        return $this->responseRedirect('customers.index', trans('common.delete_success'), 'success', false, false);
     }
 }
