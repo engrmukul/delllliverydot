@@ -138,7 +138,7 @@ class RestaurantRepository extends BaseRepository implements RestaurantContract
     {
         try {
             //return $this->findOneOrFail($id);
-            return $this->model->with('restaurantDetails','restaurantSetting','restaurantAddress')->findOrFail($id);
+            return $this->model->with('restaurantDetails', 'restaurantSetting', 'restaurantAddress')->findOrFail($id);
 
         } catch (ModelNotFoundException $e) {
 
@@ -158,99 +158,98 @@ class RestaurantRepository extends BaseRepository implements RestaurantContract
 
             $collection = collect($params);
 
-            /* Get credentials from .env */
-            /*$token = getenv("TWILIO_AUTH_TOKEN");
-            $twilio_sid = getenv("TWILIO_SID");
-            $twilio_verify_sid = getenv("TWILIO_VERIFY_SID");
-            $twilio = new Client($twilio_sid, $token);
-            $twilio->verify->v2->services($twilio_verify_sid)
-                ->verifications
-                ->create($collection['phone_number'], "sms");*/
+            $phoneNumber = (substr($collection['phone_number'], 0, 3) == '+88') ? $collection['phone_number'] : '+88' . $collection['phone_number'];
 
-            $maxCat = Category::where('id', '!=', '')->get()->max('id');
-            $maxId = Restaurant::where('id', '!=', '')->get()->count() + 1;
-            $created_at = date('Y-m-d');
-            $name = "Restaurant". $maxId;
-            $email = 'restaurant'. $maxId .'@dd.com';
+            //SEND OTP
+            if (sendOtpByTWILIO($phoneNumber)) {
 
-            $merge = $collection->merge(compact('name','email','created_at'));
+                $maxCat = Category::where('id', '!=', '')->get()->max('id');
+                $maxId = Restaurant::where('id', '!=', '')->get()->count() + 1;
+                $created_at = date('Y-m-d');
+                $name = "Restaurant" . $maxId;
+                $email = 'restaurant' . $maxId . '@dd.com';
 
-            if (Restaurant::where('phone_number', '=', $collection['phone_number'])->count() > 0) {
+                $merge = $collection->merge(compact('name', 'email', 'created_at'));
+
+                if (Restaurant::where('phone_number', '=', $collection['phone_number'])->count() > 0) {
+                    return $restaurant = Restaurant::where('phone_number', $collection['phone_number'])->first();
+                }
+
+                $restaurant = new Restaurant($merge->all());
+
+                $restaurant->save();
+
+                $restaurantProfile = new RestaurantProfile();
+
+                $restaurantProfile->restaurant_id = $restaurant->id;
+                $restaurantProfile->name = "Restaurant" . $maxId;
+                $restaurantProfile->feature_section = 1;
+                $restaurantProfile->delivery_fee = 0;
+                $restaurantProfile->delivery_time = "30 min";
+                $restaurantProfile->delivery_range = 5;
+                $restaurantProfile->ratting = 5;
+
+                $restaurantProfile->save();
+
+                $restaurantSettings = new RestaurantSetting();
+                $restaurantSettings->restaurant_id = $restaurant->id;
+                $restaurantSettings->save();
+
+                //Default food
+                $food = new Food();
+                $food->name = "Piza";
+                $food->short_description = "Piza";
+                $food->image = url('/') . '/public/img/restaurant/default.png';
+                $food->discount_price = "10";
+                $food->description = "NA";
+                $food->ingredients = "NA";
+                $food->unit = "NA";
+                $food->package_count = "NA";
+                $food->weight = "NA";
+                $food->featured = 1;
+                $food->deliverable_food = 1;
+                $food->restaurant_id = $restaurant->id;
+                $food->category_id = $maxCat;
+                $food->options = "NA";
+                $food->created_by = 1;
+                $food->created_at = date('Y-m-d');
+
+                $food->save();
+
+                $foodVariantData = array(
+                    array('food_id' => $food->id, 'name' => 'Piza 6 inch', 'price' => 220.00),
+                    array('food_id' => $food->id, 'name' => 'Piza 9 inch', 'price' => 420.00),
+                    array('food_id' => $food->id, 'name' => 'Piza 12 inch', 'price' => 920.00),
+                );
+
+                FoodVariant::insert($foodVariantData);
+
+
+                $coupon = new Coupon();
+
+                $coupon->code = "DD" . $restaurant->id;
+                $coupon->total_code = 100;
+                $coupon->total_used_code = 0;
+                $coupon->discount_type = "fixed";
+                $coupon->discount = 20;
+                $coupon->description = "NA";
+                $coupon->food_id = $food->id;
+                $coupon->restaurant_id = $restaurant->id;
+                $coupon->category_id = $maxCat;
+                $coupon->expire_at = date('Y-m-d', strtotime("+30 days"));
+                $coupon->enabled = 1;
+                $coupon->status = "active";
+                $coupon->created_at = date('Y-m-d');
+                $coupon->created_by = 1;
+
+                $coupon->save();
+
+                DB::commit();
+
                 return $restaurant = Restaurant::where('phone_number', $collection['phone_number'])->first();
+            } else {
+                return false;
             }
-
-            $restaurant = new Restaurant($merge->all());
-
-            $restaurant->save();
-
-            $restaurantProfile = new RestaurantProfile();
-
-            $restaurantProfile->restaurant_id = $restaurant->id;
-            $restaurantProfile->name = "Restaurant".$maxId;
-            $restaurantProfile->feature_section = 1;
-            $restaurantProfile->delivery_fee = 0;
-            $restaurantProfile->delivery_time = "30 min";
-            $restaurantProfile->delivery_range = 5;
-            $restaurantProfile->ratting = 5;
-
-            $restaurantProfile->save();
-
-            $restaurantSettings = new RestaurantSetting();
-            $restaurantSettings->restaurant_id = $restaurant->id;
-            $restaurantSettings->save();
-
-            //Default food
-            $food = new Food();
-            $food->name = "Piza";
-            $food->short_description = "Piza";
-            $food->image = url('/').'/public/img/restaurant/default.png';
-            $food->discount_price = "10";
-            $food->description = "NA";
-            $food->ingredients = "NA";
-            $food->unit = "NA";
-            $food->package_count = "NA";
-            $food->weight = "NA";
-            $food->featured = 1;
-            $food->deliverable_food = 1;
-            $food->restaurant_id = $restaurant->id;
-            $food->category_id = $maxCat;
-            $food->options = "NA";
-            $food->created_by = 1;
-            $food->created_at = date('Y-m-d');
-
-            $food->save();
-
-            $foodVariantData = array(
-                array('food_id' => $food->id, 'name'=> 'Piza 6 inch', 'price' => 220.00 ),
-                array('food_id' => $food->id, 'name'=> 'Piza 9 inch', 'price' => 420.00 ),
-                array('food_id' => $food->id, 'name'=> 'Piza 12 inch', 'price' => 920.00 ),
-            );
-
-            FoodVariant::insert($foodVariantData);
-
-
-            $coupon = new Coupon();
-
-            $coupon->code = "DD" . $restaurant->id;
-            $coupon->total_code = 100;
-            $coupon->total_used_code = 0;
-            $coupon->discount_type = "fixed";
-            $coupon->discount = 20;
-            $coupon->description = "NA";
-            $coupon->food_id = $food->id;
-            $coupon->restaurant_id = $restaurant->id;
-            $coupon->category_id = $maxCat;
-            $coupon->expire_at = date('Y-m-d', strtotime("+30 days"));
-            $coupon->enabled = 1;
-            $coupon->status = "active";
-            $coupon->created_at = date('Y-m-d');
-            $coupon->created_by = 1;
-
-            $coupon->save();
-
-            DB::commit();
-
-            return $restaurant = Restaurant::where('phone_number', $collection['phone_number'])->first();
 
         } catch (QueryException $exception) {
             DB::rollback();
@@ -268,32 +267,17 @@ class RestaurantRepository extends BaseRepository implements RestaurantContract
     {
         try {
             $collection = collect($params);
+            $phoneNumber = (substr($collection['phone_number'],0,3)=='+88') ? $collection['phone_number'] : '+88'.$collection['phone_number'];
 
-            /* Get credentials from .env */
-            /*$token = getenv("TWILIO_AUTH_TOKEN");
-            $twilio_sid = getenv("TWILIO_SID");
-            $twilio_verify_sid = getenv("TWILIO_VERIFY_SID");
-            $twilio = new Client($twilio_sid, $token);
+            if (verifyOtpByTWILIO($phoneNumber, $collection['verification_code'])) {
 
-            $verification = $twilio->verify->v2->services($twilio_verify_sid)
-                ->verificationChecks
-                ->create($collection['verification_code'], array('to' => $collection['phone_number']));*/
+                tap(Restaurant::where('phone_number', $phoneNumber))->update(['isVerified' => true]);
 
-            //WILL CHANGE
-            Restaurant::where('phone_number', $collection['phone_number'])->update(['isVerified' => true]);
+                return Restaurant::where('phone_number', $phoneNumber)->first();
 
-            return true;
-
-            /*if ($verification->valid) {
-
-                $otp = tap(Restaurant::where('phone_number', $collection['phone_number']))->update(['isVerified' => true]);
-
-                //return $this->findRestaurantById($params['id']);
-                return $otp;
-
-            } else {
+            }else{
                 return false;
-            }*/
+            }
 
         } catch (QueryException $exception) {
             throw new InvalidArgumentException($exception->getMessage());
@@ -307,18 +291,18 @@ class RestaurantRepository extends BaseRepository implements RestaurantContract
 
             $collection = collect($params);
 
-            $phone_number = (substr($collection['phone_number'],0,3)=='+88') ? $collection['phone_number'] : '+88'.$collection['phone_number'];
+            $phone_number = (substr($collection['phone_number'], 0, 3) == '+88') ? $collection['phone_number'] : '+88' . $collection['phone_number'];
             $created_at = date('Y-m-d');
             $created_by = auth()->user()->id;
             $maxCat = Category::where('id', '!=', '')->get()->max('id');
 
-            if(isset($params['image'])){
-                $image = url('/').'/public/img/restaurant/'.$params['image'];
-            }else{
-                $image = url('/').'/public/img/restaurant/default.png';
+            if (isset($params['image'])) {
+                $image = url('/') . '/public/img/restaurant/' . $params['image'];
+            } else {
+                $image = url('/') . '/public/img/restaurant/default.png';
             }
 
-            $merge = $collection->merge(compact('created_at', 'created_by','phone_number','image'));
+            $merge = $collection->merge(compact('created_at', 'created_by', 'phone_number', 'image'));
 
             //SAVE RESTAURANT
             $restaurant = new Restaurant($merge->all());
@@ -345,7 +329,7 @@ class RestaurantRepository extends BaseRepository implements RestaurantContract
             $food = new Food();
             $food->name = "Piza";
             $food->short_description = "Piza";
-            $food->image = url('/').'/public/img/restaurant/default.png';
+            $food->image = url('/') . '/public/img/restaurant/default.png';
             $food->discount_price = "10";
             $food->description = "NA";
             $food->ingredients = "NA";
@@ -363,9 +347,9 @@ class RestaurantRepository extends BaseRepository implements RestaurantContract
             $food->save();
 
             $foodVariantData = array(
-                array('food_id' => $food->id, 'name'=> 'Piza 6 inch', 'price' => 220.00 ),
-                array('food_id' => $food->id, 'name'=> 'Piza 9 inch', 'price' => 420.00 ),
-                array('food_id' => $food->id, 'name'=> 'Piza 12 inch', 'price' => 920.00 ),
+                array('food_id' => $food->id, 'name' => 'Piza 6 inch', 'price' => 220.00),
+                array('food_id' => $food->id, 'name' => 'Piza 9 inch', 'price' => 420.00),
+                array('food_id' => $food->id, 'name' => 'Piza 12 inch', 'price' => 920.00),
             );
 
             FoodVariant::insert($foodVariantData);
@@ -408,23 +392,23 @@ class RestaurantRepository extends BaseRepository implements RestaurantContract
 
             $collection = collect($params)->except('_token');
 
-            $phone_number = (substr($collection['phone_number'],0,3)=='+88') ? $collection['phone_number'] : '+88'.$collection['phone_number'];
+            $phone_number = (substr($collection['phone_number'], 0, 3) == '+88') ? $collection['phone_number'] : '+88' . $collection['phone_number'];
 
             $updated_at = date('Y-m-d');
             $updated_by = auth()->user()->id;
 
-            if(isset($params['image'])){
-                $image = url('/').'/public/img/restaurant/'.$params['image'];
-            }else{
-                $image = url('/').'/public/img/restaurant/default.png';
+            if (isset($params['image'])) {
+                $image = url('/') . '/public/img/restaurant/' . $params['image'];
+            } else {
+                $image = url('/') . '/public/img/restaurant/default.png';
             }
 
-            $merge = $collection->merge(compact('updated_at', 'updated_by','phone_number','image'));
+            $merge = $collection->merge(compact('updated_at', 'updated_by', 'phone_number', 'image'));
 
             $restaurant->update($merge->all());
 
             //SAVE RESTAURANT PROFILE
-            RestaurantProfile::where('restaurant_id',$restaurant->id)->delete();
+            RestaurantProfile::where('restaurant_id', $restaurant->id)->delete();
             $restaurantProfile = new RestaurantProfile($merge->all());
             $restaurantProfile->restaurant_id = $restaurant->id;
             $restaurantProfile->feature_section = 1;
@@ -432,13 +416,13 @@ class RestaurantRepository extends BaseRepository implements RestaurantContract
             $restaurantProfile->save();
 
             //SAVE RESTAURANT SETTINGS
-            RestaurantSetting::where('restaurant_id',$restaurant->id)->delete();
+            RestaurantSetting::where('restaurant_id', $restaurant->id)->delete();
             $restaurantSettings = new RestaurantSetting($merge->all());
             $restaurantSettings->restaurant_id = $restaurant->id;
             $restaurantSettings->save();
 
             //SAVE RESTAURANT ADDRESS
-            RestaurantAddress::where('restaurant_id',$restaurant->id)->delete();
+            RestaurantAddress::where('restaurant_id', $restaurant->id)->delete();
             $restaurantAddress = new RestaurantAddress($merge->all());
             $restaurantAddress->restaurant_id = $restaurant->id;
             $restaurantAddress->save();

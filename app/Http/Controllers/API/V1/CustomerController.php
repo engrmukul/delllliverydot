@@ -18,6 +18,7 @@ use App\Models\Coupon;
 use App\Models\Customer;
 use App\Models\Extra;
 use App\Models\FoodVariant;
+use App\Models\HelpAndSupport;
 use App\Models\Point;
 use App\Models\PromotionalBanner;
 use App\Models\Restaurant;
@@ -25,6 +26,7 @@ use App\Models\Setting;
 use App\Models\Shop;
 use App\Models\ShopItem;
 use App\Models\ShopPromotion;
+use App\Models\TermsAndCondition;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
@@ -63,32 +65,23 @@ class CustomerController extends BaseController
         $customer = $this->customerRepository->createCustomer($params);
 
         if ($customer) {
-            //$settings = new Setting();
-            //$settings->customer_id = $customer->id;
-            //$settings->save();
-
-
-            return $this->sendResponse(array(), 'Welcome to DD.', Response::HTTP_OK);
+            return $this->sendResponse($customer, 'Customer create successfully.', Response::HTTP_OK);
+        }else{
+            return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
         }
-        return $this->sendError('Unable to create.', 'Internal Server Error', Response::HTTP_INTERNAL_SERVER_ERROR);
     }
 
     protected function otpVerify(CustomerOTPVerificationFormRequest $request)
     {
         $params = $request->except('_token');
 
-        //$otp = $this->customerRepository->customerOTPVerify($params);
+        $customer = $this->customerRepository->customerOTPVerify($params);
 
-        $customer = Customer::where('phone_number', $request->phone_number)->first();
-
-        //will remove
-        return $this->sendResponse($customer, 'Customer phone number valid.', Response::HTTP_OK);
-
-
-//        if ($otp) {
-//            return $this->sendResponse($customer, 'Customer phone number valid.', Response::HTTP_OK);
-//        }
-//        return $this->sendError('Invalid verification code entered!.', 'Internal Server Error', Response::HTTP_INTERNAL_SERVER_ERROR);
+        if ($customer){
+            return $this->sendResponse($customer, 'Phone number verify success', Response::HTTP_OK);
+        } else {
+            return $this->sendResponse(array(), 'Customer code not valid', Response::HTTP_NOT_FOUND);
+        }
     }
 
 
@@ -529,7 +522,8 @@ class CustomerController extends BaseController
             $foodName = FoodVariant::where('id', $item['foodVariantId'])->first()->name;
             $deviceToken = Restaurant::where('id',$orderData['restaurantId'])->first()->device_token;
 
-            $this->send_notification_FCM($deviceToken, $orderId, $foodName);
+            //SENT NOTIFICATION
+            sendNotificationFCM($deviceToken, $orderId, $foodName, $orderFrom='Customer', 'NEW_ORDER_FOR_RESTAURANT');
 
 
             //POINT SAVE
@@ -554,59 +548,6 @@ class CustomerController extends BaseController
         }
     }
 
-    public function send_notification_FCM($deviceToken, $orderId, $foodName)
-    {
-        $accesstoken = "key=AAAA6DftdWk:APA91bEwkeR1wHImQVk_ryC5Nfk8O1GK2E1dDamgTN-nzTStibnK2SFj5n2qkuXYIr8ZhU7hJlfLADmsq_HctdmEo_r4RJYNHot60RUo-Vmt2_ovvZUfKd3bCDqu-Q1OadOGa-VEisQZ";
-
-        $URL = 'https://fcm.googleapis.com/fcm/send';
-
-        $post_data = '{
-            "to" : "' . $deviceToken . '",
-            "data" : {
-              "order_id" : "' . $orderId . '",
-              "food_name" : "' . $foodName . '",
-            },
-            "notification" : {
-                 "title": "New order",
-                "body": "New order from  customer ' . $orderId . ' ",
-                "click_action": "NEW_ORDER_FOR_RESTAURANT"
-               },
-
-          }';
-
-
-        //print_r($post_data);die;
-
-        $crl = curl_init();
-
-        $headr = array();
-        $headr[] = 'Content-type: application/json';
-        $headr[] = 'Authorization: ' . $accesstoken;
-        curl_setopt($crl, CURLOPT_SSL_VERIFYPEER, false);
-
-        curl_setopt($crl, CURLOPT_URL, $URL);
-        curl_setopt($crl, CURLOPT_HTTPHEADER, $headr);
-
-        curl_setopt($crl, CURLOPT_POST, true);
-        curl_setopt($crl, CURLOPT_POSTFIELDS, $post_data);
-        curl_setopt($crl, CURLOPT_RETURNTRANSFER, true);
-
-        $rest = curl_exec($crl);
-
-        if ($rest === false) {
-            // throw new Exception('Curl error: ' . curl_error($crl));
-            //print_r('Curl error: ' . curl_error($crl));
-            $result_noti = 0;
-        } else {
-
-            $result_noti = 1;
-        }
-
-        //curl_close($crl);
-        //print_r($result_noti);die;
-        return $result_noti;
-    }
-
     public function customerOrderDetails($orderId='')
     {
         $orderStatus = Order::with('RestaurantDetails')->where('id', $orderId)->orderBy('id', 'DESC')->first();
@@ -628,7 +569,7 @@ class CustomerController extends BaseController
         {
             return $this->sendResponse($myOrders, 'My order list.', Response::HTTP_OK);
         }else{
-            return $this->sendResponse(array(), 'Data not save', Response::HTTP_NOT_FOUND);
+            return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
         }
     }
 
@@ -689,17 +630,28 @@ class CustomerController extends BaseController
     //POINT LIST
     public function point(Request $request)
     {
-        $points = Point::with('orders','orders.RestaurantDetails', 'orders.orderDetails','orders.orderDetails.foods')
+        $points = Point::with('orders','orders.RestaurantDetails', 'orders.orderDetails','orders.orderDetails.foods','orders.orderDetails.foodVariants')
             ->where('customer_id', $request->customer_id)
             ->get();
 
         if ($points->count() > 0) {
+            $pointsList = [];
+
+            foreach ($points->toArray() as $key=>$point){
+
+                $pointData['point'] = $point['point'].' PTS';
+                $pointData['order_date'] = date('Y-m-d', strtotime($point['orders']['order_date']));
+                $pointData['item'] = $point['orders']['order_details'][0]['foods']['name'].', '.$point['orders']['order_details'][0]['food_variants'][0]['name'].', '.$point['orders']['restaurant_details']['name'];
+
+                $pointsList[] = $pointData;
+            }
+
+
             $data = array(
                 'earned_point' => $points->sum('point'),
-                'points_list' => $points
+                'points' => $pointsList
+
             );
-
-
 
             return $this->sendResponse($data, 'Point list', Response::HTTP_OK);
 
@@ -708,5 +660,25 @@ class CustomerController extends BaseController
         }
     }
 
+    public function helpAndSupport()
+    {
+        $helpAndSupport = HelpAndSupport::select('question','answer')->where('type','customer')->get();
 
+        if($helpAndSupport->count() > 0){
+            return $this->sendResponse($helpAndSupport, 'Help and support list',Response::HTTP_OK);
+        }else{
+            return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
+        }
+    }
+
+    public function termsAndCondition()
+    {
+        $termsAndCondition = TermsAndCondition::where('type','customer')->first();
+
+        if($termsAndCondition){
+            return $this->sendResponse(strip_tags($termsAndCondition->description), 'Terms and condition list',Response::HTTP_OK);
+        }else{
+            return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
+        }
+    }
 }

@@ -178,7 +178,7 @@ class RestaurantController extends BaseController
 
         $orderData['order_id'] = $orderId = $order_details['id'];
         $orderData['order_status'] = $order_details['order_status'];
-        $orderData['restaurant_name'] = $restaurantName = $order_details['restaurant_details']['name'];
+        $orderData['restaurant_name'] = $orderFrom = $order_details['restaurant_details']['name'];
         $orderData['restaurant_address'] = $order_details['restaurant_details']['address'];
 
 
@@ -191,7 +191,7 @@ class RestaurantController extends BaseController
 
         foreach ($riders as $key => $value) {
 
-            $this->send_notification_FCM($value->device_token, $orderId, $foodName, $restaurantName);
+            sendNotificationFCM($value->device_token, $orderId, $foodName, $orderFrom, 'NEW_ORDER_FOR_DELIVERY');
         }
 
         $todaysOrder = Order::with('customer', 'RestaurantDetails', 'orderDetails', 'orderDetails.foods', 'orderDetails.foodVariants')
@@ -221,55 +221,6 @@ class RestaurantController extends BaseController
         }
     }
 
-
-    function send_notification_FCM($deviceToken, $orderId, $foodName, $restaurantName)
-    {
-
-        $accesstoken = "key=AAAA6DftdWk:APA91bEwkeR1wHImQVk_ryC5Nfk8O1GK2E1dDamgTN-nzTStibnK2SFj5n2qkuXYIr8ZhU7hJlfLADmsq_HctdmEo_r4RJYNHot60RUo-Vmt2_ovvZUfKd3bCDqu-Q1OadOGa-VEisQZ";
-
-        $URL = 'https://fcm.googleapis.com/fcm/send';
-
-        $post_data = '{
-            "to" : "' . $deviceToken . '",
-            "data" : {
-              "order_id" : "' . $orderId . '",
-              "food_name" : "' . $foodName . '",
-            },
-            "notification" : {
-                 "title": "New order",
-                "body": "New order from ' . $restaurantName . '",
-                "click_action": "NEW_ORDER_FOR_DELIVERY"
-               },
-
-          }';
-
-        //print_r($post_data);die;
-
-        $crl = curl_init();
-
-        $headr = array();
-        $headr[] = 'Content-type: application/json';
-        $headr[] = 'Authorization: ' . $accesstoken;
-        curl_setopt($crl, CURLOPT_SSL_VERIFYPEER, false);
-
-        curl_setopt($crl, CURLOPT_URL, $URL);
-        curl_setopt($crl, CURLOPT_HTTPHEADER, $headr);
-
-        curl_setopt($crl, CURLOPT_POST, true);
-        curl_setopt($crl, CURLOPT_POSTFIELDS, $post_data);
-        curl_setopt($crl, CURLOPT_RETURNTRANSFER, true);
-
-        $rest = curl_exec($crl);
-
-        if ($rest === false) {
-            $result_noti = 0;
-        } else {
-            $result_noti = 1;
-        }
-        return $result_noti;
-    }
-
-
     /**
      * @param RestaurantPhoneVerificationFormRequest $request
      * @return Response
@@ -283,7 +234,6 @@ class RestaurantController extends BaseController
         if ($restaurant) {
             return $this->sendResponse($restaurant, 'Restaurant saved successfully.', Response::HTTP_OK);
         } else {
-
             return $this->sendResponse(array(), 'Data not save', Response::HTTP_NOT_FOUND);
         }
     }
@@ -296,15 +246,13 @@ class RestaurantController extends BaseController
     {
         $params = $request->except('_token');
 
-        $otp = $this->restaurantRepository->restaurantOTPVerify($params);
+        $restaurant = $this->restaurantRepository->restaurantOTPVerify($params);
 
-        $restaurant = Restaurant::where('phone_number', $request->phone_number)->first();
-
-        if ($otp) {
+        if ($restaurant) {
             return $this->sendResponse($restaurant, 'Restaurant phone number valid.', Response::HTTP_OK);
         } else {
 
-            return $this->sendResponse(array(), 'Data not verified', Response::HTTP_NOT_FOUND);
+            return $this->sendResponse(array(), 'Restaurant code not valid', Response::HTTP_NOT_FOUND);
         }
     }
 

@@ -4,10 +4,13 @@ namespace App\Repositories;
 
 use App\Models\Customer;
 use App\Contracts\CustomerContract;
+use App\Models\CustomerAddress;
+use App\Models\CustomerProfile;
+use App\Models\Setting;
 use Illuminate\Database\QueryException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Doctrine\Instantiator\Exception\InvalidArgumentException;
-use Twilio\Rest\Client;
+use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
 
 class CustomerRepository extends BaseRepository implements CustomerContract
@@ -78,33 +81,77 @@ class CustomerRepository extends BaseRepository implements CustomerContract
     public function createCustomer(array $params)
     {
         try {
+            DB::beginTransaction();
 
             $collection = collect($params);
 
-            $customer = new Customer($collection->all());
+            $phoneNumber = (substr($collection['phone_number'],0,3)=='+88') ? $collection['phone_number'] : '+88'.$collection['phone_number'];
 
-            /* Get credentials from .env */
-            /*$token = getenv("TWILIO_AUTH_TOKEN");
-            $twilio_sid = getenv("TWILIO_SID");
-            $twilio_verify_sid = getenv("TWILIO_VERIFY_SID");
-            $twilio = new Client($twilio_sid, $token);
-            $twilio->verify->v2->services($twilio_verify_sid)
-                ->verifications
-                ->create($collection['phone_number'], "sms");*/
+            //SEND OTP
+            $otpSendStatus = getenv('SEND_OTP') ?? sendOtpByTWILIO($phoneNumber);
 
-            $created_at = date('Y-m-d');
+            if($otpSendStatus){
+                //DEFAULT CUSTOMER DATA
+                $maxId = Customer::where('id', '!=', '')->get()->count() + 1;
+                $name = "Customer". $maxId;
+                $email = 'customer'. $maxId .'@dd.com';
+                $created_at = date('Y-m-d');
 
-            $merge = $collection->merge(compact('created_at'));
+                $merge = $collection->merge(compact('name','email','created_at'));
 
-            if( Customer::where('phone_number','=', $collection['phone_number'])->count() > 0){
-                return $customer = Customer::where('phone_number', $collection['phone_number'])->first();
+                if( Customer::where('phone_number','=', $phoneNumber)->count() > 0){
+                    return $customer = Customer::where('phone_number', $phoneNumber)->first();
+                }
+
+                //SAVE CUSTOMER
+                $customer = new Customer($merge->all());
+                $customer->save();
+
+                //SAVE CUSTOMER PROFILE
+                $customerProfile = new CustomerProfile();
+
+                $customerProfile->customer_id = $customer->id;
+                $customerProfile->image = url('/').'/public/img/customer/default.png';
+                $customerProfile->dob = NULL;
+                $customerProfile->spouse_dob = NULL;
+                $customerProfile->father_dob = NULL;
+                $customerProfile->mother_dob = NULL;
+                $customerProfile->anniversary = NULL;
+                $customerProfile->first_child_dob = NULL;
+                $customerProfile->second_child_dob = NULL;
+                $customerProfile->address = "Address";
+                $customerProfile->short_biography = NULL;
+
+                $customerProfile->save();
+
+                //SAVE CUSTOMER ADDRESS
+                $customerAddress = new CustomerAddress();
+
+                $customerAddress->customer_id = $customer->id;
+                $customerAddress->address = "Address";
+                $customerAddress->is_current_address = 'yes';
+
+                $customerAddress->save();
+
+                //SAVE CUSTOMER SETTINGS
+                $customerSetting = new Setting();
+
+                $customerSetting->customer_id = $customer->id;
+                $customerSetting->notification = 1;
+                $customerSetting->sms = 1;
+                $customerSetting->offer_and_promotion = 1;
+
+                $customerSetting->save();
+
+                DB::commit();
+
+                return $customer;
+            }else{
+                return false;
             }
 
-            $customer->save($merge->all());
-
-            return $customer;
-
         } catch (QueryException $exception) {
+            DB::rollback();
             throw new InvalidArgumentException($exception->getMessage());
         }
     }
@@ -113,23 +160,15 @@ class CustomerRepository extends BaseRepository implements CustomerContract
     {
         try {
             $collection = collect($params);
+            $phoneNumber = (substr($collection['phone_number'],0,3)=='+88') ? $collection['phone_number'] : '+88'.$collection['phone_number'];
 
-            /* Get credentials from .env */
-            $token = getenv("TWILIO_AUTH_TOKEN");
-            $twilio_sid = getenv("TWILIO_SID");
-            $twilio_verify_sid = getenv("TWILIO_VERIFY_SID");
-            $twilio = new Client($twilio_sid, $token);
+            $otpSendStatus = getenv('SEND_OTP') ?? verifyOtpByTWILIO($phoneNumber, $collection['verification_code']);
 
-            $verification = $twilio->verify->v2->services($twilio_verify_sid)
-                ->verificationChecks
-                ->create($collection['verification_code'], array('to' => $collection['phone_number']));
+            if ($otpSendStatus) {
 
-            if ($verification->valid) {
+                tap(Customer::where('phone_number', $phoneNumber))->update(['isVerified' => true]);
 
-                $otp = tap(Customer::where('phone_number', $collection['phone_number']))->update(['isVerified' => true]);
-
-                //return $this->findCustomerById($params['id']);
-                return $otp;
+                return Customer::where('phone_number', $phoneNumber)->first();
 
             }else{
                 return false;

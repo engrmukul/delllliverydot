@@ -52,6 +52,8 @@ Route::post('/order', 'API\V1\CustomerController@order')->name('order');
 Route::post('/points', 'API\V1\CustomerController@point')->name('points');
 Route::post('/my-orders', 'API\V1\CustomerController@myOrder')->name('my-orders');
 Route::get('/order-status/{orderId}', 'API\V1\CustomerController@customerOrderDetails')->name('order-status');
+Route::get('/customer-help-and-support', 'API\V1\CustomerController@helpAndSupport')->name('customer-help-and-support');
+Route::get('/customer-terms-and-condition', 'API\V1\CustomerController@termsAndCondition')->name('customer-terms-and-condition');
 
 
 Route::post('/restaurant-order-list', 'API\V1\RestaurantController@restaurantOrderList')->name('restaurant-order-list');

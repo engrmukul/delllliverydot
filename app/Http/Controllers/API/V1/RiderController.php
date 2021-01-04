@@ -85,14 +85,13 @@ class RiderController extends BaseController
     {
         $params = $request->except('_token');
 
-        $otp = $this->riderRepository->riderOTPVerify($params);
+        $rider = $this->riderRepository->riderOTPVerify($params);
 
-        $rider = Rider::where('phone_number', $request->phone_number)->first();
-
-        if ($otp) {
+        if ($rider) {
             return $this->sendResponse($rider, 'Rider phone number valid.',Response::HTTP_OK);
+        }else{
+            return $this->sendResponse(array(), 'Rider code not valid', Response::HTTP_NOT_FOUND);
         }
-        return $this->sendError('Invalid verification code entered!.', 'Internal Server Error' ,Response::HTTP_INTERNAL_SERVER_ERROR);
     }
 
     public function documentUpdate(RiderDocumentUpdateFormRequest $request)
@@ -463,7 +462,7 @@ class RiderController extends BaseController
         if($helpAndSupport->count() > 0){
             return $this->sendResponse($helpAndSupport, 'Help and support list',Response::HTTP_OK);
         }else{
-            return $this->sendResponse(array(), 'Data not updated', Response::HTTP_NOT_FOUND);
+            return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
         }
     }
 
@@ -474,7 +473,7 @@ class RiderController extends BaseController
         if($termsAndCondition){
             return $this->sendResponse(strip_tags($termsAndCondition->description), 'Terms and condition list',Response::HTTP_OK);
         }else{
-            return $this->sendResponse(array(), 'Data not updated', Response::HTTP_NOT_FOUND);
+            return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
         }
     }
 }

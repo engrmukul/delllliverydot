@@ -39,12 +39,12 @@ class RiderRepository extends BaseRepository implements RiderContract
      */
     public function listRider(int $riderId, string $order = 'id', string $sort = 'desc', array $columns = ['*'])
     {
-        return RiderOrder::with('order','order.RestaurantDetails','order.orderDetails', 'order.orderDetails.foods', 'order.orderDetails.foodVariants')->where('rider_id', $riderId)->get();
+        return RiderOrder::with('order', 'order.RestaurantDetails', 'order.orderDetails', 'order.orderDetails.foods', 'order.orderDetails.foodVariants')->where('rider_id', $riderId)->get();
     }
 
     public function listRiderTodayOrder(int $riderId, string $order = 'id', string $sort = 'desc', array $columns = ['*'])
     {
-        return RiderOrder::with('order','order.customer','order.RestaurantDetails','order.orderDetails', 'order.orderDetails.foods', 'order.orderDetails.foodVariants')->whereDate('ride_date','>=', date('Y-m-d'))->where('rider_id', $riderId)->get();
+        return RiderOrder::with('order', 'order.customer', 'order.RestaurantDetails', 'order.orderDetails', 'order.orderDetails.foods', 'order.orderDetails.foodVariants')->whereDate('ride_date', '>=', date('Y-m-d'))->where('rider_id', $riderId)->get();
     }
 
 
@@ -83,7 +83,7 @@ class RiderRepository extends BaseRepository implements RiderContract
     public function findRiderByIdByAdmin(int $id)
     {
         try {
-            return $this->model->with('riderProfile','riderSetting','riderAddress')->findOrFail($id);
+            return $this->model->with('riderProfile', 'riderSetting', 'riderAddress')->findOrFail($id);
 
         } catch (ModelNotFoundException $e) {
 
@@ -103,50 +103,49 @@ class RiderRepository extends BaseRepository implements RiderContract
 
             $collection = collect($params);
 
-            /* Get credentials from .env */
-            /*$token = getenv("TWILIO_AUTH_TOKEN");
-            $twilio_sid = getenv("TWILIO_SID");
-            $twilio_verify_sid = getenv("TWILIO_VERIFY_SID");
-            $twilio = new Client($twilio_sid, $token);
-            $twilio->verify->v2->services($twilio_verify_sid)
-                ->verifications
-                ->create($collection['phone_number'], "sms");*/
+            $phoneNumber = (substr($collection['phone_number'], 0, 3) == '+88') ? $collection['phone_number'] : '+88' . $collection['phone_number'];
 
-            $created_at = date('Y-m-d');
-            $name = 'Rider' . (Rider::where('id', '!=', '')->get()->max('id') + 1);
-            $email = 'rider' . (Rider::where('id', '!=', '')->get()->max('id') + 1).'@dd.com';
+            //SEND OTP
+            if (sendOtpByTWILIO($phoneNumber)) {
 
-            $merge = $collection->merge(compact('created_at','name','email'));
+                $created_at = date('Y-m-d');
+                $name = 'Rider' . (Rider::where('id', '!=', '')->get()->max('id') + 1);
+                $email = 'rider' . (Rider::where('id', '!=', '')->get()->max('id') + 1) . '@dd.com';
 
-            if( Rider::where('phone_number','=', $collection['phone_number'])->count() > 0){
+                $merge = $collection->merge(compact('created_at', 'name', 'email'));
 
-                return $rider = Rider::where('phone_number', $collection['phone_number'])->first();
+                if (Rider::where('phone_number', '=', $collection['phone_number'])->count() > 0) {
+
+                    return $rider = Rider::where('phone_number', $collection['phone_number'])->first();
+                }
+
+                $rider = new Rider($merge->all());
+
+                $rider->save();
+
+                $riderSettings = new RiderSetting();
+
+                $riderSettings->rider_id = $rider->id;
+                $riderSettings->notification = 1;
+                $riderSettings->popup_notification = 1;
+                $riderSettings->sms = 1;
+                $riderSettings->offer_and_promotion = 1;
+
+                $riderSettings->save();
+
+
+                $riderProfile = new RiderProfile();
+
+                $riderProfile->rider_id = $rider->id;
+
+                $riderProfile->save();
+
+                DB::commit();
+
+                return $rider;
+            } else {
+                return false;
             }
-
-            $rider = new Rider($merge->all());
-
-            $rider->save();
-
-            $riderSettings = new RiderSetting();
-
-            $riderSettings->rider_id = $rider->id;
-            $riderSettings->notification = 1;
-            $riderSettings->popup_notification = 1;
-            $riderSettings->sms = 1;
-            $riderSettings->offer_and_promotion = 1;
-
-            $riderSettings->save();
-
-
-            $riderProfile = new RiderProfile();
-
-            $riderProfile->rider_id = $rider->id;
-
-            $riderProfile->save();
-
-            DB::commit();
-
-            return $rider;
 
         } catch (QueryException $exception) {
             DB::rollback();
@@ -158,32 +157,17 @@ class RiderRepository extends BaseRepository implements RiderContract
     {
         try {
             $collection = collect($params);
+            $phoneNumber = (substr($collection['phone_number'],0,3)=='+88') ? $collection['phone_number'] : '+88'.$collection['phone_number'];
 
-            Rider::where('phone_number', $collection['phone_number'])->update(['isVerified' => true]);
+            if (verifyOtpByTWILIO($phoneNumber, $collection['verification_code'])) {
 
-            return true;
+                tap(Rider::where('phone_number', $phoneNumber))->update(['isVerified' => true]);
 
-
-            /* Get credentials from .env */
-            /*$token = getenv("TWILIO_AUTH_TOKEN");
-            $twilio_sid = getenv("TWILIO_SID");
-            $twilio_verify_sid = getenv("TWILIO_VERIFY_SID");
-            $twilio = new Client($twilio_sid, $token);
-
-            $verification = $twilio->verify->v2->services($twilio_verify_sid)
-                ->verificationChecks
-                ->create($collection['verification_code'], array('to' => $collection['phone_number']));
-
-            if ($verification->valid) {
-
-                $otp = tap(Rider::where('phone_number', $collection['phone_number']))->update(['isVerified' => true]);
-
-                //return $this->findRiderById($params['id']);
-                return $otp;
+                return Rider::where('phone_number', $phoneNumber)->first();
 
             }else{
                 return false;
-            }*/
+            }
 
         } catch (QueryException $exception) {
             throw new InvalidArgumentException($exception->getMessage());
@@ -202,13 +186,13 @@ class RiderRepository extends BaseRepository implements RiderContract
 
         $updated_at = date('Y-m-d');
 
-        if(isset($image)){
-            $image = url('/').'/public/img/rider/'.$image;
-        }else{
-            $image = url('/').'/public/img/rider/default.png';
+        if (isset($image)) {
+            $image = url('/') . '/public/img/rider/' . $image;
+        } else {
+            $image = url('/') . '/public/img/rider/default.png';
         }
 
-        $merge = $collection->merge(compact('updated_at','image'));
+        $merge = $collection->merge(compact('updated_at', 'image'));
 
         $rider->update($merge->all());
 
@@ -216,7 +200,7 @@ class RiderRepository extends BaseRepository implements RiderContract
         //UPDATE RESTAURANT ADDRESS
         RiderAddress::where(["rider_id" => $params['rider_id'], 'is_current_address' => 'yes'])->update(
             [
-                "address" =>$params['address'],
+                "address" => $params['address'],
             ]
         );
 
@@ -229,10 +213,10 @@ class RiderRepository extends BaseRepository implements RiderContract
 
         $collection = collect($params)->except('_token');
 
-        if(isset($params['image'])){
-            $image = url('/').'/public/img/rider/'.$params['image'];
-        }else{
-            $image = url('/').'/public/img/rider/default.png';
+        if (isset($params['image'])) {
+            $image = url('/') . '/public/img/rider/' . $params['image'];
+        } else {
+            $image = url('/') . '/public/img/rider/default.png';
         }
 
         $merge = $collection->merge(compact('image'));
