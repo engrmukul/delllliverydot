@@ -16,7 +16,6 @@ use Illuminate\Database\QueryException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Doctrine\Instantiator\Exception\InvalidArgumentException;
 use Illuminate\Support\Facades\DB;
-use Twilio\Rest\Client;
 use Yajra\DataTables\Facades\DataTables;
 
 
@@ -104,6 +103,21 @@ class RestaurantRepository extends BaseRepository implements RestaurantContract
     public function listRestaurant(string $order = 'id', string $sort = 'desc', array $columns = ['*'])
     {
         return Restaurant::with('RestaurantDetails', 'coupon', 'foods')->orderBy('id', 'DESC')->get();
+    }
+
+    public function filterRestaurant($params,string $order = 'id', string $sort = 'desc', array $columns = ['*'])
+    {
+        $collection = collect($params);
+
+        $query = Restaurant::with('RestaurantDetails', 'coupon', 'foods');
+
+        if ($collection['price_range'] && !empty($collection['price_range'])) {
+            $query->whereHas('foods', function ($q) use ($collection){
+                $q->where('restaurant_details.price', '<=', $collection['price_range']);
+            });
+        }
+
+        $query->orderBy('id', 'DESC')->get();
     }
 
     /**

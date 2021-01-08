@@ -17,9 +17,7 @@ use App\Models\Banner;
 use App\Models\Coupon;
 use App\Models\Customer;
 use App\Models\Extra;
-use App\Models\FavoriteRestaurant;
 use App\Models\FoodVariant;
-use App\Models\HelpAndSupport;
 use App\Models\Point;
 use App\Models\PromotionalBanner;
 use App\Models\Restaurant;
@@ -27,7 +25,6 @@ use App\Models\Setting;
 use App\Models\Shop;
 use App\Models\ShopItem;
 use App\Models\ShopPromotion;
-use App\Models\TermsAndCondition;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
@@ -52,6 +49,13 @@ class CustomerController extends BaseController
         $this->restaurantRepository = $restaurantRepository;
     }
 
+    public function __index()
+    {
+        $customers = $this->customerRepository->listCustomer();
+
+        return $this->sendResponse($customers, 'Customer retrieved successfully.', Response::HTTP_OK);
+    }
+
     public function store(CustomerPhoneVerificationFormRequest $request)
     {
         $params = $request->except('_token');
@@ -59,8 +63,8 @@ class CustomerController extends BaseController
         $customer = $this->customerRepository->createCustomer($params);
 
         if ($customer) {
-            return $this->sendResponse($customer, 'Customer create successfully.', Response::HTTP_OK);
-        } else {
+            return $this->sendResponse(array(), 'Customer create successfully.', Response::HTTP_OK);
+        }else{
             return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
         }
     }
@@ -71,12 +75,48 @@ class CustomerController extends BaseController
 
         $customer = $this->customerRepository->customerOTPVerify($params);
 
-        if ($customer) {
+        if ($customer){
             return $this->sendResponse($customer, 'Phone number verify success', Response::HTTP_OK);
         } else {
-            return $this->sendResponse(array(), 'Customer code not valid', Response::HTTP_NOT_FOUND);
+            return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
         }
     }
+
+
+    public function edit($id)
+    {
+        $customer = $this->customerRepository->findCustomerById($id);
+
+        if (!$customer) {
+            return $this->sendResponse($customer, 'Customer retrieved successfully.', Response::HTTP_OK);
+        }
+        return $this->sendError('Unable to create.', 'Internal Server Error', Response::HTTP_INTERNAL_SERVER_ERROR);
+
+    }
+
+    public function update(CustomerUpdateFormRequest $request, Customer $customerModel)
+    {
+        $params = $request->except('_token');
+
+        $customer = $this->customerRepository->updateCustomer($params);
+
+        if (!$customer) {
+            return $this->sendResponse($customer, 'Customer update successfully.', Response::HTTP_OK);
+        }
+        return $this->sendError('Unable to update.', 'Internal Server Error', Response::HTTP_INTERNAL_SERVER_ERROR);
+    }
+
+    public function destroy(Request $request, $id)
+    {
+        $params = $request->except('_token');
+        $customer = $this->customerRepository->deleteCustomer($id, $params);
+
+        if (!$customer) {
+            return $this->sendResponse($customer, 'Customer delete successfully.', Response::HTTP_OK);
+        }
+        return $this->sendError('Unable to create.', 'Internal Server Error', Response::HTTP_INTERNAL_SERVER_ERROR);
+    }
+
 
     public function restaurantList()
     {
@@ -121,10 +161,8 @@ class CustomerController extends BaseController
 
     public function promotionalRestaurants(PromotionalRestaurantsRequest $request)
     {
-        $restaurantList = Restaurant::with(['RestaurantDetails', 'coupon', 'foods',
-            'favoriteRestaurantId' => function ($q) use ($request) {
-                $q->where('customer_id', '=', $request->customer_id);
-            }])->orderBy('id', 'DESC')->get();
+        //$restaurantList = $this->restaurantRepository->listRestaurant();
+        $restaurantList = Restaurant::with('RestaurantDetails', 'coupon', 'foods')->orderBy('id', 'DESC')->get();
 
         $promotionalBanner = PromotionalBanner::where('id', 1)->first();
 
@@ -145,54 +183,9 @@ class CustomerController extends BaseController
         }
     }
 
-    public function filter(Request $request)
-    {
-        $params = $request->except('_token');
-        $banners = Banner::all();
-
-        $restaurantsFavorite = $this->restaurantRepository->filterRestaurant($params);
-        $restaurantsDiscounted = $this->restaurantRepository->filterRestaurant($params);
-        $restaurantsTrending = $this->restaurantRepository->filterRestaurant($params);
-        $restaurantsPopular = $this->restaurantRepository->filterRestaurant($params);
-
-        if ($restaurantsFavorite->count() > 0 || $restaurantsDiscounted->count() > 0 || $restaurantsTrending->count() > 0 || $restaurantsPopular->count() > 0) {
-            $data =
-                array(
-                    'banners' => $banners,
-                    'restaurant' => array(
-                        array(
-                            'title' => 'favorite',
-                            'restaurants' => $restaurantsFavorite
-                        ),
-                        array(
-                            'title' => 'discounted',
-                            'restaurants' => $restaurantsDiscounted
-                        ),
-                        array(
-                            'title' => 'trending',
-                            'restaurants' => $restaurantsTrending
-                        ),
-                        array(
-                            'title' => 'popular',
-                            'restaurants' => $restaurantsPopular
-                        ),
-                    )
-                );
-
-
-            return $this->sendResponse($data, 'Group of Restaurant list.', Response::HTTP_OK);
-        } else {
-            return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
-        }
-
-    }
-
     public function restaurantPanel(Request $request)
     {
-        $items = Food::with(['categories', 'foodVariants',
-            'favoriteFoodId' => function ($q) use ($request) {
-                $q->where('customer_id', '=', $request->customer_id);
-            }])->where('restaurant_id', $request->restaurant_id)->get();
+        $items = Food::with('categories', 'foodVariants')->where('restaurant_id', $request->restaurant_id)->get();
 
         $promotionalFoods = Food::with('coupon')->get();
 
@@ -379,92 +372,11 @@ class CustomerController extends BaseController
         return $this->sendResponse(array(), 'Profile updated successfully.', Response::HTTP_OK);
     }
 
-    public function saveOrUpdateFavoriteFood(Request $request)
-    {
-        $favoriteFood = FavoriteFood::updateOrCreate(
-            ['customer_id' => $request->customer_id, 'food_id' => $request->food_id]
-        );
-
-        if ($favoriteFood) {
-            return $this->sendResponse($favoriteFood, 'Update my favorite list', Response::HTTP_OK);
-        } else {
-            return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
-        }
-    }
-
-    public function removeFavoriteFood(Request $request)
-    {
-        $deleteFavoriteFood = FavoriteFood::where(['customer_id' => $request->customer_id, 'food_id' => $request->food_id])->delete();
-
-        if ($deleteFavoriteFood) {
-            return $this->sendResponse(array(), 'Update my favorite list', Response::HTTP_OK);
-        } else {
-            return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
-        }
-    }
-
-    public function saveOrUpdateFavoriteRestaurant(Request $request)
-    {
-        $favoriteRestaurant = FavoriteRestaurant::updateOrCreate(
-            ['customer_id' => $request->customer_id, 'restaurant_id' => $request->restaurant_id]
-        );
-
-        if ($favoriteRestaurant) {
-            return $this->sendResponse($favoriteRestaurant, 'Update my favorite list', Response::HTTP_OK);
-        } else {
-            return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
-        }
-    }
-
-    public function removeFavoriteRestaurant(Request $request)
-    {
-        $deleteFavoriteRestaurant = FavoriteRestaurant::where(['customer_id' => $request->customer_id, 'restaurant_id' => $request->restaurant_id])->delete();
-
-        if ($deleteFavoriteRestaurant) {
-            return $this->sendResponse(array(), 'Update my favorite list', Response::HTTP_OK);
-        } else {
-            return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
-        }
-    }
-
     public function myFavoriteFood(Request $request)
     {
-        $favoriteFoods = FavoriteFood::with('foods', 'foods.categories', 'foods.restaurants', 'foods.restaurants.restaurantDetails', 'foods.foodVariants')->where('customer_id', $request->customer_id)->get();
-        $favoriteRestaurants = FavoriteRestaurant::with('restaurant', 'restaurantProfile')->where('customer_id', $request->customer_id)->get();
+        $favoriteFoods = FavoriteFood::with('foods')->where('customer_id', $request->customer_id)->get();
 
-        if ($favoriteFoods->count() > 0) {
-
-            $favoriteFoodsArray = array();
-
-            foreach ($favoriteFoods->toArray() as $favoriteFood) {
-                $favoriteFoodData['image'] = $favoriteFood['foods']['image'];
-                $favoriteFoodData['category_name'] = $favoriteFood['foods']['categories']['name'];
-                $favoriteFoodData['food_name'] = $favoriteFood['foods']['name'];
-                $favoriteFoodData['delivery_fee'] = $favoriteFood['foods']['restaurants']['restaurant_details']['delivery_fee'];
-                $favoriteFoodData['current_price'] = "From TK " . doubleval($favoriteFood['foods']['food_variants'][0]['price'] - $favoriteFood['foods']['restaurants']['restaurant_details']['discount']);
-                $favoriteFoodData['prev_price'] = "TK " . doubleval($favoriteFood['foods']['food_variants'][0]['price']);
-
-                $favoriteFoodsArray[] = $favoriteFoodData;
-            }
-
-            if ($favoriteRestaurants->count() > 0) {
-
-                $favoriteRestaurantArray = array();
-
-                foreach ($favoriteRestaurants->toArray() as $favoriteRestaurant) {
-                    $favoriteRestaurantData['restaurant_id'] = $favoriteRestaurant['restaurant_id'];
-                    $favoriteRestaurantData['name'] = $favoriteRestaurant['restaurant']['name'];
-                    $favoriteRestaurantData['phone_number'] = $favoriteRestaurant['restaurant']['phone_number'];
-                    $favoriteRestaurantData['image'] = $favoriteRestaurant['restaurant_profile']['image'];
-                    $favoriteRestaurantArray[] = $favoriteRestaurantData;
-                }
-            }
-
-
-            return $this->sendResponse(array('foods' => $favoriteFoodsArray, 'restaurants' => $favoriteRestaurantArray), 'Update my favorite list', Response::HTTP_OK);
-        } else {
-            return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
-        }
+        return $this->sendResponse($favoriteFoods, 'My favorite items.', Response::HTTP_OK);
     }
 
     public function myDeliverySave(DeliveryStoreFormRequest $request)
@@ -559,7 +471,7 @@ class CustomerController extends BaseController
 
         $orderData = json_decode($request->getContent(), true);
 
-        if ($orderData) {
+        if($orderData){
             $order = new Order();
 
             $order->customer_id = $orderData['customer_id'];
@@ -581,9 +493,9 @@ class CustomerController extends BaseController
             $foodArray = array();
             foreach ($orderData['carts'] as $key => $item) {
 
-                if ($item['extraItemId'] == 0 || $item['extraItemId'] == NULL) {
+                if($item['extraItemId'] == 0 || $item['extraItemId'] == NULL) {
                     $item['extraItemId'] = NULL;
-                } else {
+                }else{
                     $item['extraItemId'] = $item['extraItemId'];
                 }
 
@@ -594,7 +506,7 @@ class CustomerController extends BaseController
                 $foodData['food_quantity'] = $item['quantity'];
                 $foodData['extra_id'] = $item['extraItemId'];
                 $foodData['extra_price'] = $item['extraItemPrice'] ? $item['extraItemPrice'] : 0;
-                $foodData['sub_total'] = ($item['price'] * $item['quantity']) + $item['extraItemPrice'];
+                $foodData['sub_total'] = ($item['price']*$item['quantity']) + $item['extraItemPrice'];
 
                 $foodArray[] = $foodData;
             }
@@ -606,40 +518,42 @@ class CustomerController extends BaseController
             //SEND NOTIFICATION
             $orderId = $order->id;
             $foodName = FoodVariant::where('id', $item['foodVariantId'])->first()->name;
-            $deviceToken = Restaurant::where('id', $orderData['restaurantId'])->first()->device_token;
+            $deviceToken = Restaurant::where('id',$orderData['restaurantId'])->first()->device_token;
 
             //SENT NOTIFICATION
-            sendNotificationFCM($deviceToken, $orderId, $foodName, $orderFrom = 'Customer', 'NEW_ORDER_FOR_RESTAURANT');
+            sendNotificationFCM($deviceToken, $orderId, $foodName, $orderFrom='Customer', 'NEW_ORDER_FOR_RESTAURANT');
 
 
             //POINT SAVE
             $pointData['customer_id'] = $orderData['customer_id'];
             $pointData['order_id'] = $order->id;
             $pointData['amount'] = doubleval($orderData['sub_total']);
-            $pointData['point'] = doubleval(($orderData['sub_total'] * 10) / 100);
+            $pointData['point'] = doubleval(($orderData['sub_total'] * 10)/100);
 
             Point::insert($pointData);
 
             $orderStatus = Order::with('RestaurantDetails')->where('id', $order->id)->orderBy('id', 'DESC')->first();
 
-            if ($orderStatus) {
+            if($orderStatus)
+            {
                 return $this->sendResponse($orderStatus, 'My order list.', Response::HTTP_OK);
-            } else {
+            }else{
                 return $this->sendResponse(array(), 'Data not save', Response::HTTP_NOT_FOUND);
             }
 
-        } else {
+        }else{
             return $this->sendResponse(array(), 'Data not save', Response::HTTP_NOT_FOUND);
         }
     }
 
-    public function customerOrderDetails($orderId = '')
+    public function customerOrderDetails($orderId='')
     {
         $orderStatus = Order::with('RestaurantDetails')->where('id', $orderId)->orderBy('id', 'DESC')->first();
 
-        if ($orderStatus) {
+        if($orderStatus)
+        {
             return $this->sendResponse($orderStatus, 'My order list.', Response::HTTP_OK);
-        } else {
+        }else{
             return $this->sendResponse(array(), 'Data not save', Response::HTTP_NOT_FOUND);
         }
     }
@@ -647,12 +561,13 @@ class CustomerController extends BaseController
 
     public function myOrder(Request $request)
     {
-        $myOrders = Order::with('orderDetails', 'orderDetails.foods')->where('customer_id', $request->customer_id)->orderBy('id', 'DESC')->get();
+        $myOrders = Order::with('orderDetails','orderDetails.foods')->where('customer_id', $request->customer_id)->orderBy('id', 'DESC')->get();
 
-        if ($myOrders->count() > 0) {
+        if($myOrders->count() > 0)
+        {
             return $this->sendResponse($myOrders, 'My order list.', Response::HTTP_OK);
-        } else {
-            return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
+        }else{
+            return $this->sendResponse(array(), 'Data not save', Response::HTTP_NOT_FOUND);
         }
     }
 
@@ -698,7 +613,7 @@ class CustomerController extends BaseController
     }
 
     //SHOP ITEM LIST
-    public function shopItemList($shopId = '')
+    public function shopItemList($shopId='')
     {
         $shopItemList = ShopItem::where('shop_id', $shopId)->get();
 
@@ -713,28 +628,17 @@ class CustomerController extends BaseController
     //POINT LIST
     public function point(Request $request)
     {
-        $points = Point::with('orders', 'orders.RestaurantDetails', 'orders.orderDetails', 'orders.orderDetails.foods', 'orders.orderDetails.foodVariants')
+        $points = Point::with('orders','orders.RestaurantDetails', 'orders.orderDetails','orders.orderDetails.foods')
             ->where('customer_id', $request->customer_id)
             ->get();
 
         if ($points->count() > 0) {
-            $pointsList = [];
-
-            foreach ($points->toArray() as $key => $point) {
-
-                $pointData['point'] = $point['point'] . ' PTS';
-                $pointData['order_date'] = date('Y-m-d', strtotime($point['orders']['order_date']));
-                $pointData['item'] = $point['orders']['order_details'][0]['foods']['name'] . ', ' . $point['orders']['order_details'][0]['food_variants'][0]['name'] . ', ' . $point['orders']['restaurant_details']['name'];
-
-                $pointsList[] = $pointData;
-            }
-
-
             $data = array(
                 'earned_point' => $points->sum('point'),
-                'points' => $pointsList
-
+                'points_list' => $points
             );
+
+
 
             return $this->sendResponse($data, 'Point list', Response::HTTP_OK);
 
@@ -743,25 +647,5 @@ class CustomerController extends BaseController
         }
     }
 
-    public function helpAndSupport()
-    {
-        $helpAndSupport = HelpAndSupport::select('question', 'answer')->where('type', 'customer')->get();
 
-        if ($helpAndSupport->count() > 0) {
-            return $this->sendResponse($helpAndSupport, 'Help and support list', Response::HTTP_OK);
-        } else {
-            return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
-        }
-    }
-
-    public function termsAndCondition()
-    {
-        $termsAndCondition = TermsAndCondition::where('type', 'customer')->first();
-
-        if ($termsAndCondition) {
-            return $this->sendResponse(strip_tags($termsAndCondition->description), 'Terms and condition list', Response::HTTP_OK);
-        } else {
-            return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
-        }
-    }
 }

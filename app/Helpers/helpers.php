@@ -12,24 +12,28 @@ use Twilio\Rest\Client;
 function sendOtpByTWILIO($phoneNumber){
 
     try {
-        $twilo = TWILIO::where('TWILIO_AUTH_TOKEN','!=','')
+        if(getenv('SEND_OTP') == TRUE){
+            return TRUE;
+        }else{
+            $twilo = TWILIO::where('TWILIO_AUTH_TOKEN','!=','')
                 ->where('TWILIO_SID','!=','')
                 ->where('TWILIO_VERIFY_SID','!=','')
                 ->first();
 
-        $token = $twilo->TWILIO_AUTH_TOKEN;
-        $twilio_sid = $twilo->TWILIO_SID;
-        $twilio_verify_sid = $twilo->TWILIO_VERIFY_SID;
+            $token = $twilo->TWILIO_AUTH_TOKEN;
+            $twilio_sid = $twilo->TWILIO_SID;
+            $twilio_verify_sid = $twilo->TWILIO_VERIFY_SID;
 
-        $twilio = new Client($twilio_sid, $token);
-        $sendOtp = $twilio->verify->v2->services($twilio_verify_sid)
-                    ->verifications
-                    ->create($phoneNumber, "sms");
+            $twilio = new Client($twilio_sid, $token);
+            $sendOtp = $twilio->verify->v2->services($twilio_verify_sid)
+                ->verifications
+                ->create($phoneNumber, "sms");
 
-        if($sendOtp){
-            return TRUE;
-        }else{
-            return FALSE;
+            if($sendOtp){
+                return TRUE;
+            }else{
+                return FALSE;
+            }
         }
 
     } catch (ErrorException $e) {
@@ -46,24 +50,28 @@ function sendOtpByTWILIO($phoneNumber){
  */
 function verifyOtpByTWILIO($phoneNumber, $verificationCode){
     try {
-        $twilo = TWILIO::where('TWILIO_AUTH_TOKEN','!=','')
-            ->where('TWILIO_SID','!=','')
-            ->where('TWILIO_VERIFY_SID','!=','')
-            ->first();
-
-        $token = $twilo->TWILIO_AUTH_TOKEN;
-        $twilio_sid = $twilo->TWILIO_SID;
-        $twilio_verify_sid = $twilo->TWILIO_VERIFY_SID;
-
-        $twilio = new Client($twilio_sid, $token);
-        $verification = $twilio->verify->v2->services($twilio_verify_sid)
-                        ->verificationChecks
-                        ->create($verificationCode, array('to' => $phoneNumber));
-
-        if($verification->valid){
+        if(getenv('SEND_OTP') == TRUE){
             return TRUE;
-        }else{
-            return FALSE;
+        }else {
+            $twilo = TWILIO::where('TWILIO_AUTH_TOKEN', '!=', '')
+                ->where('TWILIO_SID', '!=', '')
+                ->where('TWILIO_VERIFY_SID', '!=', '')
+                ->first();
+
+            $token = $twilo->TWILIO_AUTH_TOKEN;
+            $twilio_sid = $twilo->TWILIO_SID;
+            $twilio_verify_sid = $twilo->TWILIO_VERIFY_SID;
+
+            $twilio = new Client($twilio_sid, $token);
+            $verification = $twilio->verify->v2->services($twilio_verify_sid)
+                ->verificationChecks
+                ->create($verificationCode, array('to' => $phoneNumber));
+
+            if ($verification->valid) {
+                return TRUE;
+            } else {
+                return FALSE;
+            }
         }
 
     } catch (ErrorException $e) {

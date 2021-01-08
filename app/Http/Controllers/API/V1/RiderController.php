@@ -462,7 +462,7 @@ class RiderController extends BaseController
         if($helpAndSupport->count() > 0){
             return $this->sendResponse($helpAndSupport, 'Help and support list',Response::HTTP_OK);
         }else{
-            return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
+            return $this->sendResponse(array(), 'Data not updated', Response::HTTP_NOT_FOUND);
         }
     }
 
@@ -473,7 +473,7 @@ class RiderController extends BaseController
         if($termsAndCondition){
             return $this->sendResponse(strip_tags($termsAndCondition->description), 'Terms and condition list',Response::HTTP_OK);
         }else{
-            return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
+            return $this->sendResponse(array(), 'Data not updated', Response::HTTP_NOT_FOUND);
         }
     }
 }

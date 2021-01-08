@@ -33,6 +33,8 @@ Route::post('restaurant-panel', 'API\V1\CustomerController@restaurantPanel')->na
 
 Route::post('food-variants', 'API\V1\CustomerController@foodVariants')->name('food-variants');
 
+Route::post('filter', 'API\V1\CustomerController@filter')->name('filter');
+
 Route::post('/items', 'API\V1\CustomerController@itemList')->name('items');
 Route::post('/my-location-save', 'API\V1\CustomerController@myLocationSave')->name('my-location-save');
 Route::post('/my-location-update', 'API\V1\CustomerController@myLocationUpdate')->name('my-location-update');
@@ -41,7 +43,15 @@ Route::post('/my-locations', 'API\V1\CustomerController@myLocation')->name('my-l
 Route::post('/selected-location', 'API\V1\CustomerController@customerSelectedLocation')->name('selected-location');
 Route::post('/my-profile', 'API\V1\CustomerController@myProfile')->name('my-profile');
 Route::post('/profile-update', 'API\V1\CustomerController@myProfileUpdate')->name('profile-update');
+
+Route::post('/save-favorite-food', 'API\V1\CustomerController@saveOrUpdateFavoriteFood')->name('save-favorite-food');
+Route::post('/remove-favorite-food', 'API\V1\CustomerController@removeFavoriteFood')->name('remove-favorite-food');
+
+Route::post('/save-favorite-restaurant', 'API\V1\CustomerController@saveOrUpdateFavoriteRestaurant')->name('save-favorite-restaurant');
+Route::post('/remove-favorite-restaurant', 'API\V1\CustomerController@removeFavoriteRestaurant')->name('remove-favorite-restaurant');
+
 Route::post('/my-favorite-foods', 'API\V1\CustomerController@myFavoriteFood')->name('my-favorite-foods');
+
 Route::post('/my-delivery-save', 'API\V1\CustomerController@myDeliverySave')->name('my-delivery-save');
 Route::post('/my-delivery', 'API\V1\CustomerController@myDeliveryList')->name('my-delivery');
 Route::post('/settings', 'API\V1\CustomerController@settings')->name('settings');

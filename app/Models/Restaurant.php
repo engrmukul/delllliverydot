@@ -63,4 +63,8 @@ class Restaurant extends Model
         return $this->hasMany('App\Models\RestaurantReview');
     }
 
+    public function favoriteRestaurantId(){
+        return $this->hasOne('App\Models\FavoriteRestaurant');
+    }
+
 }
