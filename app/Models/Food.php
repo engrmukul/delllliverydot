@@ -15,6 +15,7 @@ class Food extends Model
      * @var string
      */
     protected $table = 'foods';
+    protected $appends = ['isFavorite'];
 
     /**
      * @var array
@@ -61,7 +62,7 @@ class Food extends Model
         return $this->hasOne(Restaurant::class,'id','restaurant_id');
     }
 
-    public function favoriteFoodId()
+    public function favoriteFood()
     {
         return $this->hasOne('App\Models\FavoriteFood');
     }
@@ -74,6 +75,10 @@ class Food extends Model
     public function coupon()
     {
         return $this->hasOne(Coupon::class);
+    }
+
+    public function getIsFavoriteAttribute(){
+        return count((array)$this->favoriteFood) > 0 ? true : false;
     }
 
 }

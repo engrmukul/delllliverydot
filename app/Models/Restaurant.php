@@ -15,6 +15,8 @@ class Restaurant extends Model
      * @var string
      */
     protected $table = 'restaurants';
+    protected $appends = ['isFavorite'];
+
 
     /**
      * @var array
@@ -36,7 +38,7 @@ class Restaurant extends Model
      * @var array
      */
     protected $casts  = [
-
+        'isFavorite' => 'boolean'
     ];
 
     public function restaurantDetails(){
@@ -63,8 +65,12 @@ class Restaurant extends Model
         return $this->hasMany('App\Models\RestaurantReview');
     }
 
-    public function favoriteRestaurantId(){
+    public function favoriteRestaurant(){
         return $this->hasOne('App\Models\FavoriteRestaurant');
+    }
+
+    public function getIsFavoriteAttribute(){
+        return count((array)$this->favoriteRestaurant) > 0 ? true : false;
     }
 
 }
