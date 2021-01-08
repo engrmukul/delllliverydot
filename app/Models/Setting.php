@@ -31,7 +31,9 @@ class Setting extends Model
      * @var array
      */
     protected $casts  = [
-
+        'notification' => 'boolean',
+        'sms' => 'boolean',
+        'offer_and_promotion' => 'boolean',
     ];
 
 }
