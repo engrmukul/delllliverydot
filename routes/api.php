@@ -41,8 +41,8 @@ Route::post('/my-location-update', 'API\V1\CustomerController@myLocationUpdate')
 Route::post('/my-location-delete', 'API\V1\CustomerController@myLocationDelete')->name('my-location-delete');
 Route::post('/my-locations', 'API\V1\CustomerController@myLocation')->name('my-locations');
 Route::post('/selected-location', 'API\V1\CustomerController@customerSelectedLocation')->name('selected-location');
-Route::post('/my-profile', 'API\V1\CustomerController@myProfile')->name('my-profile');
-Route::post('/profile-update', 'API\V1\CustomerController@myProfileUpdate')->name('profile-update');
+Route::post('/customer-profile', 'API\V1\CustomerController@myProfile')->name('customer-profile');
+Route::post('/customer-profile-update', 'API\V1\CustomerController@customerProfileUpdate')->name('customer-profile-update');
 
 Route::post('/save-favorite-food', 'API\V1\CustomerController@saveOrUpdateFavoriteFood')->name('save-favorite-food');
 Route::post('/remove-favorite-food', 'API\V1\CustomerController@removeFavoriteFood')->name('remove-favorite-food');
@@ -52,8 +52,6 @@ Route::post('/remove-favorite-restaurant', 'API\V1\CustomerController@removeFavo
 
 Route::post('/my-favorite-foods', 'API\V1\CustomerController@myFavoriteFood')->name('my-favorite-foods');
 
-Route::post('/my-delivery-save', 'API\V1\CustomerController@myDeliverySave')->name('my-delivery-save');
-Route::post('/my-delivery', 'API\V1\CustomerController@myDeliveryList')->name('my-delivery');
 Route::post('/settings', 'API\V1\CustomerController@settings')->name('settings');
 Route::post('/customer-settings', 'API\V1\CustomerController@settingsUpdate')->name('customer-settings');
 
@@ -64,6 +62,13 @@ Route::post('/my-orders', 'API\V1\CustomerController@myOrder')->name('my-orders'
 Route::get('/order-status/{orderId}', 'API\V1\CustomerController@customerOrderDetails')->name('order-status');
 Route::get('/customer-help-and-support', 'API\V1\CustomerController@helpAndSupport')->name('customer-help-and-support');
 Route::get('/customer-terms-and-condition', 'API\V1\CustomerController@termsAndCondition')->name('customer-terms-and-condition');
+
+Route::post('/restaurant-details', 'API\V1\CustomerController@restaurantDetails')->name('restaurant-details');
+
+
+Route::post('/customer-delivery-save', 'API\V1\CustomerController@myDeliverySave')->name('customer-delivery-save');
+Route::post('/customer-delivery-list', 'API\V1\CustomerController@myDeliveryList')->name('customer-delivery');
+
 
 
 Route::post('/restaurant-order-list', 'API\V1\RestaurantController@restaurantOrderList')->name('restaurant-order-list');

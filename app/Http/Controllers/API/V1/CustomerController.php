@@ -39,6 +39,7 @@ use App\Models\FavoriteFood;
 use App\Models\Food;
 use App\Models\Order;
 use App\Models\OrderDetail;
+use Illuminate\Support\Facades\DB;
 use stdClass;
 
 class CustomerController extends BaseController
@@ -329,30 +330,81 @@ class CustomerController extends BaseController
     public function myProfile(Request $request)
     {
         $customer = Customer::where('id', $request->customer_id)->first();
-        $customer->address = CustomerAddress::select('address')->where('customer_id', $request->customer_id)->orderBy('id', 'DESC')->limit(1)->get();
+        $customerProfile = CustomerProfile::where('customer_id', $request->customer_id)->first();
 
-        return $this->sendResponse($customer, 'Customer profile data.', Response::HTTP_OK);
+        $customer->image = $customerProfile->image;
+        $customer->address = $customerProfile->address;
+
+        if ($customer) {
+            return $this->sendResponse($customer, 'Customer selected address', Response::HTTP_OK);
+        } else {
+            return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
+        }
     }
 
-
-    public function myProfileUpdate(Request $request)
+    public function customerProfileUpdate(CustomerUpdateFormRequest $request, Customer $customerModel)
     {
-        Customer::where("id", $request->customer_id)->update(
-            [
-                "name" => $request->name,
-                "email" => $request->email,
-                "phone_number" => $request->phone_number,
-            ]
-        );
+        try {
+            DB::beginTransaction();
 
-        CustomerAddress::where("customer_id", $request->customer_id)->update(
-            [
-                "address" => $request->address,
-            ]
-        );
+            if ($request->file('image') != null) {
+
+                $imageName = $this->saveImages($request->file('image'), 'img/customer/', 100, 100);
+
+                $image = url('/') . '/public/img/customer/' . $imageName;
+            } else {
+                $image = url('/') . '/public/img/customer/default.png';
+            }
+
+            Customer::where("id", $request->customer_id)->update(
+                [
+                    "phone_number" => $request->phone_number,
+                    "name" => $request->name,
+                    "email" => $request->email,
+                    "password" => $request->password,
+                ]
+            );
+
+            if ($request->file('image') != null) {
+                CustomerProfile::where("customer_id", $request->customer_id)->update(
+                    [
+                        "image" => $image,
+                        "address" => $request->address
+                    ]
+                );
+            } else {
+                CustomerProfile::where("customer_id", $request->customer_id)->update(
+                    [
+                        "address" => $request->address
+                    ]
+                );
+            }
+
+            CustomerAddress::where("customer_id", $request->customer_id)->update(
+                [
+                    "address" => $request->address,
+                    "is_current_address" => "yes"
+                ]
+            );
 
 
-        return $this->sendResponse(array(), 'Profile updated successfully.', Response::HTTP_OK);
+            $customer = Customer::where('id', $request->customer_id)->first();
+            $customerProfile = CustomerProfile::where('customer_id', $request->customer_id)->first();
+
+            $customer->image = $customerProfile->image;
+            $customer->address = $customerProfile->address;
+
+            DB::commit();
+
+            if ($customer) {
+                return $this->sendResponse($customer, 'Customer update successfully.', Response::HTTP_OK);
+            } else {
+                return $this->sendResponse(array(), 'Data not updated', Response::HTTP_NOT_FOUND);
+            }
+        } catch (QueryException $exception) {
+            DB::rollback();
+            throw new InvalidArgumentException($exception->getMessage());
+        }
     }
 
     public function saveOrUpdateFavoriteFood(Request $request)
@@ -912,6 +964,17 @@ class CustomerController extends BaseController
 
         if ($termsAndCondition) {
             return $this->sendResponse(strip_tags($termsAndCondition->description), 'Terms and condition list', Response::HTTP_OK);
+        } else {
+            return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
+        }
+    }
+
+    public function restaurantDetails(Request $request)
+    {
+        $restaurantDetails = Restaurant::with('RestaurantDetails')->where('id', $request->restaurant_id)->first();
+
+        if ($restaurantDetails) {
+            return $this->sendResponse($restaurantDetails, 'Restaurant details.', Response::HTTP_OK);
         } else {
             return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
         }

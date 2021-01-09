@@ -26,7 +26,7 @@ class CustomerUpdateFormRequest extends FormRequest
     {
         if ($this->request->has('phone_number')){
             $phone_number = $this->phone_number;
-            $customerId = $this->id;
+            $customerId = $this->customer_id;
         }
 
         return [
