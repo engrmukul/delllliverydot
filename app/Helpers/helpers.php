@@ -12,7 +12,7 @@ use Twilio\Rest\Client;
 function sendOtpByTWILIO($phoneNumber){
 
     try {
-        if(getenv('SEND_OTP') == TRUE){
+        if(getenv('SEND_OTP') == 'TRUE'){
             return TRUE;
         }else{
             $twilo = TWILIO::where('TWILIO_AUTH_TOKEN','!=','')
@@ -50,7 +50,7 @@ function sendOtpByTWILIO($phoneNumber){
  */
 function verifyOtpByTWILIO($phoneNumber, $verificationCode){
     try {
-        if(getenv('SEND_OTP') == TRUE){
+        if(getenv('SEND_OTP') == 'TRUE'){
             return TRUE;
         }else {
             $twilo = TWILIO::where('TWILIO_AUTH_TOKEN', '!=', '')

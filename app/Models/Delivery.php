@@ -52,4 +52,9 @@ class Delivery extends Model
 
     ];
 
+
+    public function getPickupTimeAttribute($pickup_time){
+        return date('Y-m-d', strtotime($pickup_time));
+    }
+
 }

@@ -16,6 +16,8 @@ class Shop extends Model
      */
     protected $table = 'shops';
     public $timestamps = false;
+    protected $appends = ['coupon','ratting','isFavorite'];
+
 
 
     /**
@@ -44,7 +46,33 @@ class Shop extends Model
      * @var array
      */
     protected $casts  = [
-
+        'delivery_range' => 'int',
+        'delivery_fee' => 'int',
+        'discount' => 'int',
+        'available_for_delivery' => 'int',
+        'closed_shop' => 'int',
+        'isFavorite' => 'boolean',
     ];
+
+    public function getDeliveryFeeAttribute(){
+        return "Free delivery";
+    }
+
+    public function getCouponAttribute(){
+        return "Use DOT100";
+    }
+
+    public function getRattingAttribute(){
+        return "4.5(250)";
+    }
+
+    public function favoriteShop()
+    {
+        return $this->hasOne('App\Models\FavoriteShop');
+    }
+
+    public function getIsFavoriteAttribute(){
+        return count((array)$this->favoriteShop) > 0 ? true : false;
+    }
 
 }

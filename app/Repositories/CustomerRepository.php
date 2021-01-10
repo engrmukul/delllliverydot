@@ -88,7 +88,7 @@ class CustomerRepository extends BaseRepository implements CustomerContract
             $phoneNumber = (substr($collection['phone_number'],0,3)=='+88') ? $collection['phone_number'] : '+88'.$collection['phone_number'];
 
             //SEND OTP
-            if(sendOtpByTWILIO($phoneNumber)){
+            if(sendOtpByTWILIO($phoneNumber) == true){
                 //DEFAULT CUSTOMER DATA
                 $maxId = Customer::where('id', '!=', '')->get()->count() + 1;
                 $name = "Customer". $maxId;
@@ -160,7 +160,7 @@ class CustomerRepository extends BaseRepository implements CustomerContract
             $collection = collect($params);
             $phoneNumber = (substr($collection['phone_number'],0,3)=='+88') ? $collection['phone_number'] : '+88'.$collection['phone_number'];
 
-            if (verifyOtpByTWILIO($phoneNumber, $collection['verification_code'])) {
+            if (verifyOtpByTWILIO($phoneNumber, $collection['verification_code']) == true) {
 
                 tap(Customer::where('phone_number', $phoneNumber))->update(['isVerified' => true]);
 

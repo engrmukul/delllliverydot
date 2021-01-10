@@ -70,9 +70,19 @@ class CustomerController extends BaseController
     {
         $params = $request->except('_token');
 
-        $customer = $this->customerRepository->customerOTPVerify($params);
+        $customerVerify = $this->customerRepository->customerOTPVerify($params);
 
-        if ($customer) {
+        if ($customerVerify) {
+
+            $phoneNumber = (substr($request->phone_number,0,3)=='+88') ? $request->phone_number : '+88'.$request->phone_number;
+
+            $customer = Customer::where('phone_number', $phoneNumber)->first();
+
+            $customerProfile = CustomerProfile::where('customer_id', $customer->id)->first();
+
+            $customer->image = $customerProfile ? $customerProfile->image : "";
+            $customer->address = $customerProfile ? $customerProfile->address : "";
+
             return $this->sendResponse($customer, 'Phone number verify success', Response::HTTP_OK);
         } else {
             return $this->sendResponse(array(), 'Customer code not valid', Response::HTTP_NOT_FOUND);
@@ -356,12 +366,14 @@ class CustomerController extends BaseController
                 $image = url('/') . '/public/img/customer/default.png';
             }
 
+            $phoneNumber = (substr($request->phone_number,0,3)=='+88') ? $request->phone_number : '+88'.$request->phone_number;
+
             Customer::where("id", $request->customer_id)->update(
                 [
-                    "phone_number" => $request->phone_number,
+                    "phone_number" => $phoneNumber,
                     "name" => $request->name,
                     "email" => $request->email,
-                    "password" => $request->password,
+                    "password" => 123456,
                 ]
             );
 
@@ -696,6 +708,7 @@ class CustomerController extends BaseController
         $myDelivery->instructions = $request->instructions;
         $myDelivery->pickup_time = $request->pickup_time;
         $myDelivery->status = 'processing';
+        $myDelivery->send_date = date('Y-m-d');
 
         if ($myDelivery->save()) {
             return $this->sendResponse($myDelivery, 'Delivery added successfully.', Response::HTTP_OK);
@@ -709,7 +722,19 @@ class CustomerController extends BaseController
         $deliveries = Delivery::where('customer_id', $request->customer_id)->get();
 
         if ($deliveries->count() > 0) {
-            return $this->sendResponse($deliveries, 'My delivery list.', Response::HTTP_OK);
+            $deliveryDataArray = array();
+            foreach ($deliveries as $key => $delivery){
+                $deliveryData['send_date'] = $delivery->send_date;
+                $deliveryData['item_name'] = $delivery->item_name;
+                $deliveryData['to'] = $delivery->to_name .", ". $delivery->to_address;
+                $deliveryData['to_phone'] = $delivery->to_phone;
+                $deliveryData['est'] = $delivery->pickup_time;
+                $deliveryData['status'] = $delivery->status;
+
+                $deliveryDataArray[] = $deliveryData;
+            }
+
+            return $this->sendResponse($deliveryDataArray, 'My delivery list.', Response::HTTP_OK);
         } else {
             return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
         }
@@ -889,10 +914,27 @@ class CustomerController extends BaseController
         $shopList = Shop::all();
 
         if ($shopList->count() > 0) {
+
+            $shopListDataArray = array();
+
+            foreach ($shopList as $shop){
+                $shopListData['id'] = $shop->id;
+                $shopListData['image'] = $shop->image;
+                $shopListData['name'] = $shop->name;
+                $shopListData['delivery_fee'] = $shop->delivery_fee;
+                $shopListData['description'] = $shop->description;
+                $shopListData['ratting'] = $shop->ratting;
+                $shopListData['coupon'] = $shop->coupon;
+                $shopListData['delivery_time'] = $shop->delivery_time;
+                $shopListData['is_favorite'] = $shop->isFavorite;
+
+                $shopListDataArray[] = $shopListData;
+            }
+
             $data = array(
                 'message' => $shopPromotion[0]->message,
                 'banner' => $shopPromotion[0]->image,
-                'shops' => $shopList
+                'shops' => $shopListDataArray
             );
             return $this->sendResponse($data, 'Shop list', Response::HTTP_OK);
 
@@ -902,12 +944,36 @@ class CustomerController extends BaseController
     }
 
     //SHOP ITEM LIST
-    public function shopItemList($shopId = '')
+    public function shopItemList(Request $request)
     {
-        $shopItemList = ShopItem::where('shop_id', $shopId)->get();
-
+        $shopItemList = ShopItem::where('shop_id', $request->shop_id)->get();
+        $shopDataArray = array();
         if ($shopItemList->count() > 0) {
-            return $this->sendResponse($shopItemList, 'Shop item list', Response::HTTP_OK);
+
+            $banner = "http://rongtulibd.com/deliverydot/public/img/customer/default.png";
+
+            $headerData['coupon'] = $shopItemList[0]['coupon'];
+            $headerData['delivery_fee'] = $shopItemList[0]['delivery_fee'];
+            $headerData['description'] = $shopItemList[0]['description'];
+            $headerData['ratting'] = $shopItemList[0]['ratting'];
+            $headerData['is_favorite'] = $shopItemList[0]['is_favorite'];
+
+            foreach ($shopItemList as $shop){
+                $shopData['image'] = $shop->image;
+                $shopData['item_name'] = $shop->item_name;
+                $shopData['price'] = $shop->price;
+                $shopData['discount'] = $shop->discount;
+
+                $shopDataArray[] = $shopData;
+            }
+
+            $data = array(
+                'banner' => $banner,
+                'promotion_data' => $headerData,
+                'items' => $shopDataArray,
+            );
+
+            return $this->sendResponse($data, 'Shop item list', Response::HTTP_OK);
 
         } else {
             return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);

@@ -132,7 +132,7 @@ Route::post('/restaurant-complain', 'API\V1\RestauranrController@storeComplain')
 
 //SHOP API ROUTE
 Route::get('/shops', 'API\V1\CustomerController@shopList')->name('shops');
-Route::get('/shop-items/{shopId}', 'API\V1\CustomerController@shopItemList')->name('shop-items');
+Route::post('/shop-items', 'API\V1\CustomerController@shopItemList')->name('shop-items');
 
 
 Route::fallback(function(){
