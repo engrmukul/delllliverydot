@@ -230,4 +230,19 @@ class CustomerRepository extends BaseRepository implements CustomerContract
     {
         return $this->shopWiseAllData();
     }
+
+    public function settingsUpdate(array $params)
+    {
+        $settings = new Setting();
+
+        $collection = collect($params)->except('_token');
+
+        $customer_id = $collection['customer_id'];
+
+        $merge = $collection->merge(compact('customer_id'));
+
+        $affected = $settings->where('customer_id', $params['customer_id'])->update($merge->all());
+
+        return $affected;
+    }
 }

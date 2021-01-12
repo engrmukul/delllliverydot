@@ -8,6 +8,7 @@ use App\Http\Requests\CustomerAddressUpdateFormRequest;
 use App\Http\Requests\CustomerOrderRequest;
 use App\Http\Requests\CustomerOTPVerificationFormRequest;
 use App\Http\Requests\CustomerPhoneVerificationFormRequest;
+use App\Http\Requests\CustomerSettingsFormRequest;
 use App\Http\Requests\CustomerStoreFormRequest;
 use App\Http\Requests\CustomerUpdateFormRequest;
 use App\Http\Requests\DeliveryStoreFormRequest;
@@ -751,23 +752,18 @@ class CustomerController extends BaseController
         }
     }
 
-
-    public function settingsUpdate(Request $request)
+    public function settingsUpdate(CustomerSettingsFormRequest $request)
     {
-        Setting::where("customer_id", $request->customer_id)->update(
-            [
-                "notification" => $request->notification,
-                "sms" => $request->sms,
-                "offer_and_promotion" => $request->offer_and_promotion,
-            ]
-        );
+        $params = $request->except('_token');
+
+        $this->customerRepository->settingsUpdate($params);
 
         $settings = Setting::where('customer_id', $request->customer_id)->first();
 
-        if ($settings) {
-            return $this->sendResponse($settings, 'My settings.', Response::HTTP_OK);
-        } else {
-            return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
+        if ($settings->count() > 0) {
+            return $this->sendResponse($settings, 'Customer settings update successfully.',Response::HTTP_OK);
+        }else {
+            return $this->sendResponse(array(), 'Data not updated', Response::HTTP_NOT_FOUND);
         }
     }
 
@@ -960,7 +956,7 @@ class CustomerController extends BaseController
 
             foreach ($shopItemList as $shop){
                 $shopData['image'] = $shop->image;
-                $shopData['item_name'] = $shop->item_name;
+                $shopData['item_name'] = $shop->name;
                 $shopData['price'] = $shop->price;
                 $shopData['discount'] = $shop->discount;
 
