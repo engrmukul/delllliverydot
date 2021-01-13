@@ -129,3 +129,50 @@ function sendNotificationFCM($deviceToken, $orderId, $foodName, $orderFrom, $cli
 
     return $result_noti;
 }
+
+
+/**
+ * @param $deviceToken
+ * @param $orderId
+ * @param $foodName
+ * @return int
+ */
+function sendStatusNotificationFCM($deviceToken, $message)
+{
+    $accesstoken = "key=AAAA6DftdWk:APA91bEwkeR1wHImQVk_ryC5Nfk8O1GK2E1dDamgTN-nzTStibnK2SFj5n2qkuXYIr8ZhU7hJlfLADmsq_HctdmEo_r4RJYNHot60RUo-Vmt2_ovvZUfKd3bCDqu-Q1OadOGa-VEisQZ";
+
+    $URL = 'https://fcm.googleapis.com/fcm/send';
+
+    $post_data = '{
+            "to" : "' . $deviceToken . '",
+            "notification" : {
+                 "title": "DD Notification",
+                "body": " '.$message.' ",
+               },
+
+          }';
+
+    $crl = curl_init();
+
+    $headr = array();
+    $headr[] = 'Content-type: application/json';
+    $headr[] = 'Authorization: ' . $accesstoken;
+    curl_setopt($crl, CURLOPT_SSL_VERIFYPEER, false);
+
+    curl_setopt($crl, CURLOPT_URL, $URL);
+    curl_setopt($crl, CURLOPT_HTTPHEADER, $headr);
+
+    curl_setopt($crl, CURLOPT_POST, true);
+    curl_setopt($crl, CURLOPT_POSTFIELDS, $post_data);
+    curl_setopt($crl, CURLOPT_RETURNTRANSFER, true);
+
+    $rest = curl_exec($crl);
+
+    if ($rest === false) {
+        $result_noti = 0;
+    } else {
+        $result_noti = 1;
+    }
+
+    return $result_noti;
+}

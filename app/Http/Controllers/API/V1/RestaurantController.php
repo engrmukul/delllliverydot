@@ -99,6 +99,12 @@ class RestaurantController extends BaseController
                 ]
             );
 
+            $order = Order::with('customer')->where('id',  $request->order_id)->first();
+
+
+            //SEND FCM NOTIFICATION TO USER
+            sendStatusNotificationFCM($order->customer->device_token, 'Your order accepted');
+
             $todaysOrder = Order::with('customer', 'RestaurantDetails', 'orderDetails', 'orderDetails.foods', 'orderDetails.foodVariants')->whereDate('order_date', '>=', date('Y-m-d'))->where('restaurant_id', $request->restaurant_id)->orderBy('order_date', 'ASC')->get();
 
             $orderDataArray = array();
@@ -134,6 +140,7 @@ class RestaurantController extends BaseController
             ]
         );
 
+
         $todaysOrder = Order::with('customer', 'RestaurantDetails', 'orderDetails', 'orderDetails.foods', 'orderDetails.foodVariants')->whereDate('order_date', '>=', date('Y-m-d'))->where('restaurant_id', $request->restaurant_id)->orderBy('order_date', 'ASC')->get();
 
         $orderDataArray = array();
@@ -165,7 +172,7 @@ class RestaurantController extends BaseController
             ]
         );
 
-        $orderDetails =
+        //$orderDetails =
 
             //SEND PUSH NOTIFICATION
         $riders = Rider::whereNotNull('device_token')->get();
