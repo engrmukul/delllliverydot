@@ -121,6 +121,28 @@ Route::group(['prefix' => 'admin'], function () {
             Route::get('/get-data', 'Admin\RiderController@getData')->name('riders.get-data');
         });
 
+        // help and support route
+        Route::group(['prefix' => 'help-and-supports'], function (){
+            Route::get('/', 'Admin\HelpAndSupportController@index')->name('helpandsupports.index');
+            Route::get('/create', 'Admin\HelpAndSupportController@create')->name('helpandsupports.create');
+            Route::post('/store', 'Admin\HelpAndSupportController@store')->name('helpandsupports.store');
+            Route::get('/{id}/edit', 'Admin\HelpAndSupportController@edit')->name('helpandsupports.edit');
+            Route::put('/update', 'Admin\HelpAndSupportController@update')->name('helpandsupports.update');
+            Route::delete('/{id}/delete', 'Admin\HelpAndSupportController@delete')->name('helpandsupports.destroy');
+            Route::get('/get-data', 'Admin\HelpAndSupportController@getData')->name('helpandsupports.get-data');
+        });
+
+        // terms and conditions
+        Route::group(['prefix' => 'terms-and-conditions'], function (){
+            Route::get('/', 'Admin\TermsAndConditionController@index')->name('termsandconditions.index');
+            Route::get('/create', 'Admin\TermsAndConditionController@create')->name('termsandconditions.create');
+            Route::post('/store', 'Admin\TermsAndConditionController@store')->name('termsandconditions.store');
+            Route::get('/{id}/edit', 'Admin\TermsAndConditionController@edit')->name('termsandconditions.edit');
+            Route::put('/update', 'Admin\TermsAndConditionController@update')->name('termsandconditions.update');
+            Route::delete('/{id}/delete', 'Admin\TermsAndConditionController@delete')->name('termsandconditions.destroy');
+            Route::get('/get-data', 'Admin\TermsAndConditionController@getData')->name('termsandconditions.get-data');
+        });
+
 
     });
 });

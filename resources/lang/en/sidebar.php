@@ -48,4 +48,7 @@ return [
     'payments' => 'Payments',
     'customers'=>'Customers',
     'riders'=>'Riders',
+    'settings'=>'Settings',
+    'help&supports'=>'Helps & Supports',
+    'terms&conditions'=>'Terms & Conditions'
 ];

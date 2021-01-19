@@ -2,20 +2,20 @@
 
 namespace App\Repositories;
 
-use App\Contracts\CategoryContract;
-use App\Models\Category;
+use App\Contracts\TermsAndConditionContract;
+use App\Models\TermsAndCondition;
 use Illuminate\Database\QueryException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Doctrine\Instantiator\Exception\InvalidArgumentException;
 use Yajra\DataTables\DataTables;
 
-class CategoryRepository extends BaseRepository implements CategoryContract
+class TermsAndConditionRepository extends BaseRepository implements TermsAndConditionContract
 {
     /**
-     * CategoryRepository constructor.
-     * @param Category $model
+     * TermsAndConditionRepository constructor.
+     * @param TermsAndCondition $model
      */
-    public function __construct(Category $model)
+    public function __construct(TermsAndCondition $model)
     {
         parent::__construct($model);
         $this->model = $model;
@@ -27,20 +27,20 @@ class CategoryRepository extends BaseRepository implements CategoryContract
      * @param array $columns
      * @return mixed
      */
-    public function listCategory(string $order = 'id', string $sort = 'desc', array $columns = ['*'])
+    public function listTermsAndCondition(string $order = 'id', string $sort = 'desc', array $columns = ['*'])
     {
         //$query = $this->all($columns, $order, $sort);
 
-        $query = Category::latest()->get();
+        $query = TermsAndCondition::latest()->get();
 
-        return Datatables::of($query)
+        return DataTables::of($query)
             ->addColumn('action', function ($row) {
                 $actions = '';
 
-                $actions.= '<a class="btn btn-primary btn-xs float-left mr-1" href="' . route('categories.edit', [$row->id]) . '" title="Category Edit"><i class="fa fa-pencil"></i> '. trans("common.edit") . '</a>';
+                $actions .= '<a class="btn btn-primary btn-xs float-left mr-1" href="' . route('termsandconditions.edit', [$row->id]) . '" title="TermsAndCondition Edit"><i class="fa fa-pencil"></i> '. trans("common.edit") . '</a>';
 
-                $actions.= '
-                    <form action="'.route('categories.destroy', [$row->id]).'" method="POST">
+                $actions .= '
+                    <form action="'.route('termsandconditions.destroy', [$row->id]).'" method="POST">
                         <input type="hidden" name="_method" value="delete">
                         <input type="hidden" name="_token" value="'.csrf_token().'">
                         <button type="submit" class="btn btn-danger btn-xs"><i class="fa fa-remove"></i> '. trans("common.delete") . '</button>
@@ -56,7 +56,7 @@ class CategoryRepository extends BaseRepository implements CategoryContract
      * @param int $id
      * @return mixed
      */
-    public function findCategoryById(int $id)
+    public function findTermsAndConditionById(int $id)
     {
         try {
             return $this->findOneOrFail($id);
@@ -70,9 +70,9 @@ class CategoryRepository extends BaseRepository implements CategoryContract
 
     /**
      * @param array $params
-     * @return Category|mixed
+     * @return TermsAndCondition|mixed
      */
-    public function createCategory(array $params)
+    public function createTermsAndCondition(array $params)
     {
         try {
             $collection = collect($params);
@@ -81,11 +81,11 @@ class CategoryRepository extends BaseRepository implements CategoryContract
 
             $merge = $collection->merge(compact('created_by'));
 
-            $Category = new Category($merge->all());
+            $termsAndCondition = new TermsAndCondition($merge->all());
 
-            $Category->save();
+            $termsAndCondition->save();
 
-            return $Category;
+            return $termsAndCondition;
 
         } catch (QueryException $exception) {
             throw new InvalidArgumentException($exception->getMessage());
@@ -96,9 +96,9 @@ class CategoryRepository extends BaseRepository implements CategoryContract
      * @param array $params
      * @return mixed
      */
-    public function updateCategory(array $params)
+    public function updateTermsAndCondition(array $params)
     {
-        $Category = $this->findCategoryById($params['id']);
+        $termsAndCondition = $this->findTermsAndConditionById($params['id']);
 
         $collection = collect($params)->except('_token');
 
@@ -106,21 +106,21 @@ class CategoryRepository extends BaseRepository implements CategoryContract
 
         $merge = $collection->merge(compact('updated_by'));
 
-        $Category->update($merge->all());
+        $termsAndCondition->update($merge->all());
 
-        return $Category;
+        return $termsAndCondition;
     }
 
     /**
      * @param $id
      * @return bool|mixed
      */
-    public function deleteCategory($id, array $params)
+    public function deleteTermsAndCondition($id, array $params)
     {
-        $Category = $this->findCategoryById($id);
+        $termsAndCondition = $this->findTermsAndConditionById($id);
 
-        $Category->delete();
+        $termsAndCondition->delete();
 
-        return $Category;
+        return $termsAndCondition;
     }
 }
