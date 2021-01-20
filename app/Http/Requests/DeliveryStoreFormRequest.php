@@ -32,7 +32,6 @@ class DeliveryStoreFormRequest extends FormRequest
             'from_address' =>  'required',
             'to_name' =>  'required',
             'to_phone' =>  'required',
-            'to_email' =>  'required',
             'to_address' =>  'required',
             'to_area' =>  'required',
             'to_district' =>  'required',
@@ -43,7 +42,6 @@ class DeliveryStoreFormRequest extends FormRequest
             'height' =>  'required',
             'length' =>  'required',
             'weight' =>  'required',
-            'instructions' =>  'required',
             'pickup_time' =>  'required',
         ];
     }

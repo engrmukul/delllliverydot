@@ -29,6 +29,16 @@ Route::get('restaurant-list', 'API\V1\CustomerController@restaurantList')->name(
 
 Route::post('promotional-restaurants', 'API\V1\CustomerController@promotionalRestaurants')->name('restaurant-list');
 
+
+
+Route::post('text-search', 'API\V1\CustomerController@searchBytext')->name('text-search');
+Route::get('filter-options', 'API\V1\CustomerController@filterOptions')->name('filter-options');
+Route::post('search-by-filter-option', 'API\V1\CustomerController@searchByFilterOptions')->name('search-by-filter-option');
+Route::post('checkout-option', 'API\V1\CustomerController@checkoutOption')->name('checkout-option');
+Route::post('review', 'API\V1\CustomerController@restaurantReview')->name('review');
+
+
+
 Route::post('restaurant-panel', 'API\V1\CustomerController@restaurantPanel')->name('restaurant-panel');
 
 Route::post('food-variants', 'API\V1\CustomerController@foodVariants')->name('food-variants');

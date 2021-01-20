@@ -12,6 +12,7 @@ use App\Http\Requests\RestaurantPhoneVerificationFormRequest;
 use App\Http\Requests\RestaurantStoreFormRequest;
 use App\Http\Requests\RestaurantUpdateFormRequest;
 use App\Http\Requests\RiderDeviceTokenStoreFormRequest;
+use App\Models\Food;
 use App\Models\Order;
 use App\Models\Restaurant;
 use App\Models\RestaurantAddress;
@@ -601,6 +602,18 @@ class RestaurantController extends BaseController
             return $this->sendResponse(array(), 'Device token not updated', Response::HTTP_NOT_FOUND);
         }
     }
+
+    public function restaurantFoodList(Request $request)
+    {
+        $restaurantFoodList = Food::where('restaurant_id', $request->restaurant_id )->get();
+
+        if ($restaurantFoodList->count() > 0) {
+            return $this->sendResponse($restaurantFoodList, 'Food list.', Response::HTTP_OK);
+        } else {
+            return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
+        }
+    }
+
 
 
 }

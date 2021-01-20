@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API\V1;
 
 use App\Contracts\CustomerContract;
+use App\Http\Requests\CheckoutOptionRequest;
 use App\Http\Requests\CustomerAddressStoreFormRequest;
 use App\Http\Requests\CustomerAddressUpdateFormRequest;
 use App\Http\Requests\CustomerOrderRequest;
@@ -12,18 +13,24 @@ use App\Http\Requests\CustomerSettingsFormRequest;
 use App\Http\Requests\CustomerStoreFormRequest;
 use App\Http\Requests\CustomerUpdateFormRequest;
 use App\Http\Requests\DeliveryStoreFormRequest;
+use App\Http\Requests\FoodReviewFormRequest;
 use App\Http\Requests\PromoCodeRequest;
 use App\Http\Requests\PromotionalRestaurantsRequest;
+use App\Http\Requests\RestaurantReviewFormRequest;
+use App\Http\Requests\SearchBytextRequest;
 use App\Models\Banner;
 use App\Models\Coupon;
 use App\Models\Customer;
 use App\Models\Extra;
 use App\Models\FavoriteRestaurant;
+use App\Models\FilterOption;
+use App\Models\FoodReview;
 use App\Models\FoodVariant;
 use App\Models\HelpAndSupport;
 use App\Models\Point;
 use App\Models\PromotionalBanner;
 use App\Models\Restaurant;
+use App\Models\RestaurantReview;
 use App\Models\Setting;
 use App\Models\Shop;
 use App\Models\ShopItem;
@@ -158,22 +165,77 @@ class CustomerController extends BaseController
         }
     }
 
-    public function filter(Request $request)
+    public function searchBytext(Request $request)
     {
-        $restaurantList = Restaurant::with(['RestaurantDetails', 'coupon', 'foods',
-            'favoriteRestaurant' => function ($q) use ($request) {
-                $q->where('customer_id', '=', $request->customer_id);
-            }])->orderBy('id', 'DESC')->get();
+        $searchText = $request->search_text;
+
+        $restaurantList = Restaurant::with('RestaurantDetails', 'coupon', 'foods')->orderBy('id', 'DESC')->get();
 
         if ($restaurantList->count() > 0) {
 
-            return $this->sendResponse($restaurantList, 'Promotional restaurant list', Response::HTTP_OK);
+            return $this->sendResponse($restaurantList, 'Restaurant list', Response::HTTP_OK);
 
         } else {
             return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
         }
 
     }
+
+    public function filterOptions(Request $request)
+    {
+        $pricerange = FilterOption::select('slug','title')->where('filter_type', 'price_range')->get();
+        $otheroption = FilterOption::select('slug','title')->where('filter_type', 'other_option')->get();
+        $foodtype = FilterOption::select('slug','title')->where('filter_type', 'food_type')->get();
+        $otherfeature = FilterOption::select('slug','title')->where('filter_type', 'other_feature')->get();
+
+        $data = array(
+            'price_range' => $pricerange ? $pricerange : "",
+            'other_option' => $otheroption ? $otheroption : "",
+            'food_type' => $foodtype ? $foodtype : "",
+            'other_feature' => $otherfeature ? $otherfeature : "",
+        );
+
+        if($data > 0){
+            return $this->sendResponse($data, 'Filter options', Response::HTTP_OK);
+        }else{
+            return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
+        }
+    }
+
+    public function searchByFilterOptions(Request $request)
+    {
+        $restaurantList = Restaurant::with('RestaurantDetails', 'coupon', 'foods')->orderBy('id', 'DESC')->get();
+
+        if ($restaurantList->count() > 0) {
+
+            return $this->sendResponse($restaurantList, 'Restaurant list', Response::HTTP_OK);
+
+        } else {
+            return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
+        }
+
+    }
+
+    public function checkoutOption(CheckoutOptionRequest $request)
+    {
+        $addresses = CustomerAddress::where('customer_id', $request->customer_id)->orderBy('id', 'DESC')->limit(2)->get();
+        $point = Point::where('customer_id', $request->customer_id)->get()->sum('point');
+
+        if ($addresses->count() > 0 || $point) {
+
+            $data = array(
+                'addresses'=> $addresses ? $addresses : "NA",
+                'point'=> $point ? $point : 0
+            );
+
+            return $this->sendResponse($data, 'Checkout option', Response::HTTP_OK);
+
+        } else {
+            return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
+        }
+    }
+
+
 
     public function restaurantPanel(Request $request)
     {
@@ -1039,6 +1101,26 @@ class CustomerController extends BaseController
             return $this->sendResponse($restaurantDetails, 'Restaurant details.', Response::HTTP_OK);
         } else {
             return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
+        }
+    }
+
+    public function restaurantReview(RestaurantReviewFormRequest $request)
+    {
+        $restaurantReview = RestaurantReview::updateOrCreate(
+            [
+                'customer_id' => $request->customer_id,
+                'restaurant_id' => $request->restaurant_id,
+                'review' => $request->review,
+                'rate' => $request->rate,
+            ]
+        );
+
+        if ($restaurantReview) {
+
+            return $this->sendResponse($restaurantReview, 'Review saved', Response::HTTP_OK);
+
+        } else {
+            $this->sendResponse(array(), 'Data not save', Response::HTTP_NOT_FOUND);
         }
     }
 }
