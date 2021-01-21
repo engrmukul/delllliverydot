@@ -27,89 +27,33 @@
                                             <span class="form-text m-b-none text-danger"> @error('name') {{ $message }} @enderror </span>
                                         </div>
 
-                                        <!--- short description --->
-                                        <div class="form-group">
-                                            <label for="short_description" class="font-bold">{{ trans('food.short_description')}}</label>
-                                            <textarea name="short_description" placeholder="{{ trans('food.short_description')}}" class="form-control summernote" required>{{ old('short_description') }}</textarea>
-                                            <span class="form-text m-b-none text-danger"> @error('short_description') {{ $message }} @enderror </span>
-                                        </div>
-
-                                        <!--- food description --->
-                                        <div class="form-group">
-                                            <label for="description" class="font-bold">{{ trans('food.description')}}</label>
-                                            <textarea name="description" placeholder="{{ trans('food.description')}}" class="form-control summernote" required>{{ old('description') }}</textarea>
-                                            <span class="form-text m-b-none text-danger"> @error('description') {{ $message }} @enderror </span>
-                                        </div>
-
                                         <!--- food ingredients --->
                                         <div class="form-group">
                                             <label for="ingredients" class="font-bold">{{ trans('food.ingredients')}}</label>
-                                            <textarea name="ingredients" placeholder="{{ trans('food.ingredients')}}" class="form-control summernote" required>{{ old('ingredients') }}</textarea>
+                                            <textarea name="ingredients" placeholder="{{ trans('food.ingredients')}}" class="form-control" required>{{ old('ingredients') }}</textarea>
                                             <span class="form-text m-b-none text-danger"> @error('ingredients') {{ $message }} @enderror </span>
                                         </div>
+
+                                        <!--- featured --->
+                                        <div class="form-group">
+                                            <label for="featured" class="font-bold">{{ trans('food.featured')}}</label>
+                                            <select id="featured" class="form-control custom-select mt-15" name="featured" required>
+                                                <option value="">{{ trans('food.featured')}}</option>
+                                                @foreach($features as $key => $feature)
+                                                    @if (old('featured') == $feature)
+                                                        <option value="{{ $feature }}" selected> {{ ucfirst($feature) }} </option>
+                                                    @else
+                                                        <option value="{{ $feature }}"> {{ ucfirst($feature) }} </option>
+                                                    @endif
+                                                @endforeach
+                                            </select>
+                                            <span class="form-text m-b-none text-danger"> @error('featured') {{ $message }} @enderror </span>
+                                        </div>
+
                                     </div>
 
                                     <div class="col-md-6">
 
-                                    <!--- food discount_price --->
-                                    <div class="form-group">
-                                        <label for="discount_price" class="font-bold">{{ trans('food.discount_price')}}</label>
-                                        <input type="text" id="discount_price" name="discount_price" value="{{ old('discount_price') }}" placeholder="{{ trans('food.discount_price')}}" class="form-control" required>
-                                        <span class="form-text m-b-none text-danger"> @error('discount_price') {{ $message }} @enderror </span>
-                                    </div>
-
-                                    <!--- unit  --->
-                                    <div class="form-group">
-                                        <label for="unit" class="font-bold">{{ trans('food.unit')}}</label>
-                                        <input type="text" id="unit" name="unit" value="{{ old('unit') }}" placeholder="{{ trans('food.unit')}}" class="form-control" required>
-                                        <span class="form-text m-b-none text-danger"> @error('unit') {{ $message }} @enderror </span>
-                                    </div>
-
-                                    <!--- package_count --->
-                                    <div class="form-group">
-                                        <label for="package_count" class="font-bold">{{ trans('food.package_count')}}</label>
-                                        <input type="text" id="package_count" name="package_count" value="{{ old('package_count') }}" placeholder="{{ trans('food.package_count')}}" class="form-control">
-                                        <span class="form-text m-b-none text-danger"> @error('package_count') {{ $message }} @enderror </span>
-                                    </div>
-
-                                    <!--- weight --->
-                                    <div class="form-group">
-                                        <label for="weight" class="font-bold">{{ trans('food.weight')}}</label>
-                                        <input type="text" id="weight" name="weight" value="{{ old('package_count') }}" placeholder="{{ trans('food.weight')}}" class="form-control">
-                                        <span class="form-text m-b-none text-danger"> @error('weight') {{ $message }} @enderror </span>
-                                    </div>
-
-                                    <!--- featured --->
-                                    <div class="form-group">
-                                        <label for="featured" class="font-bold">{{ trans('food.featured')}}</label>
-                                        <select id="featured" class="form-control custom-select mt-15" name="featured" required>
-                                            <option value="">{{ trans('food.featured')}}</option>
-                                            @foreach($features as $key => $feature)
-                                                @if (old('featured') == $feature)
-                                                    <option value="{{ $feature }}" selected> {{ ucfirst($feature) }} </option>
-                                                @else
-                                                    <option value="{{ $feature }}"> {{ ucfirst($feature) }} </option>
-                                                @endif
-                                            @endforeach
-                                        </select>
-                                        <span class="form-text m-b-none text-danger"> @error('featured') {{ $message }} @enderror </span>
-                                    </div>
-
-                                    <!--- deliverable_food --->
-                                    <div class="form-group">
-                                        <label for="deliverable_food" class="font-bold">{{ trans('food.deliverable_food')}}</label>
-                                        <select id="deliverable_food" class="form-control custom-select mt-15" name="deliverable_food" required>
-                                            <option value="">{{ trans('food.deliverable_food')}}</option>
-                                            @foreach($deliverableFoods as $key => $deliverableFood)
-                                                @if (old('deliverable_food') == $deliverableFood)
-                                                    <option value="{{ $key }}" selected> {{ ucfirst($deliverableFood) }} </option>
-                                                @else
-                                                    <option value="{{ $key }}"> {{ ucfirst($deliverableFood) }} </option>
-                                                @endif
-                                            @endforeach
-                                        </select>
-                                        <span class="form-text m-b-none text-danger"> @error('deliverable_food') {{ $message }} @enderror </span>
-                                    </div>
 
                                     <!--- restaurant_id --->
                                     <div class="form-group">

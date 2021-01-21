@@ -175,6 +175,76 @@ class CustomerRepository extends BaseRepository implements CustomerContract
         }
     }
 
+    public function createCustomerByAdmin(array $params)
+    {
+        try {
+            DB::beginTransaction();
+
+            $collection = collect($params);
+
+            $phone_number = (substr($collection['phone_number'],0,3)=='+88') ? $collection['phone_number'] : '+88'.$collection['phone_number'];
+
+            //DEFAULT CUSTOMER DATA
+            $maxId = Customer::where('id', '!=', '')->get()->count() + 1;
+            $name = "Customer". $maxId;
+            $email = 'customer'. $maxId .'@dd.com';
+            $created_at = date('Y-m-d');
+
+            $merge = $collection->merge(compact('name','email','created_at','phone_number'));
+
+            if( Customer::where('phone_number','=', $phone_number)->count() > 0){
+                return $customer = Customer::where('phone_number', $phone_number)->first();
+            }
+
+            //SAVE CUSTOMER
+            $customer = new Customer($merge->all());
+            $customer->save();
+
+            //SAVE CUSTOMER PROFILE
+            $customerProfile = new CustomerProfile();
+
+            $customerProfile->customer_id = $customer->id;
+            $customerProfile->image = url('/').'/public/img/customer/default.png';
+            $customerProfile->dob = NULL;
+            $customerProfile->spouse_dob = NULL;
+            $customerProfile->father_dob = NULL;
+            $customerProfile->mother_dob = NULL;
+            $customerProfile->anniversary = NULL;
+            $customerProfile->first_child_dob = NULL;
+            $customerProfile->second_child_dob = NULL;
+            $customerProfile->address = "Address";
+            $customerProfile->short_biography = NULL;
+
+            $customerProfile->save();
+
+            //SAVE CUSTOMER ADDRESS
+            $customerAddress = new CustomerAddress();
+
+            $customerAddress->customer_id = $customer->id;
+            $customerAddress->address = "Address";
+            $customerAddress->is_current_address = 'yes';
+
+            $customerAddress->save();
+
+            //SAVE CUSTOMER SETTINGS
+            $customerSetting = new Setting();
+
+            $customerSetting->customer_id = $customer->id;
+            $customerSetting->notification = 1;
+            $customerSetting->sms = 1;
+            $customerSetting->offer_and_promotion = 1;
+
+            $customerSetting->save();
+
+            DB::commit();
+
+            return $customer;
+
+        } catch (QueryException $exception) {
+            DB::rollback();
+            return false;
+        }
+    }
     /**
      * @param array $params
      * @return mixed

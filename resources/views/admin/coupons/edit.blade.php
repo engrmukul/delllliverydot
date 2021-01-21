@@ -74,33 +74,16 @@
                                         <label for="description" class="font-bold">{{ trans('coupon.description')}}</label>
                                         <textarea name="description"
                                                   placeholder="{{ trans('coupon.description')}}"
-                                                  class="form-control summernote"
+                                                  class="form-control"
                                                   required>{{ old('description', $coupon->description) }}</textarea>
                                         <span class="form-text m-b-none text-danger"> @error('description') {{ $message }} @enderror </span>
-                                    </div>
-
-                                    <!--- food id --->
-                                    <div class="form-group">
-                                        <label for="food_id">{{ trans('coupon.food_id')}}</label>
-                                        <input type="hidden" name="id" value="{{ $coupon->id }}">
-                                        <select id="food_id" class="form-control custom-select mt-15" name="food_id" required>
-                                            <option value="">{{ trans('coupon.food_id')}}</option>
-                                            @foreach($foods as $key => $food)
-                                                @if (old('food_id', $coupon->food_id) == $food->id)
-                                                    <option value="{{ $food->id }}" selected> {{ $food->name }} </option>
-                                                @else
-                                                    <option value="{{ $food->id }}"> {{ $food->name }} </option>
-                                                @endif
-                                            @endforeach
-                                        </select>
-                                        <span class="form-text m-b-none text-danger"> @error('food_id') {{ $message }} @enderror </span>
                                     </div>
 
                                     <!--- restaurant id --->
                                     <div class="form-group">
                                         <label for="restaurant_id">{{ trans('coupon.restaurant_id')}}</label>
                                         <input type="hidden" name="id" value="{{ $coupon->id }}">
-                                        <select id="restaurant_id" class="form-control custom-select mt-15" name="restaurant_id" required>
+                                        <select id="restaurant_id" multiple class="form-control custom-select mt-15 select2" name="restaurant_id" required>
                                             <option value="">{{ trans('coupon.restaurant_id')}}</option>
                                             @foreach($restaurants as $key => $restaurant)
                                                 @if (old('restaurant_id', $coupon->restaurant_id) == $restaurant->id)
@@ -111,23 +94,6 @@
                                             @endforeach
                                         </select>
                                         <span class="form-text m-b-none text-danger"> @error('restaurant_id') {{ $message }} @enderror </span>
-                                    </div>
-
-                                    <!--- category id --->
-                                    <div class="form-group">
-                                        <label for="category_id">{{ trans('coupon.category_id')}}</label>
-                                        <input type="hidden" name="id" value="{{ $coupon->id }}">
-                                        <select id="category_id" class="form-control custom-select mt-15" name="category_id" required>
-                                            <option value="">{{ trans('coupon.category_id')}}</option>
-                                            @foreach($categories as $key => $category)
-                                                @if (old('category_id', $coupon->category_id) == $category->id)
-                                                    <option value="{{ $category->id }}" selected> {{ $category->name }} </option>
-                                                @else
-                                                    <option value="{{ $category->id }}"> {{ $category->name }} </option>
-                                                @endif
-                                            @endforeach
-                                        </select>
-                                        <span class="form-text m-b-none text-danger"> @error('category_id') {{ $message }} @enderror </span>
                                     </div>
 
                                     <!--- expire datate --->

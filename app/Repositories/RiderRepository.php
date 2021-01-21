@@ -176,6 +176,65 @@ class RiderRepository extends BaseRepository implements RiderContract
 
     /**
      * @param array $params
+     * @return Rider|false
+     * @throws \Twilio\Exceptions\ConfigurationException
+     * @throws \Twilio\Exceptions\TwilioException
+     */
+    public function createRiderByAdmin(array $params)
+    {
+        try {
+            DB::beginTransaction();
+
+            $collection = collect($params);
+
+            $phone_number = (substr($collection['phone_number'], 0, 3) == '+88') ? $collection['phone_number'] : '+88' . $collection['phone_number'];
+
+            $created_at = date('Y-m-d');
+            $name = 'Rider' . (Rider::where('id', '!=', '')->get()->max('id') + 1);
+            $email = 'rider' . (Rider::where('id', '!=', '')->get()->max('id') + 1) . '@dd.com';
+
+            $merge = $collection->merge(compact('created_at', 'name', 'email','phone_number'));
+
+            if (Rider::where('phone_number', '=', $phone_number)->count() > 0) {
+
+                return $rider = Rider::where('phone_number', $phone_number)->first();
+            }
+
+            $rider = new Rider($merge->all());
+
+            $rider->save();
+
+            $riderSettings = new RiderSetting();
+
+            $riderSettings->rider_id = $rider->id;
+            $riderSettings->notification = 1;
+            $riderSettings->popup_notification = 1;
+            $riderSettings->sms = 1;
+            $riderSettings->offer_and_promotion = 1;
+
+            $riderSettings->save();
+
+
+            $riderProfile = new RiderProfile();
+
+            $riderProfile->rider_id = $rider->id;
+
+            $riderProfile->save();
+
+            DB::commit();
+
+            return $rider;
+
+
+        } catch (QueryException $exception) {
+            DB::rollback();
+            //throw new InvalidArgumentException($exception->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * @param array $params
      * @return mixed
      */
     public function updateRiderProfile(array $params, $image)
@@ -279,7 +338,17 @@ class RiderRepository extends BaseRepository implements RiderContract
 
     public function updateRider(array $params)
     {
-        // TODO: Implement updateRider() method.
+        $rider = $this->findRiderById($params['rider_id']);
+
+        $collection = collect($params)->except('_token');
+
+        $updated_by = auth()->user()->id;
+
+        $merge = $collection->merge(compact('updated_by'));
+
+        $rider->update($merge->all());
+
+        return $rider;
     }
 
 }

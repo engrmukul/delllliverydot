@@ -30,56 +30,11 @@
                                         <span class="form-text m-b-none text-danger"> @error('name') {{ $message }} @enderror </span>
                                     </div>
 
-                                    <!--- short description --->
-                                    <div class="form-group">
-                                        <label for="short_description" class="font-bold">{{ trans('food.short_description')}}</label>
-                                        <textarea name="short_description" placeholder="{{ trans('food.short_description')}}" class="form-control summernote" required>{{ old('short_description', $food->short_description) }}</textarea>
-                                        <span class="form-text m-b-none text-danger"> @error('short_description') {{ $message }} @enderror </span>
-                                    </div>
-
-                                    <!--- food description --->
-                                    <div class="form-group">
-                                        <label for="description" class="font-bold">{{ trans('food.description')}}</label>
-                                        <textarea name="description" placeholder="{{ trans('food.description')}}" class="form-control summernote" required>{{ old('description', $food->description) }}</textarea>
-                                        <span class="form-text m-b-none text-danger"> @error('description') {{ $message }} @enderror </span>
-                                    </div>
-
                                     <!--- food ingredients --->
                                     <div class="form-group">
                                         <label for="ingredients" class="font-bold">{{ trans('food.ingredients')}}</label>
                                         <textarea name="ingredients" placeholder="{{ trans('food.ingredients')}}" class="form-control summernote" required>{{ old('ingredients', $food->ingredients) }}</textarea>
                                         <span class="form-text m-b-none text-danger"> @error('ingredients') {{ $message }} @enderror </span>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-6">
-
-                                    <!--- food discount_price --->
-                                    <div class="form-group">
-                                        <label for="discount_price" class="font-bold">{{ trans('food.discount_price')}}</label>
-                                        <input type="text" id="discount_price" name="discount_price" value="{{ old('discount_price', $food->discount_price) }}" placeholder="{{ trans('food.discount_price')}}" class="form-control" required>
-                                        <span class="form-text m-b-none text-danger"> @error('discount_price') {{ $message }} @enderror </span>
-                                    </div>
-
-                                    <!--- unit  --->
-                                    <div class="form-group">
-                                        <label for="unit" class="font-bold">{{ trans('food.unit')}}</label>
-                                        <input type="text" id="unit" name="unit" value="{{ old('unit', $food->unit) }}" placeholder="{{ trans('food.unit')}}" class="form-control" required>
-                                        <span class="form-text m-b-none text-danger"> @error('unit') {{ $message }} @enderror </span>
-                                    </div>
-
-                                    <!--- package_count --->
-                                    <div class="form-group">
-                                        <label for="package_count" class="font-bold">{{ trans('food.package_count')}}</label>
-                                        <input type="text" id="package_count" name="package_count" value="{{ old('package_count', $food->package_count) }}" placeholder="{{ trans('food.package_count')}}" class="form-control">
-                                        <span class="form-text m-b-none text-danger"> @error('package_count') {{ $message }} @enderror </span>
-                                    </div>
-
-                                    <!--- weight --->
-                                    <div class="form-group">
-                                        <label for="weight" class="font-bold">{{ trans('food.weight')}}</label>
-                                        <input type="text" id="weight" name="weight" value="{{ old('weight', $food->weight) }}" placeholder="{{ trans('food.weight')}}" class="form-control">
-                                        <span class="form-text m-b-none text-danger"> @error('weight') {{ $message }} @enderror </span>
                                     </div>
 
                                     <!--- featured --->
@@ -97,7 +52,9 @@
                                         </select>
                                         <span class="form-text m-b-none text-danger"> @error('featured') {{ $message }} @enderror </span>
                                     </div>
+                                </div>
 
+                                <div class="col-md-6">
                                     <!--- deliverable_food --->
                                     <div class="form-group">
                                         <label for="deliverable_food" class="font-bold">{{ trans('food.deliverable_food')}}</label>

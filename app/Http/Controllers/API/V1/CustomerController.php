@@ -189,10 +189,10 @@ class CustomerController extends BaseController
         $otherfeature = FilterOption::select('slug','title')->where('filter_type', 'other_feature')->get();
 
         $data = array(
-            'price_range' => $pricerange ? $pricerange : "",
-            'other_option' => $otheroption ? $otheroption : "",
-            'food_type' => $foodtype ? $foodtype : "",
-            'other_feature' => $otherfeature ? $otherfeature : "",
+            'price_range' => $pricerange ?  $pricerange : array()  ,
+            'other_option' => $otheroption ? $otheroption : array() ,
+            'food_type' => $foodtype ? $foodtype : array() ,
+            'other_feature' => $otherfeature ? $otherfeature : array() ,
         );
 
         if($data > 0){

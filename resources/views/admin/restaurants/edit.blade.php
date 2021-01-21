@@ -89,6 +89,34 @@
                                         <span class="form-text m-b-none text-danger"> @error('delivery_time') {{ $message }} @enderror </span>
                                     </div>
 
+                                </div>
+
+                                <div class="col-md-6 col-sm-12">
+                                    <!---closed_restaurant--->
+                                    <div class="form-group">
+                                        <label for="closed_restaurant">{{ trans('restaurant.closed_restaurant')}}</label>
+                                        <select id="closed_restaurant" class="form-control custom-select mt-15" name="closed_restaurant" required>
+                                            <option value="">{{ trans('restaurant.closed_restaurant')}}</option>
+                                            @foreach($closedRestaurants as $key => $closedRestaurant)
+                                                @if (old('closed_restaurant', $restaurant->restaurantDetails->closed_restaurant) == $key)
+                                                    <option value="{{ $closedRestaurant }}" selected> {{ ucfirst($closedRestaurant) }} </option>
+                                                @else
+                                                    <option value="{{ $closedRestaurant }}"> {{ ucfirst($closedRestaurant) }} </option>
+                                                @endif
+                                            @endforeach
+                                        </select>
+                                        <span class="form-text m-b-none text-danger"> @error('delivery_type') {{ $message }} @enderror </span>
+                                    </div>
+                                    <!---description--->
+                                    <div class="form-group">
+                                        <label for="description" class="font-bold">{{ trans('restaurant.description')}}</label>
+                                        <textarea name="description"
+                                                  placeholder="{{ trans('restaurant.description')}}"
+                                                  class="form-control"
+                                                  required>{{ old('description', $restaurant->restaurantDetails->description) }}</textarea>
+                                        <span class="form-text m-b-none text-danger"> @error('description') {{ $message }} @enderror </span>
+                                    </div>
+
                                     <!---discount--->
                                     <div class="form-group">
                                         <label for="discount" class="font-bold">{{ trans('restaurant.discount')}}</label>
@@ -110,54 +138,6 @@
                                         <span class="form-text m-b-none text-danger"> @error('address') {{ $message }} @enderror </span>
                                     </div>
 
-                                    <!---latitude--->
-                                    <div class="form-group">
-                                        <label for="latitude" class="font-bold">{{ trans('restaurant.latitude')}}</label>
-                                        <input type="text" name="latitude" value="{{ old('latitude', $restaurant->restaurantDetails->latitude) }}" placeholder="{{ trans('restaurant.latitude')}}" class="form-control" required>
-                                        <span class="form-text m-b-none text-danger"> @error('latitude') {{ $message }} @enderror </span>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-6 col-sm-12">
-                                    <!---longitude--->
-                                    <div class="form-group">
-                                        <label for="longitude" class="font-bold">{{ trans('restaurant.longitude')}}</label>
-                                        <input type="text" name="longitude" value="{{ old('longitude', $restaurant->restaurantDetails->longitude) }}" placeholder="{{ trans('restaurant.longitude')}}" class="form-control" required>
-                                        <span class="form-text m-b-none text-danger"> @error('longitude') {{ $message }} @enderror </span>
-                                    </div>
-
-                                    <!---closed_restaurant--->
-                                    <div class="form-group">
-                                        <label for="closed_restaurant">{{ trans('restaurant.closed_restaurant')}}</label>
-                                        <select id="closed_restaurant" class="form-control custom-select mt-15" name="closed_restaurant" required>
-                                            <option value="">{{ trans('restaurant.closed_restaurant')}}</option>
-                                            @foreach($closedRestaurants as $key => $closedRestaurant)
-                                                @if (old('closed_restaurant', $restaurant->restaurantDetails->closed_restaurant) == $key)
-                                                    <option value="{{ $closedRestaurant }}" selected> {{ ucfirst($closedRestaurant) }} </option>
-                                                @else
-                                                    <option value="{{ $closedRestaurant }}"> {{ ucfirst($closedRestaurant) }} </option>
-                                                @endif
-                                            @endforeach
-                                        </select>
-                                        <span class="form-text m-b-none text-danger"> @error('delivery_type') {{ $message }} @enderror </span>
-                                    </div>
-
-                                    <!---available_for_delivery--->
-                                    <div class="form-group">
-                                        <label for="available_for_delivery">{{ trans('restaurant.available_for_delivery')}}</label>
-                                        <select id="available_for_delivery" class="form-control custom-select mt-15" name="available_for_delivery" required>
-                                            <option value="">{{ trans('restaurant.available_for_delivery')}}</option>
-                                            @foreach($availableForDeliveries as $key => $availableForDelivery)
-                                                @if (old('available_for_delivery', $restaurant->restaurantDetails->available_for_delivery) == $key)
-                                                    <option value="{{ $availableForDelivery }}" selected> {{ ucfirst($availableForDelivery) }} </option>
-                                                @else
-                                                    <option value="{{ $availableForDelivery }}"> {{ ucfirst($availableForDelivery) }} </option>
-                                                @endif
-                                            @endforeach
-                                        </select>
-                                        <span class="form-text m-b-none text-danger"> @error('delivery_type') {{ $message }} @enderror </span>
-                                    </div>
-
                                     <!---image--->
                                     <div class="form-group">
                                         <label for="images" class="font-bold">{{ trans('restaurant.image')}}</label>
@@ -165,91 +145,7 @@
                                         <span class="form-text m-b-none text-danger"> @error('image') {{ $message }} @enderror </span>
                                     </div>
 
-                                    <!---description--->
-                                    <div class="form-group">
-                                        <label for="description" class="font-bold">{{ trans('restaurant.description')}}</label>
-                                        <textarea name="description"
-                                                  placeholder="{{ trans('restaurant.description')}}"
-                                                  class="form-control summernote"
-                                                  required>{{ old('description', $restaurant->restaurantDetails->description) }}</textarea>
-                                        <span class="form-text m-b-none text-danger"> @error('description') {{ $message }} @enderror </span>
-                                    </div>
 
-                                    <!---information--->
-                                    <div class="form-group">
-                                        <label for="short_description" class="font-bold">{{ trans('restaurant.information')}}</label>
-                                        <textarea name="information"
-                                                  placeholder="{{ trans('restaurant.information')}}"
-                                                  class="form-control summernote"
-                                                  required>{{ old('information', $restaurant->restaurantDetails->information) }}</textarea>
-                                        <span class="form-text m-b-none text-danger"> @error('information') {{ $message }} @enderror </span>
-                                    </div>
-
-                                    <!---RESTAURANT SETTINGS--->
-
-                                    <!---notification--->
-                                    <div class="form-group">
-                                        <label for="notification">{{ trans('restaurant.notification')}}</label>
-                                        <select id="notification" class="form-control custom-select mt-15" name="notification" required>
-                                            <option value="">{{ trans('restaurant.notification')}}</option>
-                                            @foreach($notifications as $key => $notification)
-                                                @if (old('notification', $restaurant->restaurantSetting->notification) == $key)
-                                                    <option value="{{ $key }}" selected> {{ ucfirst($notification) }} </option>
-                                                @else
-                                                    <option value="{{ $key }}"> {{ ucfirst($notification) }} </option>
-                                                @endif
-                                            @endforeach
-                                        </select>
-                                        <span class="form-text m-b-none text-danger"> @error('notification') {{ $message }} @enderror </span>
-                                    </div>
-
-                                    <!---popup_notification--->
-                                    <div class="form-group">
-                                        <label for="popup_notification">{{ trans('restaurant.popup_notification')}}</label>
-                                        <select id="popup_notification" class="form-control custom-select mt-15" name="popup_notification" required>
-                                            <option value="">{{ trans('restaurant.popup_notification')}}</option>
-                                            @foreach($popupNotifications as $key => $popupNotification)
-                                                @if (old('popup_notification', $restaurant->restaurantSetting->popup_notification) == $key)
-                                                    <option value="{{ $key }}" selected> {{ ucfirst($popupNotification) }} </option>
-                                                @else
-                                                    <option value="{{ $key }}"> {{ ucfirst($popupNotification) }} </option>
-                                                @endif
-                                            @endforeach
-                                        </select>
-                                        <span class="form-text m-b-none text-danger"> @error('popup_notification') {{ $message }} @enderror </span>
-                                    </div>
-
-                                    <!---sms--->
-                                    <div class="form-group">
-                                        <label for="sms">{{ trans('restaurant.sms')}}</label>
-                                        <select id="sms" class="form-control custom-select mt-15" name="sms" required>
-                                            <option value="">{{ trans('restaurant.sms')}}</option>
-                                            @foreach($smses as $key => $sms)
-                                                @if (old('sms', $restaurant->restaurantSetting->sms) == $key)
-                                                    <option value="{{ $key }}" selected> {{ ucfirst($sms) }} </option>
-                                                @else
-                                                    <option value="{{ $key }}"> {{ ucfirst($sms) }} </option>
-                                                @endif
-                                            @endforeach
-                                        </select>
-                                        <span class="form-text m-b-none text-danger"> @error('sms') {{ $message }} @enderror </span>
-                                    </div>
-
-                                    <!---offer_and_promotion--->
-                                    <div class="form-group">
-                                        <label for="offer_and_promotion">{{ trans('restaurant.offer_and_promotion')}}</label>
-                                        <select id="offer_and_promotion" class="form-control custom-select mt-15" name="offer_and_promotion" required>
-                                            <option value="">{{ trans('restaurant.offer_and_promotion')}}</option>
-                                            @foreach($offerAndPromotions as $key => $offerAndPromotion)
-                                                @if (old('offer_and_promotion', $restaurant->restaurantSetting->offer_and_promotion) == $key)
-                                                    <option value="{{ $key }}" selected> {{ ucfirst($offerAndPromotion) }} </option>
-                                                @else
-                                                    <option value="{{ $key }}"> {{ ucfirst($offerAndPromotion) }} </option>
-                                                @endif
-                                            @endforeach
-                                        </select>
-                                        <span class="form-text m-b-none text-danger"> @error('offer_and_promotion') {{ $message }} @enderror </span>
-                                    </div>
                                 </div>
                             </div>
 
