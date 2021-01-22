@@ -2,6 +2,7 @@
 
 return [
 
+    'note' => 'Note',
     'list' => 'List',
     'create' => 'Create',
     'submit' => 'Submit',

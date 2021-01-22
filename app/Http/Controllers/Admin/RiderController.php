@@ -66,29 +66,7 @@ class RiderController extends BaseController
     {
         $this->setPageTitle('Riders', 'Create Rider');
 
-        $currentAddresses = array(
-            '0' => 'No',
-            '1' => 'Yes',
-        );
-
-        $notifications  = array(
-            '0' => 'No',
-            '1' => 'Yes',
-        );
-
-        $popupNotifications = array(
-            '0' => 'No',
-            '1' => 'Yes',
-        );
-
-        $smses = array(
-            '0' => 'No',
-            '1' => 'Yes',
-        );
-
-        $orders = Order::all();
-
-        return view('admin.riders.create', compact('currentAddresses','notifications', 'orders', 'popupNotifications', 'smses'));
+        return view('admin.riders.create');
     }
 
     /**
@@ -99,7 +77,12 @@ class RiderController extends BaseController
     {
         $params = $request->except('_token');
 
-        $rider = $this->riderRepository->createRider($params);
+        if ($request->file('image') != null){
+
+            $params['image'] = $this->saveImages($request->file('image'), 'img/rider/', 200, 200);
+        }
+
+        $rider = $this->riderRepository->createRiderByAdmin($params);
 
         if (!$rider) {
             return $this->responseRedirectBack(trans('common.create_error'), 'error', true, true);
@@ -115,29 +98,9 @@ class RiderController extends BaseController
     {
         $this->setPageTitle('Riders', 'Edit Rider');
 
-        $notifications  = array(
-            '0' => 'No',
-            '1' => 'Yes',
-        );
-
-        $popupNotifications = array(
-            '0' => 'No',
-            '1' => 'Yes',
-        );
-
-        $smses = array(
-            '0' => 'No',
-            '1' => 'Yes',
-        );
-
-        $offerAndPromotions = array(
-            '0' => 'No',
-            '1' => 'Yes',
-        );
-
         $rider = $this->riderRepository->findRiderByIdByAdmin($id);
 
-        return view('admin.riders.edit', compact('notifications','popupNotifications','smses','offerAndPromotions','rider'));
+        return view('admin.riders.edit', compact('rider'));
     }
 
     /**
@@ -148,7 +111,12 @@ class RiderController extends BaseController
     {
         $params = $request->except('_token');
 
-        $rider = $this->riderRepository->updateRider($params);
+        if ($request->file('image') != null){
+
+            $params['image'] = $this->saveImages($request->file('image'), 'img/rider/', 200, 200);
+        }
+
+        $rider = $this->riderRepository->updateRiderByAdmin($params);
 
         if (!$rider) {
             return $this->responseRedirectBack(trans('common.update_error'), 'error', true, true);

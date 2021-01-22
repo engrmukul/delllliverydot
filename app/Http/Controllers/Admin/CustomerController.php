@@ -71,22 +71,7 @@ class CustomerController extends BaseController
     {
         $this->setPageTitle('Customers', 'Create Customer');
 
-        $notifications = array(
-            '0' => 'No',
-            '1' => 'Yes',
-        );
-
-        $offerAndPromotions = array(
-            '0' => 'No',
-            '1' => 'Yes',
-        );
-
-        $smses = array(
-            '0' => 'No',
-            '1' => 'Yes',
-        );
-
-        return view('admin.customers.create', compact('notifications','offerAndPromotions', 'smses'));
+        return view('admin.customers.create');
     }
 
     /**
@@ -97,7 +82,7 @@ class CustomerController extends BaseController
     {
         $params = $request->except('_token');
 
-        $customer = $this->customerRepository->createCustomer($params);
+        $customer = $this->customerRepository->createCustomerByAdmin($params);
 
         if (!$customer) {
             return $this->responseRedirectBack(trans('common.create_error'), 'error', true, true);
@@ -113,24 +98,9 @@ class CustomerController extends BaseController
     {
         $this->setPageTitle('Customers', 'Edit Customer');
 
-        $notifications = array(
-            '0' => 'No',
-            '1' => 'Yes',
-        );
-
-        $offerAndPromotions = array(
-            '0' => 'No',
-            '1' => 'Yes',
-        );
-
-        $smses = array(
-            '0' => 'No',
-            '1' => 'Yes',
-        );
-
         $customer = $this->customerRepository->findCustomerByIdByAdmin($id);
 
-        return view('admin.customers.edit',compact('customer','notifications','offerAndPromotions', 'smses'));
+        return view('admin.customers.edit',compact('customer'));
     }
 
     /**
@@ -141,7 +111,7 @@ class CustomerController extends BaseController
     {
         $params = $request->except('_token');
 
-        $customer = $this->customerRepository->updateCustomer($params);
+        $customer = $this->customerRepository->updateCustomerByAdmin($params);
 
         if (!$customer) {
             return $this->responseRedirectBack(trans('common.update_error'), 'error', true, true);

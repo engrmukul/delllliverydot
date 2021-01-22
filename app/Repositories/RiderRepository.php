@@ -190,15 +190,8 @@ class RiderRepository extends BaseRepository implements RiderContract
             $phone_number = (substr($collection['phone_number'], 0, 3) == '+88') ? $collection['phone_number'] : '+88' . $collection['phone_number'];
 
             $created_at = date('Y-m-d');
-            $name = 'Rider' . (Rider::where('id', '!=', '')->get()->max('id') + 1);
-            $email = 'rider' . (Rider::where('id', '!=', '')->get()->max('id') + 1) . '@dd.com';
 
-            $merge = $collection->merge(compact('created_at', 'name', 'email','phone_number'));
-
-            if (Rider::where('phone_number', '=', $phone_number)->count() > 0) {
-
-                return $rider = Rider::where('phone_number', $phone_number)->first();
-            }
+            $merge = $collection->merge(compact('created_at', 'phone_number'));
 
             $rider = new Rider($merge->all());
 
@@ -218,8 +211,18 @@ class RiderRepository extends BaseRepository implements RiderContract
             $riderProfile = new RiderProfile();
 
             $riderProfile->rider_id = $rider->id;
+            $riderProfile->nid = $collection['nid'];
 
             $riderProfile->save();
+
+
+            $riderAddress = new RiderAddress();
+
+            $riderAddress->rider_id = $rider->id;
+            $riderAddress->address = $collection['address'];
+            $riderAddress->is_current_address = 'yes';
+
+            $riderAddress->save();
 
             DB::commit();
 
@@ -347,6 +350,36 @@ class RiderRepository extends BaseRepository implements RiderContract
         $merge = $collection->merge(compact('updated_by'));
 
         $rider->update($merge->all());
+
+        return $rider;
+    }
+
+    public function updateRiderByAdmin(array $params)
+    {
+        $rider = $this->findRiderById($params['rider_id']);
+
+        $collection = collect($params)->except('_token');
+
+        $updated_by = auth()->user()->id;
+
+        $merge = $collection->merge(compact('updated_by'));
+
+        $rider->update($merge->all());
+
+        RiderProfile::where('rider_id', $params['rider_id'])->update(
+            array(
+                'nid' => $collection['nid'],
+                'image' => isset($collection['image']) ? isset($collection['image']) :  ($rider->image ? $rider->image : url('/').'/public/img/rider/default.png'),
+                'dob' => $collection['dob']
+            )
+        );
+
+        RiderAddress::where(["rider_id" => $params['rider_id'], 'is_current_address' => 'yes'])->update(
+            [
+                "address" => $collection['address'],
+            ]
+        );
+
 
         return $rider;
     }

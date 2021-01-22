@@ -57,22 +57,6 @@
                                         <span class="form-text m-b-none text-danger"> @error('trade_licence') {{ $message }} @enderror </span>
                                     </div>
 
-                                    <!---delivery_type--->
-                                    <div class="form-group">
-                                        <label for="delivery_type">{{ trans('restaurant.delivery_type')}}</label>
-                                        <select id="delivery_type" class="form-control custom-select mt-15" name="delivery_type" required>
-                                            <option value="">{{ trans('restaurant.delivery_type')}}</option>
-                                            @foreach($deliveryTypes as $key => $deliveryType)
-                                                @if (old('delivery_type') == $deliveryType)
-                                                    <option value="{{ $deliveryType }}" selected> {{ ucfirst($deliveryType) }} </option>
-                                                @else
-                                                    <option value="{{ $deliveryType }}"> {{ ucfirst($deliveryType) }} </option>
-                                                @endif
-                                            @endforeach
-                                        </select>
-                                        <span class="form-text m-b-none text-danger"> @error('delivery_type') {{ $message }} @enderror </span>
-                                    </div>
-
                                     <!---delivery_fee--->
                                     <div class="form-group">
                                         <label for="delivery_fee" class="font-bold">{{ trans('restaurant.delivery_fee')}}</label>
@@ -113,13 +97,6 @@
                                                   class="form-control"
                                                   required>{{ old('description') }}</textarea>
                                         <span class="form-text m-b-none text-danger"> @error('description') {{ $message }} @enderror </span>
-                                    </div>
-
-                                    <!---discount--->
-                                    <div class="form-group">
-                                        <label for="discount" class="font-bold">{{ trans('restaurant.discount')}}</label>
-                                        <input type="text" name="discount" value="{{ old('discount') }}" placeholder="{{ trans('restaurant.discount')}}" class="form-control" required>
-                                        <span class="form-text m-b-none text-danger"> @error('discount') {{ $message }} @enderror </span>
                                     </div>
 
                                     <!---delivery_range--->

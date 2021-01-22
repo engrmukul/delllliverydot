@@ -78,11 +78,9 @@ class CouponController extends BaseController
             'fixed' => 'fixed',
         );
 
-        $foods = Food::all();
-        $categories = Category::all();
         $restaurants = Restaurant::all();
 
-        return view('admin.coupons.create', compact('discountTypes','foods','categories','restaurants'));
+        return view('admin.coupons.create', compact('discountTypes','restaurants'));
     }
 
     /**
@@ -114,13 +112,11 @@ class CouponController extends BaseController
             'fixed' => 'fixed',
         );
 
-        $foods = Food::all();
-        $categories = Category::all();
         $restaurants = Restaurant::all();
 
         $coupon = $this->couponRepository->findCouponById($id);
 
-        return view('admin.coupons.edit', compact('coupon','discountTypes','foods','categories','restaurants'));
+        return view('admin.coupons.edit', compact('coupon','restaurants','discountTypes'));
     }
 
     /**

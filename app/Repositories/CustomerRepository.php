@@ -205,7 +205,7 @@ class CustomerRepository extends BaseRepository implements CustomerContract
 
             $customerProfile->customer_id = $customer->id;
             $customerProfile->image = url('/').'/public/img/customer/default.png';
-            $customerProfile->dob = NULL;
+            $customerProfile->dob = $collection['dob'];
             $customerProfile->spouse_dob = NULL;
             $customerProfile->father_dob = NULL;
             $customerProfile->mother_dob = NULL;
@@ -260,6 +260,30 @@ class CustomerRepository extends BaseRepository implements CustomerContract
         $merge = $collection->merge(compact('updated_by'));
 
         $customer->update($merge->all());
+
+        return $customer;
+    }
+
+    public function updateCustomerByAdmin(array $params)
+    {
+        $customer = $this->findCustomerById($params['customer_id']);
+
+        $collection = collect($params)->except('_token');
+
+        $updated_by = auth()->user()->id;
+
+        $merge = $collection->merge(compact('updated_by'));
+
+        $customer->update($merge->all());
+
+
+        CustomerProfile::where('customer_id', $params['customer_id'])->update(
+            array(
+                'customer_id' => $customer->id,
+                'image' => $customer->image ? $customer->image : url('/').'/public/img/customer/default.png',
+                'dob' => $collection['dob']
+            )
+        );
 
         return $customer;
     }

@@ -19,7 +19,7 @@
                         <form role="form" method="post" action="{{route( strtolower($pageTitle) . '.update', $customer->id )}}" enctype="multipart/form-data">
                             @method('PUT')
                             @csrf
-                            <input type="hidden" name="id" value="{{$customer->id}}">
+                            <input type="hidden" name="customer_id" value="{{$customer->id}}">
 
                             <div class="row">
                                 <div class="col-md-6">
@@ -52,7 +52,7 @@
                                         <label for="address" class="font-bold">{{ trans('customer.address')}}</label>
                                         <textarea name="address"
                                                   placeholder="{{ trans('customer.address')}}"
-                                                  class="form-control summernote"
+                                                  class="form-control"
                                                   required>{{ old('address',$customer->customerProfile->address) }}</textarea>
                                         <span class="form-text m-b-none text-danger"> @error('address') {{ $message }} @enderror </span>
                                     </div>

@@ -50,10 +50,11 @@
                                         <label for="address" class="font-bold">{{ trans('customer.address')}}</label>
                                         <textarea name="address"
                                                   placeholder="{{ trans('customer.address')}}"
-                                                  class="form-control summernote"
+                                                  class="form-control"
                                                   required>{{ old('address') }}</textarea>
                                         <span class="form-text m-b-none text-danger"> @error('address') {{ $message }} @enderror </span>
                                     </div>
+
                                     <!--- dob --->
                                     <div class="form-group" id="dateItem">
                                         <label for="dob" class="font-bold">{{ trans('customer.dob')}}</label>

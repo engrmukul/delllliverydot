@@ -80,11 +80,21 @@ class CouponRepository extends BaseRepository implements CouponContract
 
             $created_by = auth()->user()->id;
 
-            $merge = $collection->merge(compact('created_by'));
+            $couponArray = array();
+            foreach (array_filter($collection['restaurant_id']) as $key => $item) {
+                $couponData['code'] = $collection['code'];
+                $couponData['total_code'] = $collection['total_code'];
+                $couponData['discount_type'] = $collection['discount_type'];
+                $couponData['discount'] = $collection['discount'];
+                $couponData['description'] = $collection['description'];
+                $couponData['restaurant_id'] = $item;
+                $couponData['expire_at'] = $collection['expire_at']." 00:00:00";
+                $couponData['created_by'] = $created_by;
 
-            $Coupon = new Coupon($merge->all());
+                $couponArray[] = $couponData;
+            }
 
-            $Coupon->save();
+            $Coupon = Coupon::insert($couponArray);
 
             return $Coupon;
 

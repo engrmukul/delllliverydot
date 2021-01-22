@@ -36,8 +36,7 @@ class OrderRepository extends BaseRepository implements OrderContract
             ->addColumn('action', function ($row) {
                 $actions = '';
 
-                $actions.= '<a class="btn btn-primary btn-xs float-left mr-1" href="' . route('orders.edit', [$row->id]) . '" title="Order Edit"><i class="fa fa-pencil"></i> '. trans("common.edit") . '</a>';
-                $actions.= '<a class="btn btn-success btn-xs float-left mr-1" href="' . route('orders.view', [$row->id]) . '" title="Order View"><i class="fa fa-eye"></i> '. trans("common.view") . '</a>';
+                $actions.= '<a class="btn btn-primary btn-xs float-left mr-1" href="#" title="Order Edit"><i class="fa fa-itunes"></i> '. trans("common.note") . '</a>';
 
                 return $actions;
             })

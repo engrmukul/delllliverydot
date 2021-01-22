@@ -48,7 +48,7 @@
                                     <!---NID--->
                                     <div class="form-group">
                                         <label for="nid" class="font-bold">{{ trans('rider.nid')}}</label>
-                                        <input type="text" name="nid" value="{{ old('nid', $rider->nid) }}" placeholder="{{ trans('rider.nid')}}" class="form-control" required>
+                                        <input type="text" name="nid" value="{{ old('nid', $rider->riderProfile->nid) }}" placeholder="{{ trans('rider.nid')}}" class="form-control" required>
                                         <span class="form-text m-b-none text-danger"> @error('nid') {{ $message }} @enderror </span>
                                     </div>
                                 </div>
@@ -59,8 +59,8 @@
                                         <label for="address" class="font-bold">{{ trans('rider.address')}}</label>
                                         <textarea name="address"
                                                   placeholder="{{ trans('rider.address')}}"
-                                                  class="form-control summernote"
-                                                  required>{{ old('address', $rider->riderProfile->address) }}</textarea>
+                                                  class="form-control"
+                                                  required>{{ old('address', $rider->riderAddress->address) }}</textarea>
                                         <span class="form-text m-b-none text-danger"> @error('address') {{ $message }} @enderror </span>
                                     </div>
 

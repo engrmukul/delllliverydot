@@ -109,42 +109,12 @@ class RestaurantController extends BaseController
     {
         $this->setPageTitle('restaurants', 'create restaurant');
 
-        $deliveryTypes = array(
-            'home' => 'home',
-            'collect' => 'collect',
-        );
-
         $closedRestaurants = array(
             '0' => 'No',
             '1' => 'Yes',
         );
 
-        $availableForDeliveries = array(
-            '0' => 'No',
-            '1' => 'Yes',
-        );
-
-        $notifications = array(
-            '0' => 'No',
-            '1' => 'Yes',
-        );
-
-        $popupNotifications = array(
-            '0' => 'No',
-            '1' => 'Yes',
-        );
-
-        $smses = array(
-            '0' => 'No',
-            '1' => 'Yes',
-        );
-
-        $offerAndPromotions = array(
-            '0' => 'No',
-            '1' => 'Yes',
-        );
-
-        return view('admin.restaurants.create', compact('deliveryTypes','closedRestaurants','availableForDeliveries','notifications','popupNotifications','smses','offerAndPromotions'));
+        return view('admin.restaurants.create', compact('closedRestaurants'));
 
     }
 
@@ -158,7 +128,7 @@ class RestaurantController extends BaseController
 
         if ($request->file('image') != null){
 
-            $params['image'] = $this->saveImages($request->file('image'), 'img/restaurant/', 500, 500);
+            $params['image'] = $this->saveImages($request->file('image'), 'img/restaurant/', 200, 200);
         }
 
         $restaurant = $this->restaurantRepository->createRestaurantByAdmin($params);
@@ -176,44 +146,20 @@ class RestaurantController extends BaseController
     public function edit($id)
     {
         $this->setPageTitle('restaurants', 'Edit Restaurant');
-        $deliveryTypes = array(
-            'home' => 'home',
-            'collect' => 'collect',
-        );
 
         $closedRestaurants = array(
             '0' => 'No',
             '1' => 'Yes',
         );
 
-        $availableForDeliveries = array(
-            '0' => 'No',
-            '1' => 'Yes',
-        );
-
-        $notifications = array(
-            '0' => 'No',
-            '1' => 'Yes',
-        );
-
-        $popupNotifications = array(
-            '0' => 'No',
-            '1' => 'Yes',
-        );
-
-        $smses = array(
-            '0' => 'No',
-            '1' => 'Yes',
-        );
-
-        $offerAndPromotions = array(
-            '0' => 'No',
-            '1' => 'Yes',
+        $statuses = array(
+            'active' => 'Active',
+            'inactive' => 'Inactive',
         );
 
         $restaurant = $this->restaurantRepository->findRestaurantByIdByAdmin($id);
 
-        return view('admin.restaurants.edit',  compact('restaurant','deliveryTypes','closedRestaurants','availableForDeliveries','notifications','popupNotifications','smses','offerAndPromotions'));
+        return view('admin.restaurants.edit',  compact('restaurant','closedRestaurants','statuses'));
     }
 
     /**

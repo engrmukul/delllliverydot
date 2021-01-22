@@ -7,7 +7,7 @@
             <div class="col-lg-12">
                 <div class="ibox ">
                     <div class="ibox-title">
-                        <h5><i class="fa fa-book"></i> coupon {{ trans('common.create')}}</h5>
+                        <h5><i class="fa fa-book"></i> Coupon {{ trans('common.create')}}</h5>
                         <div class="ibox-tools">
                             <a style="margin-top: -8px;" href="{{ route( strtolower($pageTitle) . '.index') }}" class="btn btn-primary"><i
                                     class="fa fa-list"></i> {{ trans('common.list')}}</a>
@@ -32,13 +32,6 @@
                                             <label for="total_code" class="font-bold">{{ trans('coupon.total_code')}}</label>
                                             <input type="text" name="total_code" value="{{ old('total_code') }}" placeholder="{{ trans('coupon.total_code')}}" class="form-control" required>
                                             <span class="form-text m-b-none text-danger"> @error('total_code') {{ $message }} @enderror </span>
-                                        </div>
-
-                                        <!---total used code--->
-                                        <div class="form-group">
-                                            <label for="total_used_code" class="font-bold">{{ trans('coupon.total_used_code')}}</label>
-                                            <input type="text" name="total_used_code" value="{{ old('total_code') }}" placeholder="{{ trans('coupon.total_used_code')}}" class="form-control" required>
-                                            <span class="form-text m-b-none text-danger"> @error('total_used_code') {{ $message }} @enderror </span>
                                         </div>
 
                                         <!---discount type--->
@@ -79,7 +72,7 @@
                                         <!--- restaurant id --->
                                         <div class="form-group">
                                             <label for="restaurant_id">{{ trans('coupon.restaurant_id')}}</label>
-                                            <select id="restaurant_id" class="form-control custom-select mt-15" name="restaurant_id" required>
+                                            <select id="restaurant_id" multiple class="form-control custom-select mt-15" name="restaurant_id[]" required>
                                                 <option value="">{{ trans('coupon.restaurant_id')}}</option>
                                                 @foreach($restaurants as $key => $restaurant)
                                                     @if (old('restaurant_id') == $restaurant->id)

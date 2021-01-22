@@ -27,15 +27,11 @@ class CouponStoreFormRequest extends FormRequest
         return [
             'code' => 'required',
             'total_code' => 'required',
-            'total_used_code' => 'required',
             'discount_type' => 'required',
             'discount' => 'required',
             'description' => 'required',
-            'food_id' => 'required',
             'restaurant_id' => 'required',
-            'category_id' => 'required',
             'expire_at' => 'required',
-            //'enabled' => 'required'
         ];
     }
 }
