@@ -136,6 +136,9 @@ class RestaurantController extends BaseController
         if (!$restaurant) {
             return $this->responseRedirectBack(trans('common.create_error'), 'error', true, true);
         }
+
+        event(new \App\Events\NewRegistration());
+
         return $this->responseRedirect('restaurants.index', trans('common.create_success'), 'success', false, false);
     }
 

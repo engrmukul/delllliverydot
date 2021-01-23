@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Models\Order;
 use App\Models\Rider;
+use App\Models\User;
 use Illuminate\Http\Request;
 use App\Models\Restaurant;
 use App\Contracts\RiderContract;
@@ -87,6 +88,9 @@ class RiderController extends BaseController
         if (!$rider) {
             return $this->responseRedirectBack(trans('common.create_error'), 'error', true, true);
         }
+
+        event(new \App\Events\NewRegistration());
+
         return $this->responseRedirect('riders.index', trans('common.create_success'), 'success', false, false);
     }
 

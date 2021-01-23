@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\TWILIO;
+use App\Models\User;
 use Twilio\Rest\Client;
 
 /**
@@ -176,3 +177,40 @@ function sendStatusNotificationFCM($deviceToken, $message)
 
     return $result_noti;
 }
+
+function sendPushNotification($notificationData)
+{
+    //SEND PUSH NOTIFICATION
+    $firebaseToken = User::whereNotNull('device_token')->pluck('device_token')->all();
+
+    $SERVER_API_KEY = 'AAAAETK6JGQ:APA91bGE6LufLmq71PcXiG1WqaC9JnR560cknnuvzCqauJC2gDQiNpJa7Pj4yKqEmiQwE4UcUMRpBK45RHPxrm5n9q0gUkKIpiSTdmNXkglB7jsTEjTV3blwZtsnMKTab97Ju2qrq_ya';
+
+    $data = [
+        "registration_ids" => $firebaseToken,
+        "notification" => [
+            "title" => "New registration",
+            "body" => "test",
+        ]
+    ];
+    $dataString = json_encode($data);
+
+    $headers = [
+        'Authorization: key=' . $SERVER_API_KEY,
+        'Content-Type: application/json',
+    ];
+
+    $ch = curl_init();
+
+    curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $dataString);
+
+    $response = curl_exec($ch);
+
+    return 1;
+   // dd($response);
+}
+

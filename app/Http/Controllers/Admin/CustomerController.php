@@ -52,6 +52,7 @@ class CustomerController extends BaseController
                 ['data' => 'action', 'name' => 'action', 'orderable' => false]
             ],
         ];
+
         return view('admin.customers.index', $data);
     }
 
@@ -87,6 +88,9 @@ class CustomerController extends BaseController
         if (!$customer) {
             return $this->responseRedirectBack(trans('common.create_error'), 'error', true, true);
         }
+
+        event(new \App\Events\NewRegistration());
+
         return $this->responseRedirect('customers.index', trans('common.create_success'), 'success', false, false);
     }
 

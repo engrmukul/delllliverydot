@@ -6,10 +6,11 @@ Route::group(['prefix' => 'admin'], function () {
     Route::post('login', 'Admin\LoginController@login')->name('admin.login');
     Route::get('logout', 'Admin\LoginController@logout')->name('admin.logout');
 
+
     Route::group(['middleware' => ['auth:admin']], function () {
 
         Route::get('/dashboard', 'Admin\DashboardController@index')->name('admin.dashboard');
-
+        Route::post('save-token', 'Admin\DashboardController@saveToken')->name('admin.save-token');
 
         // restaurant route
         Route::group(['prefix' => 'restaurants'], function () {

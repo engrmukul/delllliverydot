@@ -7,6 +7,8 @@ use App\Models\Dashboard;
 use App\Models\Order;
 use App\Models\Restaurant;
 use App\Models\Rider;
+use App\Models\User;
+use Illuminate\Http\Request;
 
 class DashboardController extends BaseController
 {
@@ -22,7 +24,25 @@ class DashboardController extends BaseController
         $totalCustomers = Customer::all()->count();
         $totalOrders = Order::all()->count();
 
-        return view('admin.dashboard.index', compact('totalCustomers','totalOrders', 'totalRestaurants','totalRiders'));
+        $customers = Customer::latest('id')->limit(5)->get();
+        $restaurants = Customer::latest('id')->limit(5)->get();
+        $riders = Customer::latest('id')->limit(5)->get();
+
+        $orders = Order::with('customer', 'restaurant', 'rider')->latest('id')->limit(10)->get();
+
+        return view('admin.dashboard.index', compact('customers','restaurants','riders','totalCustomers','orders','totalOrders', 'totalRestaurants','totalRiders'));
+    }
+
+    /**
+     * SAVE ADMIN DEVICE TOKEN
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function saveToken(Request $request)
+    {
+        //dd($request->token);
+        User::where('id',auth()->user()->id)->update(array('device_token'=>$request->token));
+        return response()->json(['token saved successfully.']);
     }
 
 }

@@ -185,12 +185,9 @@ class CustomerRepository extends BaseRepository implements CustomerContract
             $phone_number = (substr($collection['phone_number'],0,3)=='+88') ? $collection['phone_number'] : '+88'.$collection['phone_number'];
 
             //DEFAULT CUSTOMER DATA
-            $maxId = Customer::where('id', '!=', '')->get()->count() + 1;
-            $name = "Customer". $maxId;
-            $email = 'customer'. $maxId .'@dd.com';
             $created_at = date('Y-m-d');
 
-            $merge = $collection->merge(compact('name','email','created_at','phone_number'));
+            $merge = $collection->merge(compact('created_at','phone_number'));
 
             if( Customer::where('phone_number','=', $phone_number)->count() > 0){
                 return $customer = Customer::where('phone_number', $phone_number)->first();
