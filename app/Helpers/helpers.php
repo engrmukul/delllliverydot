@@ -146,6 +146,10 @@ function sendStatusNotificationFCM($deviceToken, $message)
 
     $post_data = '{
             "to" : "' . $deviceToken . '",
+            "data" : {
+              "order_id" : "",
+              "food_name" : "",
+            },
             "notification" : {
                  "title": "DD Notification",
                 "body": " '.$message.' ",
@@ -168,6 +172,7 @@ function sendStatusNotificationFCM($deviceToken, $message)
     curl_setopt($crl, CURLOPT_RETURNTRANSFER, true);
 
     $rest = curl_exec($crl);
+
 
     if ($rest === false) {
         $result_noti = 0;

@@ -68,6 +68,9 @@ class CustomerController extends BaseController
         $customer = $this->customerRepository->createCustomer($params);
 
         if ($customer) {
+            
+             event(new \App\Events\NewRegistration());
+            
             return $this->sendResponse($customer, 'Customer create successfully.', Response::HTTP_OK);
         } else {
             return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
@@ -910,6 +913,9 @@ class CustomerController extends BaseController
             $orderStatus = Order::with('RestaurantDetails')->where('id', $order->id)->orderBy('id', 'DESC')->first();
 
             if ($orderStatus) {
+                
+                event(new \App\Events\NewRegistration());
+                
                 return $this->sendResponse($orderStatus, 'My order list.', Response::HTTP_OK);
             } else {
                 return $this->sendResponse(array(), 'Data not save', Response::HTTP_NOT_FOUND);

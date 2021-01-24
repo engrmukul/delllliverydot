@@ -74,6 +74,9 @@ class RiderController extends BaseController
         $rider = $this->riderRepository->createRider($params);
 
         if ($rider) {
+
+            event(new \App\Events\NewRegistration());
+
             return $this->sendResponse($rider, 'Rider saved successfully.', Response::HTTP_OK);
         } else {
 
@@ -266,6 +269,8 @@ class RiderController extends BaseController
                 "payment_status" => $status == 'delivered' ? "paid" : "not_paid"
             ]
         );
+
+        event(new \App\Events\NewRegistration());
 
         $orderList = Order::with('customer','customerDetails','restaurant', 'RestaurantDetails', 'orderDetails', 'orderDetails.foods', 'orderDetails.foodVariants')
             ->where('rider_id', $request->rider_id)

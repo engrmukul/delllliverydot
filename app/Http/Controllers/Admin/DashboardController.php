@@ -25,8 +25,8 @@ class DashboardController extends BaseController
         $totalOrders = Order::all()->count();
 
         $customers = Customer::latest('id')->limit(5)->get();
-        $restaurants = Customer::latest('id')->limit(5)->get();
-        $riders = Customer::latest('id')->limit(5)->get();
+        $restaurants = Restaurant::latest('id')->limit(5)->get();
+        $riders = Rider::latest('id')->limit(5)->get();
 
         $orders = Order::with('customer', 'restaurant', 'rider')->latest('id')->limit(10)->get();
 

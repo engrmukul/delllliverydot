@@ -102,6 +102,7 @@ class RestaurantController extends BaseController
 
             $order = Order::with('customer')->where('id',  $request->order_id)->first();
 
+            event(new \App\Events\NewRegistration());
 
             //SEND FCM NOTIFICATION TO USER
             sendStatusNotificationFCM($order->customer->device_token, 'Your order accepted');
@@ -141,8 +142,12 @@ class RestaurantController extends BaseController
             ]
         );
 
+        event(new \App\Events\NewRegistration());
 
         $todaysOrder = Order::with('customer', 'RestaurantDetails', 'orderDetails', 'orderDetails.foods', 'orderDetails.foodVariants')->whereDate('order_date', '>=', date('Y-m-d'))->where('restaurant_id', $request->restaurant_id)->orderBy('order_date', 'ASC')->get();
+
+        //SEND FCM NOTIFICATION TO USER
+        sendStatusNotificationFCM($todaysOrder->customer->device_token, 'Your order canceled');
 
         $orderDataArray = array();
         if ($todaysOrder->count() > 0) {
@@ -173,12 +178,17 @@ class RestaurantController extends BaseController
             ]
         );
 
-        //$orderDetails =
+        event(new \App\Events\NewRegistration());
 
             //SEND PUSH NOTIFICATION
         $riders = Rider::whereNotNull('device_token')->get();
 
-        $orderDetail = Order::with('RestaurantDetails', 'orderDetails', 'orderDetails.foods', 'orderDetails.foodVariants')->where('id', $request->order_id)->first();
+        $orderDetail = Order::with('customer','RestaurantDetails', 'orderDetails', 'orderDetails.foods', 'orderDetails.foodVariants')->where('id', $request->order_id)->first();
+
+
+        //SEND FCM NOTIFICATION TO USER
+        sendStatusNotificationFCM($orderDetail->customer->device_token, 'Your order on the way');
+
 
         $orderDataArray = array();
 
@@ -240,6 +250,9 @@ class RestaurantController extends BaseController
         $restaurant = $this->restaurantRepository->createRestaurant($params);
 
         if ($restaurant) {
+
+            event(new \App\Events\NewRegistration());
+
             return $this->sendResponse($restaurant, 'Restaurant saved successfully.', Response::HTTP_OK);
         } else {
             return $this->sendResponse(array(), 'Data not save', Response::HTTP_NOT_FOUND);
