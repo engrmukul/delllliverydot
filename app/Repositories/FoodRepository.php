@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Contracts\FoodContract;
+use App\Models\Extra;
 use App\Models\Food;
 use App\Models\FoodVariant;
 use Illuminate\Database\QueryException;
@@ -65,7 +66,7 @@ class FoodRepository extends BaseRepository implements FoodContract
     {
         try {
             //return $this->findOneOrFail($id);
-            return $this->model->with('foodVariants','categories')->findOrFail($id);
+            return $this->model->with('foodVariants','categories','extra')->findOrFail($id);
 
         } catch (ModelNotFoundException $e) {
 
@@ -85,13 +86,16 @@ class FoodRepository extends BaseRepository implements FoodContract
 
             $created_by = auth()->user()->id;
 
+            $short_description =  $collection['name'];
+            $description =  $collection['name'];
+
             if(isset($params['image'])){
                 $image = url('/').'/public/img/food/'.$params['image'];
             }else{
                 $image = url('/').'/public/img/food/default.png';
             }
 
-            $merge = $collection->merge(compact('created_by','image'));
+            $merge = $collection->merge(compact('short_description','description','created_by','image'));
 
             $food = new Food($merge->all());
 
@@ -110,6 +114,23 @@ class FoodRepository extends BaseRepository implements FoodContract
 
             FoodVariant::insert($variantArray);
 
+            //SAVE FOOD EXTRA
+            $extraArray = array();
+
+            if(isset($collection['extra_name'][0]) AND !empty($collection['extra_name'][0]) AND $collection['extra_name'][0] !=null){
+                foreach ($collection['extra_name'] as $ekey => $eName){
+                    $extraData['food_id'] = $food->id;
+                    $extraData['name'] = $eName;
+                    $extraData['price'] = $collection['extra_price'][$ekey];
+                    $extraData['created_by'] = auth()->user()->id;
+
+                    $extraArray[] = $extraData;
+                }
+
+                Extra::insert($extraArray);
+            }
+
+
             return $food;
 
         } catch (QueryException $exception) {
@@ -127,6 +148,9 @@ class FoodRepository extends BaseRepository implements FoodContract
 
         $collection = collect($params)->except('_token');
 
+        $short_description =  $collection['name'];
+        $description =  $collection['name'];
+
         $updated_by = auth()->user()->id;
 
         $updated_at = date('Y-m-d');
@@ -137,7 +161,7 @@ class FoodRepository extends BaseRepository implements FoodContract
             $image = url('/').'/public/img/food/default.png';
         }
 
-        $merge = $collection->merge(compact('updated_at','updated_by','image'));
+        $merge = $collection->merge(compact('short_description', 'description','updated_at','updated_by','image'));
 
         $food->update($merge->all());
 
@@ -155,6 +179,26 @@ class FoodRepository extends BaseRepository implements FoodContract
         }
 
         FoodVariant::insert($variantArray);
+
+
+        //SAVE FOOD EXTRA
+        $extraArray = array();
+
+        if(isset($collection['extra_name'][0]) AND !empty($collection['extra_name'][0]) AND $collection['extra_name'][0] !=null){
+
+            Extra::where('food_id', $collection['id'])->delete();
+
+            foreach ($collection['extra_name'] as $ekey => $eName){
+                $extraData['food_id'] = $food->id;
+                $extraData['name'] = $eName;
+                $extraData['price'] = $collection['extra_price'][$ekey];
+                $extraData['created_by'] = auth()->user()->id;
+
+                $extraArray[] = $extraData;
+            }
+
+            Extra::insert($extraArray);
+        }
 
         return $food;
     }

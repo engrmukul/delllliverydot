@@ -55,21 +55,6 @@
                                 </div>
 
                                 <div class="col-md-6">
-                                    <!--- deliverable_food --->
-                                    <div class="form-group">
-                                        <label for="deliverable_food" class="font-bold">{{ trans('food.deliverable_food')}}</label>
-                                        <select id="deliverable_food" class="form-control custom-select mt-15" name="deliverable_food" required>
-                                            <option value="">{{ trans('food.deliverable_food')}}</option>
-                                            @foreach($deliverableFoods as $key => $deliverableFood)
-                                                @if (old('deliverable_food', $food->deliverable_food) == $key)
-                                                    <option value="{{ $key }}" selected> {{ ucfirst($deliverableFood) }} </option>
-                                                @else
-                                                    <option value="{{ $key }}"> {{ ucfirst($deliverableFood) }} </option>
-                                                @endif
-                                            @endforeach
-                                        </select>
-                                        <span class="form-text m-b-none text-danger"> @error('deliverable_food') {{ $message }} @enderror </span>
-                                    </div>
 
                                     <!--- restaurant_id --->
                                     <div class="form-group">
@@ -135,6 +120,38 @@
 
                             </div>
 
+                            <!---ADD EXTRA--->
+                            <div class="row">
+
+                                <div class="col-12">
+                                    @forelse($food->extra as $key => $extra)
+                                        <div id="inputExtraFormRow">
+                                            <div class="input-group mb-3">
+                                                <input type="text" name="extra_name[]" value="{{ old('extra_name[]', $extra->name) }}" class="form-control m-input" placeholder="Enter food extra name" autocomplete="off">
+                                                <input type="number" name="extra_price[]" value="{{ old('extra_price[]', $extra->price) }}" class="form-control m-input" placeholder="Enter price" autocomplete="off">
+                                                <div class="input-group-append">
+                                                    <button type="button" @if($key != 0) id="removeExtraRow" @else  @endif class="btn btn-danger">Remove</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @empty
+                                        <div id="inputExtraFormRow">
+                                            <div class="input-group mb-3">
+                                                <input type="text" name="extra_name[]" class="form-control m-input" placeholder="Enter food extra name" autocomplete="off">
+                                                <input type="number" name="extra_price[]" class="form-control m-input" placeholder="Enter extra price" autocomplete="off">
+                                                <div class="input-group-append">
+                                                    <button type="button" class="btn btn-danger">Remove</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endforelse
+
+                                    <div id="newExtraRow"></div>
+                                    <button id="addExtraRow" type="button" class="btn btn-info">Add Row</button>
+                                </div>
+
+                            </div>
+
                             <div class="row mt-3">
                                 <div class="col-12">
                                     <!---CONTROL BUTTON--->
@@ -172,6 +189,26 @@
         // remove row
         $(document).on('click', '#removeRow', function () {
             $(this).closest('#inputFormRow').remove();
+        });
+
+        // add extra
+        $("#addExtraRow").click(function () {
+            var html = '';
+            html += '<div id="inputExtraFormRow">';
+            html += '<div class="input-group mb-3">';
+            html += '<input type="text" name="extra_name[]" class="form-control m-input" placeholder="Enter food extra name" autocomplete="off">';
+            html += '<input type="text" name="extra_price[]" class="form-control m-input" placeholder="Enter price" autocomplete="off">';
+            html += '<div class="input-group-append">';
+            html += '<button id="removeExtraRow" type="button" class="btn btn-danger">Remove</button>';
+            html += '</div>';
+            html += '</div>';
+
+            $('#newExtraRow').append(html);
+        });
+
+        // remove row
+        $(document).on('click', '#removeExtraRow', function () {
+            $(this).closest('#inputExtraFormRow').remove();
         });
     </script>
 @endpush

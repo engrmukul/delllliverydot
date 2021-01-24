@@ -94,7 +94,7 @@ class RestaurantRepository extends BaseRepository implements RestaurantContract
 
     public function listRestaurant(string $order = 'id', string $sort = 'desc', array $columns = ['*'])
     {
-        return Restaurant::with('RestaurantDetails', 'coupon', 'foods')->orderBy('id', 'DESC')->get();
+        return Restaurant::with('RestaurantDetails', 'coupon', 'foods')->where('status','active')->orderBy('id', 'DESC')->get();
     }
 
     public function filterRestaurant($params,string $order = 'id', string $sort = 'desc', array $columns = ['*'])

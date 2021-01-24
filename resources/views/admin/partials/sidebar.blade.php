@@ -43,8 +43,6 @@
                 <ul class="nav nav-second-level collapse">
                     <li class="@if(in_array(Route::current()->getName(), array('categories.index', 'categories.create', 'categories.edit'))) active @else  @endif"><a href="{{ route('categories.index') }}"><i class="fa fa-list"></i>{{ trans('sidebar.category')}}</a></li>
                     <li class="@if(in_array(Route::current()->getName(), array('foods.index', 'foods.create', 'foods.edit')))  active @else  @endif"><a href="{{ route('foods.index') }}"><i class="fa fa-list"></i>{{ trans('sidebar.foods')}}</a></li>
-                    <li class="@if(in_array(Route::current()->getName(), array('groups.index', 'groups.create', 'groups.edit')))  active @else  @endif"><a href="{{ route('groups.index') }}"><i class="fa fa-list"></i>{{ trans('sidebar.groups')}}</a></li>
-                    <li class="@if(in_array(Route::current()->getName(), array('extras.index', 'extras.create', 'extras.edit')))  active @else  @endif"><a href="{{ route('extras.index') }}"><i class="fa fa-list"></i>{{ trans('sidebar.extras')}}</a></li>
                 </ul>
             </li>
 
@@ -59,13 +57,13 @@
             <li class="@if(in_array(Route::current()->getName(), array('customers.index', 'customers.create', 'customers.edit')))  @else  @endif"><a href="{{ route('customers.index') }}"><i class="fa fa-list"></i>{{ trans('sidebar.customers')}}</a></li>
             <li class="@if(in_array(Route::current()->getName(), array('riders.index', 'riders.create', 'riders.edit')))  @else  @endif"><a href="{{ route('riders.index') }}"><i class="fa fa-list"></i>{{ trans('sidebar.riders')}}</a></li>
 
-            <li>
-                <a href="#"><i class="fa fa-gears"></i> <span class="nav-label">{{ trans('sidebar.settings')}}</span><span class="fa arrow"></span></a>
-                <ul class="nav nav-second-level collapse">
-                    <li class="@if(in_array(Route::current()->getName(), array('helpandsupports.index', 'helpandsupports.create', 'helpandsupports.edit'))) active @else  @endif"><a href="{{ route('helpandsupports.index') }}"><i class="fa fa-list"></i>{{ trans('sidebar.help&supports')}}</a></li>
-                    <li class="@if(in_array(Route::current()->getName(), array('termsandconditions.index', 'termsandconditions.create', 'termsandconditions.edit')))  active @else  @endif"><a href="{{ route('termsandconditions.index') }}"><i class="fa fa-list"></i>{{ trans('sidebar.terms&conditions')}}</a></li>
-                </ul>
-            </li>
+{{--            <li>--}}
+{{--                <a href="#"><i class="fa fa-gears"></i> <span class="nav-label">{{ trans('sidebar.settings')}}</span><span class="fa arrow"></span></a>--}}
+{{--                <ul class="nav nav-second-level collapse">--}}
+{{--                    <li class="@if(in_array(Route::current()->getName(), array('helpandsupports.index', 'helpandsupports.create', 'helpandsupports.edit'))) active @else  @endif"><a href="{{ route('helpandsupports.index') }}"><i class="fa fa-list"></i>{{ trans('sidebar.help&supports')}}</a></li>--}}
+{{--                    <li class="@if(in_array(Route::current()->getName(), array('termsandconditions.index', 'termsandconditions.create', 'termsandconditions.edit')))  active @else  @endif"><a href="{{ route('termsandconditions.index') }}"><i class="fa fa-list"></i>{{ trans('sidebar.terms&conditions')}}</a></li>--}}
+{{--                </ul>--}}
+{{--            </li>--}}
 
 
         </ul>

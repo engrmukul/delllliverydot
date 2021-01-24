@@ -26,15 +26,8 @@ class FoodUpdateFormRequest extends FormRequest
     {
         return [
             'name' => 'required',
-            'short_description' => 'required',
-            'discount_price' => 'required',
-            'description' => 'required',
             'ingredients' => 'required',
-            'unit' => 'required',
-            'package_count' => 'required',
-            'weight' => 'required',
             'featured' => 'required',
-            'deliverable_food' => 'required',
             'restaurant_id' => 'required'
         ];
     }

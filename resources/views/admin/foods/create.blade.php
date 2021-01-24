@@ -7,7 +7,7 @@
             <div class="col-lg-12">
                 <div class="ibox ">
                     <div class="ibox-title">
-                        <h5><i class="fa fa-book"></i> food {{ trans('common.create')}}</h5>
+                        <h5><i class="fa fa-book"></i> Food {{ trans('common.create')}}</h5>
                         <div class="ibox-tools">
                             <a style="margin-top: -8px;" href="{{ route( strtolower($pageTitle) . '.index') }}" class="btn btn-primary"><i
                                     class="fa fa-list"></i> {{ trans('common.list')}}</a>
@@ -116,6 +116,28 @@
 
                              </div>
 
+                            <!---ADD EXTRA--->
+                             <hr>
+                             <h4>Extra</h4>
+                            <div class="row">
+
+                                <div class="col-12">
+                                    <div id="inputExtraFormRow">
+                                        <div class="input-group mb-3">
+                                            <input type="text" name="extra_name[]" class="form-control m-input" placeholder="Enter food extra name" autocomplete="off">
+                                            <input type="number" name="extra_price[]" class="form-control m-input" placeholder="Enter extra price" autocomplete="off">
+                                            <div class="input-group-append">
+                                                <button type="button" class="btn btn-danger">Remove</button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div id="newExtraRow"></div>
+                                    <button id="addExtraRow" type="button" class="btn btn-info">Add Row</button>
+                                </div>
+
+                            </div>
+
                              <div class="row mt-3">
                                <div class="col-12">
                                    <!---CONTROL BUTTON--->
@@ -153,6 +175,26 @@
         // remove row
         $(document).on('click', '#removeRow', function () {
             $(this).closest('#inputFormRow').remove();
+        });
+
+        // add Extra
+        $("#addExtraRow").click(function () {
+            var html = '';
+            html += '<div id="inputExtraFormRow">';
+            html += '<div class="input-group mb-3">';
+            html += '<input type="text" name="extra_name[]" class="form-control m-input" placeholder="Enter food extra name" autocomplete="off">';
+            html += '<input type="text" name="extra_price[]" class="form-control m-input" placeholder="Enter extra price" autocomplete="off">';
+            html += '<div class="input-group-append">';
+            html += '<button id="removeExtraRow" type="button" class="btn btn-danger">Remove</button>';
+            html += '</div>';
+            html += '</div>';
+
+            $('#newExtraRow').append(html);
+        });
+
+        // remove row
+        $(document).on('click', '#removeExtraRow', function () {
+            $(this).closest('#inputExtraFormRow').remove();
         });
     </script>
 @endpush
