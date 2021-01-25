@@ -35,7 +35,14 @@ class OrderDetail extends Model
      * @var array
      */
     protected $casts  = [
-
+        "order_id" => 'int',
+        "food_id" => 'int',
+        "food_variant_id" => 'int',
+        "food_price" => 'double',
+        "food_quantity" => 'int',
+        "extra_id" => 'int',
+        "extra_price" => 'double',
+        "sub_total" => 'double',
     ];
 
     public function foods()

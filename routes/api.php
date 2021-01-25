@@ -60,6 +60,10 @@ Route::post('/remove-favorite-food', 'API\V1\CustomerController@removeFavoriteFo
 Route::post('/save-favorite-restaurant', 'API\V1\CustomerController@saveOrUpdateFavoriteRestaurant')->name('save-favorite-restaurant');
 Route::post('/remove-favorite-restaurant', 'API\V1\CustomerController@removeFavoriteRestaurant')->name('remove-favorite-restaurant');
 
+Route::post('/remove-from-favorite-restaurant', 'API\V1\CustomerController@removeFromFavoriteRestaurant')->name('remove-from-favorite-restaurant');
+Route::post('/remove-from-favorite-food', 'API\V1\CustomerController@removeFromFavoriteFood')->name('remove-from-favorite-food');
+Route::post('/remove-restaurant-from-search', 'API\V1\CustomerController@removeFromSearch')->name('remove-restaurant-from-search');
+
 Route::post('/my-favorite-foods', 'API\V1\CustomerController@myFavoriteFood')->name('my-favorite-foods');
 
 Route::post('/settings', 'API\V1\CustomerController@settings')->name('settings');

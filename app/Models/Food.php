@@ -50,6 +50,8 @@ class Food extends Model
      */
     protected $casts  = [
         'discount_price' => 'double',
+        'restaurant_id' => 'int',
+        'category_id' => 'int',
     ];
 
     public function categories()

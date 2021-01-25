@@ -16,6 +16,9 @@ use App\Http\Requests\DeliveryStoreFormRequest;
 use App\Http\Requests\FoodReviewFormRequest;
 use App\Http\Requests\PromoCodeRequest;
 use App\Http\Requests\PromotionalRestaurantsRequest;
+use App\Http\Requests\RemoveFromFavoriteFoodRequest;
+use App\Http\Requests\RemoveFromFavoriteRestaurantRequest;
+use App\Http\Requests\RemoveFromSearchRequest;
 use App\Http\Requests\RestaurantReviewFormRequest;
 use App\Http\Requests\SearchBytextRequest;
 use App\Models\Banner;
@@ -68,9 +71,9 @@ class CustomerController extends BaseController
         $customer = $this->customerRepository->createCustomer($params);
 
         if ($customer) {
-            
+
              event(new \App\Events\NewRegistration());
-            
+
             return $this->sendResponse($customer, 'Customer create successfully.', Response::HTTP_OK);
         } else {
             return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
@@ -683,6 +686,105 @@ class CustomerController extends BaseController
         }
     }
 
+    /**
+     * REMOVE FAVORITE RESTAURANT
+     * @param Request $request
+     * @return Response
+     */
+    public function removeFromFavoriteRestaurant(RemoveFromFavoriteRestaurantRequest $request)
+    {
+        FavoriteRestaurant::where(['customer_id' => $request->customer_id, 'restaurant_id' => $request->restaurant_id])->delete();
+
+        $foodQuery = Food::with('categories', 'foodVariants','favoriteFood');
+
+        if ($request->has('customer_id')) {
+            $foodQuery->whereHas('favoriteFood', function ($q) use ($request) {
+                $q->where('favorite_foods.customer_id', $request->customer_id);
+            });
+        }
+
+        $favoriteFoods = $foodQuery->get();
+
+
+        $restaurantQuery = Restaurant::with('favoriteRestaurant','RestaurantDetails', 'coupon', 'foods');
+
+        if ($request->has('customer_id')) {
+            $restaurantQuery->whereHas('favoriteRestaurant', function ($q) use ($request) {
+                $q->where('favorite_restaurants.customer_id', $request->customer_id);
+            });
+        }
+
+        $restaurantList = $restaurantQuery->orderBy('id', 'DESC')->get();
+
+
+        if ($favoriteFoods->count() > 0 || $restaurantList->count() > 0 ) {
+            return $this->sendResponse(array('foods' => $favoriteFoods, 'restaurants' => $restaurantList), 'Update my favorite list', Response::HTTP_OK);
+        } else {
+            return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
+        }
+    }
+
+    /**
+     * REMOVE FAVORITE FOOD
+     * @param Request $request
+     * @return Response
+     */
+    public function removeFromFavoriteFood(RemoveFromFavoriteFoodRequest $request)
+    {
+        FavoriteFood::where(['customer_id' => $request->customer_id, 'food_id' => $request->food_id])->delete();
+
+        $foodQuery = Food::with('categories', 'foodVariants','favoriteFood');
+
+        if ($request->has('customer_id')) {
+            $foodQuery->whereHas('favoriteFood', function ($q) use ($request) {
+                $q->where('favorite_foods.customer_id', $request->customer_id);
+            });
+        }
+
+        $favoriteFoods = $foodQuery->get();
+
+
+        $restaurantQuery = Restaurant::with('favoriteRestaurant','RestaurantDetails', 'coupon', 'foods');
+
+        if ($request->has('customer_id')) {
+            $restaurantQuery->whereHas('favoriteRestaurant', function ($q) use ($request) {
+                $q->where('favorite_restaurants.customer_id', $request->customer_id);
+            });
+        }
+
+        $restaurantList = $restaurantQuery->orderBy('id', 'DESC')->get();
+
+
+        if ($favoriteFoods->count() > 0 || $restaurantList->count() > 0 ) {
+            return $this->sendResponse(array('foods' => $favoriteFoods, 'restaurants' => $restaurantList), 'Update my favorite list', Response::HTTP_OK);
+        } else {
+            return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
+        }
+    }
+
+    /**
+     * @param Request $request
+     * @return Response
+     */
+    public function removeFromSearch(RemoveFromSearchRequest $request)
+    {
+        $searchFilterOptions = json_decode($request->getContent(), true);
+
+        //dd($searchFilterOptions['customer_id']);
+
+        FavoriteRestaurant::where(['customer_id' => $searchFilterOptions['customer_id'], 'restaurant_id' => $searchFilterOptions['restaurant_id']])->delete();
+
+        $restaurantList = Restaurant::with('RestaurantDetails', 'coupon', 'foods')->orderBy('id', 'DESC')->get();
+
+        if ($restaurantList->count() > 0) {
+
+            return $this->sendResponse($restaurantList, 'Restaurant list', Response::HTTP_OK);
+
+        } else {
+            return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
+        }
+    }
+
     public function myFavoriteFood(Request $request)
     {
         //$favoriteFoods = FavoriteFood::with('foods', 'foods.categories', 'foods.restaurants', 'foods.restaurants.restaurantDetails', 'foods.foodVariants')->where('customer_id', $request->customer_id)->get();
@@ -913,9 +1015,9 @@ class CustomerController extends BaseController
             $orderStatus = Order::with('RestaurantDetails')->where('id', $order->id)->orderBy('id', 'DESC')->first();
 
             if ($orderStatus) {
-                
+
                 event(new \App\Events\NewRegistration());
-                
+
                 return $this->sendResponse($orderStatus, 'My order list.', Response::HTTP_OK);
             } else {
                 return $this->sendResponse(array(), 'Data not save', Response::HTTP_NOT_FOUND);
@@ -937,7 +1039,11 @@ class CustomerController extends BaseController
         }
     }
 
-
+    /**
+     * MY ORDER LIST
+     * @param Request $request
+     * @return Response
+     */
     public function myOrder(Request $request)
     {
         $myOrders = Order::with('orderDetails', 'orderDetails.foods')->where('customer_id', $request->customer_id)->orderBy('id', 'DESC')->get();
