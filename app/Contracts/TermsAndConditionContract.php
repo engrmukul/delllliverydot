@@ -24,12 +24,6 @@ interface TermsAndConditionContract
 
     /**
      * @param array $params
-     * @return mixed
-     */
-    public function createTermsAndCondition(array $params);
-
-    /**
-     * @param array $params
      * @param string $image
      * @return mixed
      */

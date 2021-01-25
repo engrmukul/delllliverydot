@@ -26,6 +26,7 @@ Route::post('/otp-verify', 'API\V1\CustomerController@otpVerify')->name('otp-ver
 //Route::post('/my-orders', 'API\V1\OrderController@index')->name('my-orders');
 
 Route::get('restaurant-list', 'API\V1\CustomerController@restaurantList')->name('restaurant-list');
+Route::post('restaurant-list', 'API\V1\CustomerController@restaurantList')->name('restaurant-list');
 
 Route::post('promotional-restaurants', 'API\V1\CustomerController@promotionalRestaurants')->name('restaurant-list');
 
@@ -63,6 +64,7 @@ Route::post('/remove-favorite-restaurant', 'API\V1\CustomerController@removeFavo
 Route::post('/remove-from-favorite-restaurant', 'API\V1\CustomerController@removeFromFavoriteRestaurant')->name('remove-from-favorite-restaurant');
 Route::post('/remove-from-favorite-food', 'API\V1\CustomerController@removeFromFavoriteFood')->name('remove-from-favorite-food');
 Route::post('/remove-restaurant-from-search', 'API\V1\CustomerController@removeFromSearch')->name('remove-restaurant-from-search');
+Route::post('/save-restaurant-from-search', 'API\V1\CustomerController@saveFavoriteFromSearch')->name('save-restaurant-from-search');
 
 Route::post('/my-favorite-foods', 'API\V1\CustomerController@myFavoriteFood')->name('my-favorite-foods');
 

@@ -134,16 +134,15 @@ Route::group(['prefix' => 'admin'], function () {
         });
 
         // terms and conditions
-        Route::group(['prefix' => 'terms-and-conditions'], function (){
+        Route::group(['prefix' => 'termsandconditions'], function (){
             Route::get('/', 'Admin\TermsAndConditionController@index')->name('termsandconditions.index');
-            Route::get('/create', 'Admin\TermsAndConditionController@create')->name('termsandconditions.create');
-            Route::post('/store', 'Admin\TermsAndConditionController@store')->name('termsandconditions.store');
             Route::get('/{id}/edit', 'Admin\TermsAndConditionController@edit')->name('termsandconditions.edit');
             Route::put('/update', 'Admin\TermsAndConditionController@update')->name('termsandconditions.update');
-            Route::delete('/{id}/delete', 'Admin\TermsAndConditionController@delete')->name('termsandconditions.destroy');
-            Route::get('/get-data', 'Admin\TermsAndConditionController@getData')->name('termsandconditions.get-data');
         });
 
+        //SETTINGS
+        Route::get('/edit', 'Admin\SettingsController@edit')->name('settings.edit');
+        Route::put('/update', 'Admin\SettingsController@update')->name('settings.update');
 
     });
 });

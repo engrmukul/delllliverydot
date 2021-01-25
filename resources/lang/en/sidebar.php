@@ -50,5 +50,6 @@ return [
     'riders'=>'Riders',
     'settings'=>'Settings',
     'help&supports'=>'Helps & Supports',
-    'terms&conditions'=>'Terms & Conditions'
+    'terms&conditions'=>'Terms & Conditions',
+    'settings'=>'Settings'
 ];

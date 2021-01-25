@@ -9,21 +9,19 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * Class Attribute
  * @package App\Models
  */
-class TWILIO extends Model
+class FCM extends Model
 {
     /**
      * @var string
      */
-    protected $table = 'TWILIO';
+    protected $table = 'FCM';
     public $timestamps = false;
 
     /**
      * @var array
      */
     protected $fillable = [
-        'TWILIO_AUTH_TOKEN',
-        'TWILIO_SID',
-        'TWILIO_VERIFY_SID'
+        'SERVER_API_KEY'
     ];
 
     /**

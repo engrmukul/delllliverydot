@@ -57,13 +57,14 @@
             <li class="@if(in_array(Route::current()->getName(), array('customers.index', 'customers.create', 'customers.edit')))  @else  @endif"><a href="{{ route('customers.index') }}"><i class="fa fa-list"></i>{{ trans('sidebar.customers')}}</a></li>
             <li class="@if(in_array(Route::current()->getName(), array('riders.index', 'riders.create', 'riders.edit')))  @else  @endif"><a href="{{ route('riders.index') }}"><i class="fa fa-list"></i>{{ trans('sidebar.riders')}}</a></li>
 
-{{--            <li>--}}
-{{--                <a href="#"><i class="fa fa-gears"></i> <span class="nav-label">{{ trans('sidebar.settings')}}</span><span class="fa arrow"></span></a>--}}
-{{--                <ul class="nav nav-second-level collapse">--}}
-{{--                    <li class="@if(in_array(Route::current()->getName(), array('helpandsupports.index', 'helpandsupports.create', 'helpandsupports.edit'))) active @else  @endif"><a href="{{ route('helpandsupports.index') }}"><i class="fa fa-list"></i>{{ trans('sidebar.help&supports')}}</a></li>--}}
-{{--                    <li class="@if(in_array(Route::current()->getName(), array('termsandconditions.index', 'termsandconditions.create', 'termsandconditions.edit')))  active @else  @endif"><a href="{{ route('termsandconditions.index') }}"><i class="fa fa-list"></i>{{ trans('sidebar.terms&conditions')}}</a></li>--}}
-{{--                </ul>--}}
-{{--            </li>--}}
+            <li>
+                <a href="#"><i class="fa fa-gears"></i> <span class="nav-label">{{ trans('sidebar.settings')}}</span><span class="fa arrow"></span></a>
+                <ul class="nav nav-second-level collapse">
+                    <li class="@if(in_array(Route::current()->getName(), array('helpandsupports.index', 'helpandsupports.create', 'helpandsupports.edit'))) active @else  @endif"><a href="{{ route('helpandsupports.index') }}"><i class="fa fa-list"></i>{{ trans('sidebar.help&supports')}}</a></li>
+                    <li class="@if(in_array(Route::current()->getName(), array('termsandconditions.index', 'termsandconditions.edit')))  active @else  @endif"><a href="{{ route('termsandconditions.index') }}"><i class="fa fa-list"></i>{{ trans('sidebar.terms&conditions')}}</a></li>
+                    <li class="@if(in_array(Route::current()->getName(), array('settings.edit')))  active @else  @endif"><a href="{{ route('settings.edit') }}"><i class="fa fa-list"></i>{{ trans('sidebar.settings')}}</a></li>
+                </ul>
+            </li>
 
 
         </ul>

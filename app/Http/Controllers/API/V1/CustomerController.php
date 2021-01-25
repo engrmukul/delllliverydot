@@ -19,7 +19,9 @@ use App\Http\Requests\PromotionalRestaurantsRequest;
 use App\Http\Requests\RemoveFromFavoriteFoodRequest;
 use App\Http\Requests\RemoveFromFavoriteRestaurantRequest;
 use App\Http\Requests\RemoveFromSearchRequest;
+use App\Http\Requests\RestaurantListRequest;
 use App\Http\Requests\RestaurantReviewFormRequest;
+use App\Http\Requests\SaveFavoriteFromSearch;
 use App\Http\Requests\SearchBytextRequest;
 use App\Models\Banner;
 use App\Models\Coupon;
@@ -103,14 +105,25 @@ class CustomerController extends BaseController
         }
     }
 
-    public function restaurantList()
+    public function restaurantList(RestaurantListRequest $request)
     {
         $banners = Banner::all();
 
-        $restaurantsFavorite = $this->restaurantRepository->listRestaurant();
-        $restaurantsDiscounted = $this->restaurantRepository->listRestaurant();
-        $restaurantsTrending = $this->restaurantRepository->listRestaurant();
-        $restaurantsPopular = $this->restaurantRepository->listRestaurant();
+//        $restaurantsFavorite = $this->restaurantRepository->listRestaurant();
+//        $restaurantsDiscounted = $this->restaurantRepository->listRestaurant();
+//        $restaurantsTrending = $this->restaurantRepository->listRestaurant();
+//        $restaurantsPopular = $this->restaurantRepository->listRestaurant();
+
+
+        $restaurantsList = Restaurant::with(['RestaurantDetails', 'coupon', 'foods',
+            'favoriteRestaurant' => function ($q) use ($request) {
+                $q->where('customer_id', '=', $request->customer_id);
+            }])->orderBy('id', 'DESC')->get();
+
+        $restaurantsFavorite = $restaurantsList;
+        $restaurantsDiscounted = $restaurantsList;
+        $restaurantsTrending = $restaurantsList;
+        $restaurantsPopular = $restaurantsList;
 
         if ($restaurantsFavorite->count() > 0 || $restaurantsDiscounted->count() > 0 || $restaurantsTrending->count() > 0 || $restaurantsPopular->count() > 0) {
             $data =
@@ -588,10 +601,21 @@ class CustomerController extends BaseController
                 return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
             }
         }else{
-            $restaurantsFavorite = $this->restaurantRepository->listRestaurant();
+            /*$restaurantsFavorite = $this->restaurantRepository->listRestaurant();
             $restaurantsDiscounted = $this->restaurantRepository->listRestaurant();
             $restaurantsTrending = $this->restaurantRepository->listRestaurant();
-            $restaurantsPopular = $this->restaurantRepository->listRestaurant();
+            $restaurantsPopular = $this->restaurantRepository->listRestaurant();*/
+
+            $restaurantsList = Restaurant::with(['RestaurantDetails', 'coupon', 'foods',
+                'favoriteRestaurant' => function ($q) use ($request) {
+                    $q->where('customer_id', '=', $request->customer_id);
+                }])->orderBy('id', 'DESC')->get();
+
+            $restaurantsFavorite = $restaurantsList;
+            $restaurantsDiscounted = $restaurantsList;
+            $restaurantsTrending = $restaurantsList;
+            $restaurantsPopular = $restaurantsList;
+
 
             if ($restaurantsFavorite->count() > 0 || $restaurantsDiscounted->count() > 0 || $restaurantsTrending->count() > 0 || $restaurantsPopular->count() > 0) {
                 $data =
@@ -652,10 +676,20 @@ class CustomerController extends BaseController
                 return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
             }
         }else{
-            $restaurantsFavorite = $this->restaurantRepository->listRestaurant();
+            /*$restaurantsFavorite = $this->restaurantRepository->listRestaurant();
             $restaurantsDiscounted = $this->restaurantRepository->listRestaurant();
             $restaurantsTrending = $this->restaurantRepository->listRestaurant();
-            $restaurantsPopular = $this->restaurantRepository->listRestaurant();
+            $restaurantsPopular = $this->restaurantRepository->listRestaurant();*/
+
+            $restaurantsList = Restaurant::with(['RestaurantDetails', 'coupon', 'foods',
+                'favoriteRestaurant' => function ($q) use ($request) {
+                    $q->where('customer_id', '=', $request->customer_id);
+                }])->orderBy('id', 'DESC')->get();
+
+            $restaurantsFavorite = $restaurantsList;
+            $restaurantsDiscounted = $restaurantsList;
+            $restaurantsTrending = $restaurantsList;
+            $restaurantsPopular = $restaurantsList;
 
             if ($restaurantsFavorite->count() > 0 || $restaurantsDiscounted->count() > 0 || $restaurantsTrending->count() > 0 || $restaurantsPopular->count() > 0) {
                 $data =
@@ -773,6 +807,32 @@ class CustomerController extends BaseController
         //dd($searchFilterOptions['customer_id']);
 
         FavoriteRestaurant::where(['customer_id' => $searchFilterOptions['customer_id'], 'restaurant_id' => $searchFilterOptions['restaurant_id']])->delete();
+
+        $restaurantList = Restaurant::with('RestaurantDetails', 'coupon', 'foods')->orderBy('id', 'DESC')->get();
+
+        if ($restaurantList->count() > 0) {
+
+            return $this->sendResponse($restaurantList, 'Restaurant list', Response::HTTP_OK);
+
+        } else {
+            return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
+        }
+    }
+
+    /**
+     * save Favorite From Search
+     * @param Request $request
+     * @return Response
+     */
+    public function saveFavoriteFromSearch(SaveFavoriteFromSearch $request)
+    {
+        $searchFilterOptions = json_decode($request->getContent(), true);
+
+        //dd($searchFilterOptions['customer_id']);
+
+        FavoriteRestaurant::updateOrCreate(
+            ['customer_id' => $searchFilterOptions['customer_id'], 'restaurant_id' => $searchFilterOptions['restaurant_id']]
+        );
 
         $restaurantList = Restaurant::with('RestaurantDetails', 'coupon', 'foods')->orderBy('id', 'DESC')->get();
 
