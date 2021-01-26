@@ -25,7 +25,9 @@ class PromoCodeRequest extends FormRequest
     public function rules()
     {
         return [
-            'code' =>  'required',
+            'promo_code' =>  'required',
+            'customer_id' =>  'required',
+            'restaurant_id' =>  'required',
         ];
     }
 }

@@ -26,6 +26,7 @@ use App\Http\Requests\SearchBytextRequest;
 use App\Models\Banner;
 use App\Models\Coupon;
 use App\Models\Customer;
+use App\Models\CustomerCoupon;
 use App\Models\Extra;
 use App\Models\FavoriteRestaurant;
 use App\Models\FilterOption;
@@ -186,13 +187,19 @@ class CustomerController extends BaseController
 
     public function searchBytext(Request $request)
     {
-        $searchText = $request->search_text;
+        $searchFilterOptions = json_decode($request->getContent(), true);
 
-        $restaurantList = Restaurant::with('RestaurantDetails', 'coupon', 'foods')->orderBy('id', 'DESC')->get();
+        //$restaurantList = Restaurant::with('RestaurantDetails', 'coupon', 'foods')->orderBy('id', 'DESC')->get();
 
-        if ($restaurantList->count() > 0) {
+        $restaurantsList = Restaurant::with(['RestaurantDetails', 'coupon', 'foods',
+            'favoriteRestaurant' => function ($q) use ($searchFilterOptions) {
+                $q->where('customer_id', '=', $searchFilterOptions['customer_id']);
+            }])->orderBy('id', 'DESC')->get();
 
-            return $this->sendResponse($restaurantList, 'Restaurant list', Response::HTTP_OK);
+
+        if ($restaurantsList->count() > 0) {
+
+            return $this->sendResponse($restaurantsList, 'Restaurant list', Response::HTTP_OK);
 
         } else {
             return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
@@ -808,11 +815,15 @@ class CustomerController extends BaseController
 
         FavoriteRestaurant::where(['customer_id' => $searchFilterOptions['customer_id'], 'restaurant_id' => $searchFilterOptions['restaurant_id']])->delete();
 
-        $restaurantList = Restaurant::with('RestaurantDetails', 'coupon', 'foods')->orderBy('id', 'DESC')->get();
 
-        if ($restaurantList->count() > 0) {
+        $restaurantsList = Restaurant::with(['RestaurantDetails', 'coupon', 'foods',
+            'favoriteRestaurant' => function ($q) use ($searchFilterOptions) {
+                $q->where('customer_id', '=', $searchFilterOptions['customer_id']);
+            }])->orderBy('id', 'DESC')->get();
 
-            return $this->sendResponse($restaurantList, 'Restaurant list', Response::HTTP_OK);
+        if ($restaurantsList->count() > 0) {
+
+            return $this->sendResponse($restaurantsList, 'Restaurant list', Response::HTTP_OK);
 
         } else {
             return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
@@ -834,11 +845,14 @@ class CustomerController extends BaseController
             ['customer_id' => $searchFilterOptions['customer_id'], 'restaurant_id' => $searchFilterOptions['restaurant_id']]
         );
 
-        $restaurantList = Restaurant::with('RestaurantDetails', 'coupon', 'foods')->orderBy('id', 'DESC')->get();
+        $restaurantsList = Restaurant::with(['RestaurantDetails', 'coupon', 'foods',
+            'favoriteRestaurant' => function ($q) use ($searchFilterOptions) {
+                $q->where('customer_id', '=', $searchFilterOptions['customer_id']);
+            }])->orderBy('id', 'DESC')->get();
 
-        if ($restaurantList->count() > 0) {
+        if ($restaurantsList->count() > 0) {
 
-            return $this->sendResponse($restaurantList, 'Restaurant list', Response::HTTP_OK);
+            return $this->sendResponse($restaurantsList, 'Restaurant list', Response::HTTP_OK);
 
         } else {
             return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
@@ -996,12 +1010,34 @@ class CustomerController extends BaseController
 
     public function applyPromoCode(PromoCodeRequest $request)
     {
-        $promotion = Coupon::where('code', $request->code)->first();
+        //check customer already used
+        $isCodeUsed = CustomerCoupon::where(['coupon_code' =>$request->promo_code, 'customer_id' =>$request->customer_id, 'restaurant_id' =>$request->restaurant_id])->first();
+
+        if($isCodeUsed){
+            return $this->sendResponse(array(), 'You already used this code', Response::HTTP_NOT_FOUND);
+        }
+
+        //check offer is expired
+        //check available code
+        $promotion = Coupon::where(['code' =>$request->promo_code, 'restaurant_id' =>$request->restaurant_id])
+            //->whereRaw('total_used_codes < total_code')
+            ->whereDate('expire_at', '>=', date('Y-m-d'))
+            ->first();
 
         if ($promotion) {
-            return $this->sendResponse(doubleval(round($promotion->discount, '2')), 'Discount', Response::HTTP_OK);
+
+            $discount = array(
+                'discount_type'=> $promotion->discount_type,
+                'discount'=> doubleval(round($promotion->discount, '2'))
+            );
+
+            //update coupon total used code
+
+
+
+            return $this->sendResponse($discount, 'Promo code Discount', Response::HTTP_OK);
         } else {
-            return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
+            return $this->sendResponse(array(), 'Wrong promo code', Response::HTTP_NOT_FOUND);
         }
     }
 
