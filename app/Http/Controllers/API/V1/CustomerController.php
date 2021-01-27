@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API\V1;
 
 use App\Contracts\CustomerContract;
+use App\Http\Requests\AddMoreItemRequest;
 use App\Http\Requests\CheckoutOptionRequest;
 use App\Http\Requests\CustomerAddressStoreFormRequest;
 use App\Http\Requests\CustomerAddressUpdateFormRequest;
@@ -290,6 +291,40 @@ class CustomerController extends BaseController
             );
 
             return $this->sendResponse($itemData, 'Food items', Response::HTTP_OK);
+
+        } else {
+            return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
+        }
+    }
+
+    /**
+     * @param AddMoreItemRequest $request
+     * @return Response
+     */
+    public function addMoreItem(AddMoreItemRequest $request)
+    {
+        $items = Food::with(['categories', 'foodVariants',
+            'favoriteFood' => function ($q) use ($request) {
+                $q->where('customer_id', '=', $request->customer_id);
+            }])
+            ->where('id', '!=', $request->item_id)
+            ->where('restaurant_id', $request->restaurant_id)
+            ->take(5)
+            ->get()
+            ->random();
+
+
+        if ($items->count() > 0) {
+            $allData = array();
+            foreach ($items as $item) {
+                $data = array(
+                    'items' => $items,
+                );
+
+                $allData[] = $data;
+            }
+
+            return $this->sendResponse($allData, 'Food items', Response::HTTP_OK);
 
         } else {
             return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);

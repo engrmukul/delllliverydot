@@ -41,6 +41,7 @@ Route::post('review', 'API\V1\CustomerController@restaurantReview')->name('revie
 
 
 Route::post('restaurant-panel', 'API\V1\CustomerController@restaurantPanel')->name('restaurant-panel');
+Route::post('add-more-item', 'API\V1\CustomerController@addMoreItem')->name('add-more-item');
 
 Route::post('food-variants', 'API\V1\CustomerController@foodVariants')->name('food-variants');
 
