@@ -38,7 +38,6 @@ class CustomerUpdateFormRequest extends FormRequest
                 }),
             ],
             'email' =>  'required',
-            'address' =>  'required',
         ];
     }
 }

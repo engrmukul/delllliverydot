@@ -104,6 +104,8 @@ class RiderController extends BaseController
 
         $rider = $this->riderRepository->findRiderByIdByAdmin($id);
 
+       // dd($rider->toArray());
+
         return view('admin.riders.edit', compact('rider'));
     }
 

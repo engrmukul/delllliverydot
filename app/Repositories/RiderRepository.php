@@ -370,7 +370,6 @@ class RiderRepository extends BaseRepository implements RiderContract
             array(
                 'nid' => $collection['nid'],
                 'image' => isset($collection['image']) ? isset($collection['image']) :  ($rider->image ? $rider->image : url('/').'/public/img/rider/default.png'),
-                'dob' => $collection['dob']
             )
         );
 

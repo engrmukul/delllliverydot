@@ -31,7 +31,7 @@
                                         <!--- description --->
                                         <div class="form-group">
                                             <label for="description" class="font-bold">{{ trans('category.description')}}</label>
-                                            <textarea name="description" placeholder="{{ trans('category.description')}}" class="form-control summernote" required>{{ old('description') }}</textarea>
+                                            <textarea name="description" placeholder="{{ trans('category.description')}}" class="form-control" required>{{ old('description') }}</textarea>
                                             <span class="form-text m-b-none text-danger"> @error('description') {{ $message }} @enderror </span>
                                         </div>
 

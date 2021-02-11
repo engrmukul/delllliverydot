@@ -46,28 +46,7 @@
 
                                 </div>
 
-                                <div class="col-md-6">
-                                    <!---address--->
-                                    <div class="form-group">
-                                        <label for="address" class="font-bold">{{ trans('customer.address')}}</label>
-                                        <textarea name="address"
-                                                  placeholder="{{ trans('customer.address')}}"
-                                                  class="form-control"
-                                                  required>{{ old('address',$customer->customerProfile->address) }}</textarea>
-                                        <span class="form-text m-b-none text-danger"> @error('address') {{ $message }} @enderror </span>
-                                    </div>
 
-                                    <!--- dob --->
-                                    <div class="form-group" id="dateItem">
-                                        <label for="dob" class="font-bold">{{ trans('customer.dob')}}</label>
-                                        <div class="input-group date">
-                                            <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                                            <input type="text" id="dob" name="dob" value="{{ old('dob',$customer->customerProfile->dob) }}" placeholder="{{ trans('customer.dob')}}" class="form-control datepicker" required>
-                                        </div>
-                                        <span class="form-text m-b-none text-danger"> @error('dob') {{ $message }} @enderror </span>
-                                    </div>
-
-                                </div>
                             </div>
 
                             <div class="row">

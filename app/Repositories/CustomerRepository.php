@@ -189,49 +189,9 @@ class CustomerRepository extends BaseRepository implements CustomerContract
 
             $merge = $collection->merge(compact('created_at','phone_number'));
 
-            if( Customer::where('phone_number','=', $phone_number)->count() > 0){
-                return $customer = Customer::where('phone_number', $phone_number)->first();
-            }
-
             //SAVE CUSTOMER
             $customer = new Customer($merge->all());
             $customer->save();
-
-            //SAVE CUSTOMER PROFILE
-            $customerProfile = new CustomerProfile();
-
-            $customerProfile->customer_id = $customer->id;
-            $customerProfile->image = url('/').'/public/img/customer/default.png';
-            $customerProfile->dob = $collection['dob'];
-            $customerProfile->spouse_dob = NULL;
-            $customerProfile->father_dob = NULL;
-            $customerProfile->mother_dob = NULL;
-            $customerProfile->anniversary = NULL;
-            $customerProfile->first_child_dob = NULL;
-            $customerProfile->second_child_dob = NULL;
-            $customerProfile->address = "Address";
-            $customerProfile->short_biography = NULL;
-
-            $customerProfile->save();
-
-            //SAVE CUSTOMER ADDRESS
-            $customerAddress = new CustomerAddress();
-
-            $customerAddress->customer_id = $customer->id;
-            $customerAddress->address = "Address";
-            $customerAddress->is_current_address = 'yes';
-
-            $customerAddress->save();
-
-            //SAVE CUSTOMER SETTINGS
-            $customerSetting = new Setting();
-
-            $customerSetting->customer_id = $customer->id;
-            $customerSetting->notification = 1;
-            $customerSetting->sms = 1;
-            $customerSetting->offer_and_promotion = 1;
-
-            $customerSetting->save();
 
             DB::commit();
 
@@ -272,15 +232,6 @@ class CustomerRepository extends BaseRepository implements CustomerContract
         $merge = $collection->merge(compact('updated_by'));
 
         $customer->update($merge->all());
-
-
-        CustomerProfile::where('customer_id', $params['customer_id'])->update(
-            array(
-                'customer_id' => $customer->id,
-                'image' => $customer->image ? $customer->image : url('/').'/public/img/customer/default.png',
-                'dob' => $collection['dob']
-            )
-        );
 
         return $customer;
     }

@@ -64,15 +64,7 @@
                                         <span class="form-text m-b-none text-danger"> @error('address') {{ $message }} @enderror </span>
                                     </div>
 
-                                    <!--- dob --->
-                                    <div class="form-group" id="dateItem">
-                                        <label for="dob" class="font-bold">{{ trans('rider.dob')}}</label>
-                                        <div class="input-group date">
-                                            <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                                            <input type="text" id="dob" name="dob" value="{{ old('dob', $rider->riderProfile->dob) }}" placeholder="{{ trans('rider.dob')}}" class="form-control datepicker" required>
-                                        </div>
-                                        <span class="form-text m-b-none text-danger"> @error('dob') {{ $message }} @enderror </span>
-                                    </div>
+
                                     <!---Image--->
                                     <div class="form-group">
                                         <label for="image" class="font-bold">{{ trans('rider.image')}}</label>

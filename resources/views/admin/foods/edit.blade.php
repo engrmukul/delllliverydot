@@ -33,7 +33,7 @@
                                     <!--- food ingredients --->
                                     <div class="form-group">
                                         <label for="ingredients" class="font-bold">{{ trans('food.ingredients')}}</label>
-                                        <textarea name="ingredients" placeholder="{{ trans('food.ingredients')}}" class="form-control summernote" required>{{ old('ingredients', $food->ingredients) }}</textarea>
+                                        <textarea name="ingredients" placeholder="{{ trans('food.ingredients')}}" class="form-control" required>{{ old('ingredients', $food->ingredients) }}</textarea>
                                         <span class="form-text m-b-none text-danger"> @error('ingredients') {{ $message }} @enderror </span>
                                     </div>
 
@@ -209,6 +209,12 @@
         // remove row
         $(document).on('click', '#removeExtraRow', function () {
             $(this).closest('#inputExtraFormRow').remove();
+        });
+
+        //INITIALIZE SELECT@
+        $(document).ready(function() {
+            $('#restaurant_id').select2();
+            $('#category_id').select2();
         });
     </script>
 @endpush

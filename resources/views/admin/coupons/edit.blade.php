@@ -116,3 +116,13 @@
         </div>
     </div>
 @endsection
+
+@push('scripts')
+
+    <script>
+        //INITIALIZE SELECT@
+        $(document).ready(function() {
+            $('#restaurant_id').select2();
+        });
+    </script>
+@endpush

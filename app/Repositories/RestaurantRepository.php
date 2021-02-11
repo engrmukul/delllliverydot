@@ -11,6 +11,7 @@ use App\Models\Restaurant;
 use App\Contracts\RestaurantContract;
 use App\Models\RestaurantAddress;
 use App\Models\RestaurantProfile;
+use App\Models\RestaurantReview;
 use App\Models\RestaurantSetting;
 use Illuminate\Database\QueryException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -170,6 +171,25 @@ class RestaurantRepository extends BaseRepository implements RestaurantContract
             if (sendOtpByTWILIO($phoneNumber)) {
 
                 $maxCat = Category::where('id', '!=', '')->get()->max('id');
+
+                if($maxCat){
+                    $maxCat = $maxCat;
+                }else{
+                    $category = new Category();
+
+                    $category->name = "Category 1";
+                    $category->description = "description";
+                    $category->image = url('/') . '/public/img/category/default.png';
+                    $category->created_at = date('Y-m-d');
+                    $category->created_by = 1;
+
+                    $category->save();
+
+                    $maxCat = $category->id;
+                }
+
+
+
                 $maxId = Restaurant::where('id', '!=', '')->get()->count() + 1;
                 $created_at = date('Y-m-d');
                 $name = "Restaurant" . $maxId;
@@ -185,6 +205,7 @@ class RestaurantRepository extends BaseRepository implements RestaurantContract
 
                 $restaurant->save();
 
+                //SAVE RESTAURANT PROFILE
                 $restaurantProfile = new RestaurantProfile();
 
                 $restaurantProfile->restaurant_id = $restaurant->id;
@@ -222,6 +243,7 @@ class RestaurantRepository extends BaseRepository implements RestaurantContract
 
                 $food->save();
 
+                //SAVE FOOD VARIANT
                 $foodVariantData = array(
                     array('food_id' => $food->id, 'name' => 'Piza 6 inch', 'price' => 220.00),
                     array('food_id' => $food->id, 'name' => 'Piza 9 inch', 'price' => 420.00),
@@ -231,6 +253,7 @@ class RestaurantRepository extends BaseRepository implements RestaurantContract
                 FoodVariant::insert($foodVariantData);
 
 
+                //SAVE COUPON
                 $coupon = new Coupon();
 
                 $coupon->code = "DD" . $restaurant->id;
@@ -300,7 +323,25 @@ class RestaurantRepository extends BaseRepository implements RestaurantContract
             $phone_number = (substr($collection['phone_number'], 0, 3) == '+88') ? $collection['phone_number'] : '+88' . $collection['phone_number'];
             $created_at = date('Y-m-d');
             $created_by = auth()->user()->id;
-            $maxCat = Category::where('id', '!=', '')->get()->max('id');
+
+
+//            $maxCat = Category::where('id', '!=', '')->get()->max('id');
+//
+//            if($maxCat){
+//                $maxCat = $maxCat;
+//            }else{
+//                $category = new Category();
+//
+//                $category->name = "Category 1";
+//                $category->description = "description";
+//                $category->image = url('/') . '/public/img/category/default.png';
+//                $category->created_at = date('Y-m-d');
+//                $category->created_by = 1;
+//
+//                $category->save();
+//
+//                $maxCat = $category->id;
+//            }
 
             if (isset($params['image'])) {
                 $image = url('/') . '/public/img/restaurant/' . $params['image'];
@@ -331,53 +372,53 @@ class RestaurantRepository extends BaseRepository implements RestaurantContract
             $restaurantAddress->restaurant_id = $restaurant->id;
             $restaurantAddress->save();
 
-            //Default food
-            $food = new Food();
-            $food->name = "Piza";
-            $food->short_description = "Piza";
-            $food->image = url('/') . '/public/img/restaurant/default.png';
-            $food->discount_price = "10";
-            $food->description = "NA";
-            $food->ingredients = "NA";
-            $food->unit = "NA";
-            $food->package_count = "NA";
-            $food->weight = "NA";
-            $food->featured = 1;
-            $food->deliverable_food = 1;
-            $food->restaurant_id = $restaurant->id;
-            $food->category_id = $maxCat;
-            $food->options = "NA";
-            $food->created_by = 1;
-            $food->created_at = date('Y-m-d');
-
-            $food->save();
-
-            $foodVariantData = array(
-                array('food_id' => $food->id, 'name' => 'Piza 6 inch', 'price' => 220.00),
-                array('food_id' => $food->id, 'name' => 'Piza 9 inch', 'price' => 420.00),
-                array('food_id' => $food->id, 'name' => 'Piza 12 inch', 'price' => 920.00),
-            );
-
-            FoodVariant::insert($foodVariantData);
-
-            //SAVE COUPON
-            $coupon = new Coupon();
-            $coupon->code = "DD" . $restaurant->id;
-            $coupon->total_code = 100;
-            $coupon->total_used_code = 0;
-            $coupon->discount_type = "fixed";
-            $coupon->discount = 20;
-            $coupon->description = "NA";
-            $coupon->food_id = $food->id;
-            $coupon->restaurant_id = $restaurant->id;
-            $coupon->category_id = $maxCat;
-            $coupon->expire_at = date('Y-m-d', strtotime("+30 days"));
-            $coupon->enabled = 1;
-            $coupon->status = "active";
-            $coupon->created_at = date('Y-m-d');
-            $coupon->created_by = 1;
-
-            $coupon->save();
+//            //Default food
+//            $food = new Food();
+//            $food->name = "Piza";
+//            $food->short_description = "Piza";
+//            $food->image = url('/') . '/public/img/restaurant/default.png';
+//            $food->discount_price = "10";
+//            $food->description = "NA";
+//            $food->ingredients = "NA";
+//            $food->unit = "NA";
+//            $food->package_count = "NA";
+//            $food->weight = "NA";
+//            $food->featured = 1;
+//            $food->deliverable_food = 1;
+//            $food->restaurant_id = $restaurant->id;
+//            $food->category_id = $maxCat ? $maxCat : 1;
+//            $food->options = "NA";
+//            $food->created_by = 1;
+//            $food->created_at = date('Y-m-d');
+//
+//            $food->save();
+//
+//            $foodVariantData = array(
+//                array('food_id' => $food->id, 'name' => 'Piza 6 inch', 'price' => 220.00),
+//                array('food_id' => $food->id, 'name' => 'Piza 9 inch', 'price' => 420.00),
+//                array('food_id' => $food->id, 'name' => 'Piza 12 inch', 'price' => 920.00),
+//            );
+//
+//            FoodVariant::insert($foodVariantData);
+//
+//            //SAVE COUPON
+//            $coupon = new Coupon();
+//            $coupon->code = "DD" . $restaurant->id;
+//            $coupon->total_code = 100;
+//            $coupon->total_used_code = 0;
+//            $coupon->discount_type = "fixed";
+//            $coupon->discount = 20;
+//            $coupon->description = "NA";
+//            $coupon->food_id = $food->id;
+//            $coupon->restaurant_id = $restaurant->id;
+//            $coupon->category_id = $maxCat;
+//            $coupon->expire_at = date('Y-m-d', strtotime("+30 days"));
+//            $coupon->enabled = 1;
+//            $coupon->status = "active";
+//            $coupon->created_at = date('Y-m-d');
+//            $coupon->created_by = 1;
+//
+//            $coupon->save();
 
             DB::commit();
 
@@ -712,6 +753,24 @@ class RestaurantRepository extends BaseRepository implements RestaurantContract
         $collection = collect($params)->except('_token');
 
         return Coupon::where('restaurant_id', $collection['restaurant_id'])->get();
+    }
+
+    public function restaurantReview(string $order = 'id', string $sort = 'desc', array $columns = ['*'])
+    {
+        $query = RestaurantReview::with('customer','restaurant')->latest()->get();
+
+        return Datatables::of($query)
+
+            ->editColumn('customer_phone', function ($row) {
+                return $row->customer->phone_number;
+            })
+            ->editColumn('restaurant', function ($row) {
+                return $row->restaurant->name;
+            })
+            ->editColumn('restaurant_phone', function ($row) {
+                return $row->restaurant->phone_number;
+            })
+            ->make(true);
     }
 
 }

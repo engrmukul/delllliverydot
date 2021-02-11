@@ -200,4 +200,40 @@ class RestaurantController extends BaseController
         }
         return $this->responseRedirect('restaurants.index', trans('common.delete_success'), 'success', false, false);
     }
+
+    /**
+     * RESTAURANT REVIEW
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function review()
+    {
+        $this->setPageTitle('review', 'review List');
+        $data = [
+            'tableHeads' => [
+                trans('review.SN'),
+                trans('review.customer_phone'),
+                trans('review.restaurant'),
+                trans('review.restaurant_phone'),
+                trans('review.rate'),
+            ],
+            'dataUrl' => 'admin/restaurants/review-get-data',
+            'columns' => [
+                ['data' => 'id', 'name' => 'id'],
+                ['data' => 'customer_phone', 'name' => 'customer_phone'],
+                ['data' => 'restaurant', 'name' => 'restaurant'],
+                ['data' => 'restaurant_phone', 'name' => 'restaurant_phone'],
+                ['data' => 'rate', 'name' => 'rate'],
+            ],
+        ];
+        return view('admin.restaurants.review', $data);
+    }
+
+    /**
+     * @param Request $request
+     * @return mixed
+     */
+    public function reviewGetData(Request $request)
+    {
+        return $this->restaurantRepository->restaurantReview($request);
+    }
 }

@@ -1,5 +1,8 @@
 <?php
 
+Route::get('/', 'Admin\DashboardController@index');
+Route::get('/home', 'Admin\DashboardController@index');
+
 Route::group(['prefix' => 'admin'], function () {
 
     Route::get('login', 'Admin\LoginController@showLoginForm')->name('admin.login');
@@ -9,6 +12,7 @@ Route::group(['prefix' => 'admin'], function () {
 
     Route::group(['middleware' => ['auth:admin']], function () {
 
+        Route::get('/', 'Admin\DashboardController@index');
         Route::get('/dashboard', 'Admin\DashboardController@index')->name('admin.dashboard');
         Route::post('save-token', 'Admin\DashboardController@saveToken')->name('admin.save-token');
 

@@ -90,7 +90,7 @@
                                     <!---Image--->
                                     <div class="form-group">
                                         <label for="images" class="font-bold">{{ trans('food.image')}}</label>
-                                        <input type="file" id="images" name="image" class="form-control">
+                                        <input type="file" id="images" name="image" class="form-control" required>
                                         <span class="form-text m-b-none text-danger"> @error('images') {{ $message }} @enderror </span>
                                     </div>
                                 </div>
@@ -196,5 +196,15 @@
         $(document).on('click', '#removeExtraRow', function () {
             $(this).closest('#inputExtraFormRow').remove();
         });
+
+
+        //INITIALIZE SELECT@
+        $(document).ready(function() {
+            $('#restaurant_id').select2();
+            $('#category_id').select2();
+        });
+
+
+
     </script>
 @endpush
