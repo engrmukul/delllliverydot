@@ -72,9 +72,74 @@ body {
   font-size: 0.875rem;
   font-weight: 400;
   line-height: 1.5;
-  color: #212529;
+  color: #343a40;
   text-align: left;
   background-color: #FFF;
+}
+.login-form .form-group{
+  margin-bottom:5px
+}
+.login-form .form-group label{
+  margin-bottom:3px;
+  color:#343a40 !important;
+  font-weight:600 !important;
+  font-size:13px;
+}
+.login-form .btn-primary{
+  background-color: #343a40;
+  border-color: #495057;
+  padding: 0.7rem 0.75rem;
+  border-radius:5px;
+}
+.login-form .btn-primary:hover{
+  background-color: #617386;
+  border-color: #617386;
+}
+.login-form input.form-control{
+  padding:0.6rem 0.75rem;
+  border-radius:5px;
+  background-color:#e9ecef
+}
+.login-form .form-control:focus {
+    color: #000000;
+    background-color: #FFF;
+    border-color: #cccccc;
+}
+.login-form .form-group{
+  position:relative;
+}
+.login-form .form-group.email input.form-control{
+  padding-left: 50px  !important;
+/*   border-radius: 50px 5px 5px 50px; */
+  border-radius: 50px;
+}
+.login-form .form-group.email:before{
+  content: '';
+  background:url('../img/user-icon-1.png') no-repeat center;
+  width: 44px !important;
+  height: 44px !important;
+  position:absolute;
+  bottom:0px;
+  left:-5px;
+  border-radius:22px;
+  box-shadow:5px 0 5px #00000017;
+}
+
+.login-form .form-group.pass input.form-control{
+  padding-left: 20px  !important;
+/*   border-radius: 5px 50px 50px 5px; */
+  border-radius: 50px;
+}
+.login-form .form-group.pass:after{
+  content: '';
+  background:url('../img/user-pass-1.png') no-repeat center;
+  width: 44px !important;
+  height: 44px !important;
+  position:absolute;
+  bottom:0px;
+  right:-5px;
+  border-radius:22px;
+  box-shadow:-5px 0 5px #00000017;
 }
 
 [tabindex="-1"]:focus {
@@ -356,7 +421,7 @@ h2, .h2 {
 }
 
 h3, .h3 {
-  font-size: 1.53125rem;
+  font-size: 1.25rem;
 }
 
 h4, .h4 {
@@ -1899,7 +1964,7 @@ pre code {
   color: #495057;
   background-color: #FFF;
   background-clip: padding-box;
-  border: 2px solid #ced4da;
+  border: 1px solid #e9ecef;
   border-radius: 4px;
   -webkit-transition: border-color 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
   transition: border-color 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
@@ -13301,7 +13366,7 @@ be a descendant of the grid when it is being dragged.
 
 .animated-checkbox input[type="checkbox"]:checked+.label-text:before {
   content: "";
-  color: #009688;
+  color: #343a40;
   -webkit-animation: tick 180ms ease-in;
   animation: tick 180ms ease-in;
 }
@@ -13528,7 +13593,7 @@ be a descendant of the grid when it is being dragged.
 
 .material-half-bg {
   height: 100vh;
-  background-color: #e7e7e7;
+  background: #f4f4f4 url(../img/email-pattern.png);
   position: fixed;
   top: 0;
   left: 0;
@@ -13538,7 +13603,7 @@ be a descendant of the grid when it is being dragged.
 }
 
 .material-half-bg .cover {
-  background-color: #009688;
+  background: #150124 url(../img/Banner-background-admin.jpg) no-repeat center center;
   height: 50vh;
 }
 
@@ -13897,6 +13962,7 @@ be a descendant of the grid when it is being dragged.
 }
 
 .login-content .logo {
+  display: none;
   margin-bottom: 40px;
   font-family: "Niconne";
   color: #fff;
@@ -13909,11 +13975,13 @@ be a descendant of the grid when it is being dragged.
 
 .login-content .login-box {
   position: relative;
-  min-width: 350px;
+  min-width: 325px;
   min-height: 390px;
-  background-color: #fff;
+  background-color: #cccccc;
+  border: 1px solid #e5e5e5;
+  border-radius: 9px;
   -webkit-box-shadow: 0px 29px 147.5px 102.5px rgba(0, 0, 0, 0.05), 0px 29px 95px 0px rgba(0, 0, 0, 0.16);
-  box-shadow: 0px 29px 147.5px 102.5px rgba(0, 0, 0, 0.05), 0px 29px 95px 0px rgba(0, 0, 0, 0.16);
+  box-shadow: 0px 29px 147.5px 102.5px rgb(0 0 0 / 5%), 0px 29px 95px 0px rgb(0 0 0 / 29%);
   -webkit-perspective: 800px;
   perspective: 800px;
   -webkit-transition: all 0.5s ease-in-out;
@@ -13927,6 +13995,8 @@ be a descendant of the grid when it is being dragged.
   padding-bottom: 20px;
   border-bottom: 1px solid #ddd;
   text-align: center;
+  letter-spacing: 3px !important;
+  font-size: 1.2em;
 }
 
 .login-content .login-box label {
@@ -13948,6 +14018,7 @@ be a descendant of the grid when it is being dragged.
 }
 
 .login-content .login-box .btn-container {
+  margin-top: 15px;
   margin-bottom: 0;
 }
 

@@ -36,13 +36,14 @@ class TermsAndConditionController extends BaseController
                 trans('termsAndCondition.type'),
                 trans('termsAndCondition.action')
             ],
-            'dataUrl' => 'admin/termsAndConditions/get-data',
+            'dataUrl' => 'admin/termsandconditions/get-data',
             'columns' => [
                 ['data' => 'id', 'name' => 'id'],
                 ['data' => 'type', 'name' => 'type'],
                 ['data' => 'action', 'name' => 'action', 'orderable' => false]
             ],
         ];
+
         return view('admin.terms_and_condition.index', $data);
     }
 

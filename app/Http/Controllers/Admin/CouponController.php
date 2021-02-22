@@ -96,6 +96,9 @@ class CouponController extends BaseController
         if (!$coupon) {
             return $this->responseRedirectBack(trans('common.create_error'), 'error', true, true);
         }
+
+        //return redirect('admin/coupons/'. $coupon->id .'/edit');
+
         return $this->responseRedirect('coupons.index', trans('common.create_success'), 'success', false, false);
     }
 

@@ -3,15 +3,17 @@
 @section('content')
     @include('admin.partials.flash')
     <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="row header_part">
+            <div class="col-12 ">
+                <h1 class="ddheadline"><img src="{{url('/public/img/icons/20restaurants32.png')}}" width="36" height="36" /> Edit Restaurant</h1>
+            </div>
+            <hr>
+        </div>
         <div class="row">
             <div class="col-lg-12">
                 <div class="ibox ">
                     <div class="ibox-title">
-                        <h5><i class="fa fa-book"></i> restaurant {{ trans('common.create')}}</h5>
-                        <div class="ibox-tools">
-                            <a style="margin-top: -8px;" href="{{ route( strtolower($pageTitle) . '.index') }}"
-                               class="btn btn-primary"><i class="fa fa-list"></i> {{ trans('common.list')}}</a>
-                        </div>
+                        <a class="backToList" href="{{route( strtolower($pageTitle) . '.index')}}"><i class="fa fa-angle-left"></i> Back to {{ trans('common.go_back')}}</a>
                     </div>
                     <div class="ibox-content">
 
@@ -97,7 +99,7 @@
                                         <textarea name="description"
                                                   placeholder="{{ trans('restaurant.description')}}"
                                                   class="form-control"
-                                                  required>{{ old('description', $restaurant->restaurantDetails->description) }}</textarea>
+                                                  required>{!! old('description', $restaurant->restaurantDetails->description) !!} </textarea>
                                         <span class="form-text m-b-none text-danger"> @error('description') {{ $message }} @enderror </span>
                                     </div>
 
@@ -111,7 +113,7 @@
                                     <!---address--->
                                     <div class="form-group">
                                         <label for="address" class="font-bold">{{ trans('restaurant.address')}}</label>
-                                        <input type="text" name="address" value="{{ old('address', $restaurant->restaurantDetails->address) }}" placeholder="{{ trans('restaurant.address')}}" class="form-control" required>
+                                        <input type="text" name="address" value="{!! old('address', $restaurant->restaurantDetails->address) !!}" placeholder="{{ trans('restaurant.address')}}" class="form-control" required>
                                         <span class="form-text m-b-none text-danger"> @error('address') {{ $message }} @enderror </span>
                                     </div>
 
@@ -122,20 +124,30 @@
                                         <span class="form-text m-b-none text-danger"> @error('image') {{ $message }} @enderror </span>
                                     </div>
 
-                                    <!---status--->
+                                    <!---CHECKBOX--->
                                     <div class="form-group">
-                                        <label for="status">{{ trans('restaurant.status')}}</label>
-                                        <select id="status" class="form-control custom-select mt-15" name="status" required>
-                                            <option value="">{{ trans('restaurant.status')}}</option>
-                                            @foreach($statuses as $key => $status)
-                                                @if (old('status', $restaurant->status) == $key)
-                                                    <option value="{{ $status }}" selected> {{ ucfirst($status) }} </option>
-                                                @else
-                                                    <option value="{{ $status }}"> {{ ucfirst($status) }} </option>
-                                                @endif
-                                            @endforeach
-                                        </select>
-                                        <span class="form-text m-b-none text-danger"> @error('status') {{ $message }} @enderror </span>
+                                        <label for="category" class="font-bold">Category Check</label>
+                                        <div class="col-sm-10">
+                                            <label class="checkbox-inline"><input type="checkbox" name="is_favorite" value="yes" @if($restaurant->is_favorite == 'yes') checked @else @endif id="inlineCheckbox2"> Is Favorite </label>
+                                            <label class="checkbox-inline"><input type="checkbox" name="is_discounted" value="yes" @if($restaurant->is_discounted == 'yes') checked @else @endif id="isDiscounted"> Is Discounted </label>
+                                            <label class="checkbox-inline"><input type="checkbox" name="is_trending" value="yes" @if($restaurant->is_trending == 'yes') checked @else @endif id="inlineCheckbox2"> Is Trending </label>
+                                            <label class="checkbox-inline"><input type="checkbox" name="is_popular" value="yes" @if($restaurant->is_popular == 'yes') checked @else @endif id="inlineCheckbox2"> Is Popular </label>
+                                        </div>
+                                    </div>
+
+
+                                    <!---discount--->
+                                    <div class="form-group discount d-none">
+                                        <label for="discount" class="font-bold">{{ trans('restaurant.discount')}}</label>
+                                        <input type="number" name="discount" value="{{ old('discount', $restaurant->restaurantDetails->discount) }}" placeholder="{{ trans('restaurant.discount')}}" class="form-control">
+                                        <span class="form-text m-b-none text-danger"> @error('discount') {{ $message }} @enderror </span>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="status" class="font-bold">Status</label>
+                                        <div class="col-sm-10">
+                                            <label class="checkbox-inline"><input type="checkbox" name="status" value="active" @if($restaurant->status == 'active') checked @else @endif id="inlineCheckbox2"> Active</label>
+                                        </div>
                                     </div>
 
                                 </div>
@@ -145,8 +157,7 @@
                                 <div class="col-12">
                                     <!---CONTROL BUTTON--->
                                     <div class="form-group">
-                                        <button class="btn btn-success" type="submit"><i class="fa fa-fw fa-lg fa-check-circle"></i>{{ trans('common.submit')}}</button>
-                                        <a class="btn btn-danger" href="{{route( strtolower($pageTitle) . '.index')}}"><i class="fa fa-fw fa-lg fa-arrow-left"></i>{{ trans('common.go_back')}}</a>
+                                        <button class="btn btn-success" type="submit"><i class="fa fa-fw fa-lg fa-check-circle"></i> Complete Editing</button>
                                     </div>
                                 </div>
                             </div>
@@ -157,3 +168,28 @@
         </div>
     </div>
 @endsection
+
+@push('scripts')
+    <script>
+        $(document).ready(function() {
+
+            let isDiscounted = "{{$restaurant->is_discounted}}";
+
+            if(isDiscounted == 'yes'){
+                $('.discount').removeClass('d-none');
+            }else{
+                $('.discount').addClass('d-none');
+            }
+
+            $("#isDiscounted").click(function() {
+
+                if($(this).prop("checked") == true){
+                    $('.discount').removeClass('d-none');
+                } else {
+                    $('.discount').addClass('d-none');
+                    $('input[name=discount]').val('');
+                }
+            });
+        });
+    </script>
+@endpush

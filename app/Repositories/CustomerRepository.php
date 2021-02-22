@@ -6,6 +6,7 @@ use App\Models\Customer;
 use App\Contracts\CustomerContract;
 use App\Models\CustomerAddress;
 use App\Models\CustomerProfile;
+use App\Models\Order;
 use App\Models\Setting;
 use Illuminate\Database\QueryException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -39,8 +40,15 @@ class CustomerRepository extends BaseRepository implements CustomerContract
             ->addColumn('action', function ($row) {
                 $actions = '';
 
-                $actions .= '<a class="btn btn-primary btn-xs float-left mr-1" href="' . route('customers.edit', [$row->id]) . '" title="Customer Edit"><i class="fa fa-pencil"></i> ' . trans("common.edit") . '</a>';
+                $actions .= '<a class="btn btn-primary btn-xs float-left mr-1 edit cusEdit" href="' . route('customers.edit', [$row->id]) . '" title="Customer Edit"><i class="fa fa-pencil"></i> ' . trans("common.edit") . '</a>';
 
+                $actions .= '
+                    <form action="' . route('customers.destroy', [$row->id]) . '" method="POST">
+                        <input type="hidden" name="_method" value="delete">
+                        <input type="hidden" name="_token" value="' . csrf_token() . '">
+                        <button type="submit" class="btn btn-danger btn-xs cusDelete delete"><i class="fa fa-remove"></i> </button>
+                    </form>
+                ';
                 return $actions;
             })
             ->make(true);
@@ -193,6 +201,30 @@ class CustomerRepository extends BaseRepository implements CustomerContract
             $customer = new Customer($merge->all());
             $customer->save();
 
+            //SAVE CUSTOMER PROFILE
+            $customerProfile = new CustomerProfile();
+
+            $customerProfile->customer_id = $customer->id;
+            $customerProfile->image = url('/').'/public/img/customer/default.png';
+            $customerProfile->dob = $collection['dob'];;
+            $customerProfile->spouse_dob = NULL;
+            $customerProfile->father_dob = NULL;
+            $customerProfile->mother_dob = NULL;
+            $customerProfile->anniversary = NULL;
+            $customerProfile->first_child_dob = NULL;
+            $customerProfile->second_child_dob = NULL;
+            $customerProfile->address = $collection['address'];
+            $customerProfile->short_biography = NULL;
+
+            $customerProfile->save();
+
+            //SAVE CUSTOMER ADDRESS
+            $customerAddress = new CustomerAddress();
+            $customerAddress->customer_id = $customer->id;
+            $customerAddress->address = $collection['address'];
+            $customerAddress->is_current_address = 'yes';
+            $customerAddress->save();
+
             DB::commit();
 
             return $customer;
@@ -233,6 +265,34 @@ class CustomerRepository extends BaseRepository implements CustomerContract
 
         $customer->update($merge->all());
 
+        //CUSTOMER PROFILE UPDATE
+        CustomerProfile::where(['customer_id'=> $customer->id])->delete();
+
+        $customerProfile = new CustomerProfile();
+
+        $customerProfile->customer_id = $customer->id;
+        $customerProfile->image = url('/').'/public/img/customer/default.png';
+        $customerProfile->dob = $collection['dob'];;
+        $customerProfile->spouse_dob = NULL;
+        $customerProfile->father_dob = NULL;
+        $customerProfile->mother_dob = NULL;
+        $customerProfile->anniversary = NULL;
+        $customerProfile->first_child_dob = NULL;
+        $customerProfile->second_child_dob = NULL;
+        $customerProfile->address = $collection['address'];
+        $customerProfile->short_biography = NULL;
+
+        $customerProfile->save();
+
+        //SAVE CUSTOMER ADDRESS
+        CustomerAddress::where(['customer_id'=> $customer->id, 'is_current_address'=>'yes'])->delete();
+
+        $customerAddress = new CustomerAddress();
+        $customerAddress->customer_id = $customer->id;
+        $customerAddress->address = $collection['address'];
+        $customerAddress->is_current_address = 'yes';
+        $customerAddress->save();
+
         return $customer;
     }
 
@@ -242,19 +302,22 @@ class CustomerRepository extends BaseRepository implements CustomerContract
      */
     public function deleteCustomer($id, array $params)
     {
-        $customer = $this->findCustomerById($id);
+        $count = Order::where('customer_id', $id)->count();
 
-        $customer->delete();
+        if($count > 0){
+            return false;
+        }else{
+            $customer = $this->findCustomerById($id);
 
-        $collection = collect($params)->except('_token');
+            $customer->delete();
 
-        $deleted_by = auth()->user()->id;
+            CustomerProfile::where('customer_id', $id)->delete();
+            CustomerAddress::where('customer_id', $id)->delete();
+            Setting::where('customer_id', $id)->delete();
 
-        $merge = $collection->merge(compact('deleted_by'));
+            return $customer;
+        }
 
-        $customer->update($merge->all());
-
-        return $customer;
     }
 
     /**

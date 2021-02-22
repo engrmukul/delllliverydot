@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Models\Category;
 use App\Models\Coupon;
+use App\Models\FavoriteRestaurant;
 use App\Models\Food;
 use App\Models\FoodVariant;
 use App\Models\Order;
@@ -48,7 +49,15 @@ class RestaurantRepository extends BaseRepository implements RestaurantContract
             ->addColumn('action', function ($row) {
                 $actions = '';
 
-                $actions .= '<a class="btn btn-primary btn-xs float-left mr-1" href="' . route('restaurants.edit', [$row->id]) . '" title="Course Edit"><i class="fa fa-pencil"></i> ' . trans("common.edit") . '</a>';
+                $actions .= '<a class="btn btn-primary btn-xs float-left mr-1 edit resEdit" href="' . route('restaurants.edit', [$row->id]) . '" title="Course Edit"><i class="fa fa-pencil"></i> ' . trans("common.edit") . '</a>';
+
+                $actions .= '
+                    <form action="' . route('restaurants.destroy', [$row->id]) . '" method="POST">
+                        <input type="hidden" name="_method" value="delete">
+                        <input type="hidden" name="_token" value="' . csrf_token() . '">
+                        <button type="submit" class="btn btn-danger btn-xs resDelete delete"><i class="fa fa-remove"></i> </button>
+                    </form>
+                ';
 
                 return $actions;
             })
@@ -360,6 +369,7 @@ class RestaurantRepository extends BaseRepository implements RestaurantContract
             $restaurantProfile->restaurant_id = $restaurant->id;
             $restaurantProfile->feature_section = 1;
             $restaurantProfile->ratting = 5;
+            $restaurantProfile->discount = $collection['discount'];
             $restaurantProfile->save();
 
             //SAVE RESTAURANT SETTINGS
@@ -460,6 +470,7 @@ class RestaurantRepository extends BaseRepository implements RestaurantContract
             $restaurantProfile->restaurant_id = $restaurant->id;
             $restaurantProfile->feature_section = 1;
             $restaurantProfile->ratting = 5;
+            $restaurantProfile->discount = $collection['discount'];
             $restaurantProfile->save();
 
             //SAVE RESTAURANT SETTINGS
@@ -557,19 +568,28 @@ class RestaurantRepository extends BaseRepository implements RestaurantContract
      */
     public function deleteRestaurant($id, array $params)
     {
-        $restaurant = $this->findRestaurantById($id);
+        $orderCount = Order::where('restaurant_id', $id)->count();
+        $foodCount = Food::where('restaurant_id', $id)->count();
 
-        $restaurant->delete();
+        if($orderCount > 0 || $foodCount > 0){
+            return false;
+        }else{
+            $restaurant = $this->findRestaurantById($id);
+            $restaurant->delete();
+            $collection = collect($params)->except('_token');
+            $deleted_by = auth()->user()->id;
+            $merge = $collection->merge(compact('deleted_by'));
+            $restaurant->update($merge->all());
 
-        $collection = collect($params)->except('_token');
+            FavoriteRestaurant::where('restaurant_id', $id)->delete();
+            RestaurantProfile::where('restaurant_id', $id)->delete();
+            RestaurantAddress::where('restaurant_id', $id)->delete();
+            RestaurantReview::where('restaurant_id', $id)->delete();
+            RestaurantSetting::where('restaurant_id', $id)->delete();
 
-        $deleted_by = auth()->user()->id;
+            return $restaurant;
+        }
 
-        $merge = $collection->merge(compact('deleted_by'));
-
-        $restaurant->update($merge->all());
-
-        return $restaurant;
     }
 
     /**

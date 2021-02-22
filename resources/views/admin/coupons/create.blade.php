@@ -3,15 +3,17 @@
 @section('content')
     @include('admin.partials.flash')
     <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="row header_part">
+            <div class="col-12">
+                <h1 class="ddheadline"><img src="{{url('/public/img/icons/50coupons32.png')}}" width="36" height="36" /> Coupons</h1>
+            </div>
+            <hr>
+        </div>
         <div class="row">
             <div class="col-lg-12">
                 <div class="ibox ">
                     <div class="ibox-title">
-                        <h5><i class="fa fa-book"></i> Coupon {{ trans('common.create')}}</h5>
-                        <div class="ibox-tools">
-                            <a style="margin-top: -8px;" href="{{ route( strtolower($pageTitle) . '.index') }}" class="btn btn-primary"><i
-                                    class="fa fa-list"></i> {{ trans('common.list')}}</a>
-                        </div>
+                        <a class="backToList" href="{{route( strtolower($pageTitle) . '.index')}}"><i class="fa fa-angle-left"></i> Back to {{ trans('common.go_back')}}</a>
                     </div>
                     <div class="ibox-content">
 
@@ -71,9 +73,9 @@
 
                                         <!--- restaurant id --->
                                         <div class="form-group">
-                                            <label for="restaurant_id">{{ trans('coupon.restaurant_id')}}</label>
-                                            <select id="restaurant_id" multiple class="form-control custom-select mt-15" name="restaurant_id[]" required>
-                                                <option value="">{{ trans('coupon.restaurant_id')}}</option>
+                                            <label for="restaurant_id">{{ trans('coupon.restaurant_id')}} <small>Hold <span>Ctrl/Command</span> key to select multiple</small></label>
+                                            <select id="restaurant_id" multiple class="form-control custom-select mt-15 multiple" name="restaurant_id[]" required>
+                                                {{-- <option value="">{{ trans('coupon.restaurant_id')}}</option> --}}
                                                 @foreach($restaurants as $key => $restaurant)
                                                     @if (old('restaurant_id') == $restaurant->id)
                                                         <option value="{{ $restaurant->id }}" selected> {{ $restaurant->name }} </option>
@@ -100,8 +102,7 @@
                                <div class="col-12">
                                    <!---CONTROL BUTTON--->
                                    <div class="form-group">
-                                       <button class="btn btn-success" type="submit"><i class="fa fa-fw fa-lg fa-check-circle"></i>{{ trans('common.submit')}}</button>
-                                       <a class="btn btn-danger" href="{{route( strtolower($pageTitle) . '.index')}}"><i class="fa fa-fw fa-lg fa-arrow-left"></i>{{ trans('common.go_back')}}</a>
+                                       <button class="btn btn-success" type="submit"><i class="fa fa-fw fa-lg fa-check-circle"></i> Create Coupon</button>
                                    </div>
                                </div>
                             </div>
@@ -112,13 +113,3 @@
         </div>
     </div>
 @endsection
-
-@push('scripts')
-
-    <script>
-        //INITIALIZE SELECT@
-        $(document).ready(function() {
-            $('#restaurant_id').select2();
-        });
-    </script>
-@endpush

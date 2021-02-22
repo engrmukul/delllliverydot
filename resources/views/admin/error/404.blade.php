@@ -6,12 +6,12 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>INSPINIA | 404 Error</title>
+    <title>DD | 404 Error</title>
 
-    <link href="{{ asset('css/bootstrap.min.css')}}" rel="stylesheet">
-    <link href="{{ asset('font-awesome/css/font-awesome.css')}}" rel="stylesheet">
-    <link href="{{ asset('css/animate.css')}}" rel="stylesheet">
-    <link href="{{ asset('css/style.css')}}" rel="stylesheet">
+    <link href="{{ asset('public/css/bootstrap.min.css')}}" rel="stylesheet">
+    <link href="{{ asset('public/font-awesome/css/font-awesome.css')}}" rel="stylesheet">
+    <link href="{{ asset('public/css/animate.css')}}" rel="stylesheet">
+    <link href="{{ asset('public/css/style.css')}}" rel="stylesheet">
 
 </head>
 
@@ -19,7 +19,7 @@
 
 
     <div class="middle-box text-center animated fadeInDown">
-        <h1>404</h1>
+        <h1>404!</h1>
         <h3 class="font-bold">Page Not Found</h3>
 
         <div class="error-desc">
@@ -34,9 +34,9 @@
     </div>
 
     <!-- Mainly scripts -->
-    <script src="{{ asset('js/jquery-3.1.1.min.js')}}"></script>
-    <script src="{{ asset('js/popper.min.js')}}"></script>
-    <script src="{{ asset('js/bootstrap.js')}}"></script>
+    <script src="{{ asset('public/js/jquery-3.1.1.min.js')}}"></script>
+    <script src="{{ asset('public/js/popper.min.js')}}"></script>
+    <script src="{{ asset('public/js/bootstrap.js')}}"></script>
 
 </body>
 

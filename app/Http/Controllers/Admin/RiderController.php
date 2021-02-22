@@ -91,7 +91,9 @@ class RiderController extends BaseController
 
         event(new \App\Events\NewRegistration());
 
-        return $this->responseRedirect('riders.index', trans('common.create_success'), 'success', false, false);
+        return redirect('admin/riders/'. $rider->id .'/edit');
+
+        //return $this->responseRedirect('riders.index', trans('common.create_success'), 'success', false, false);
     }
 
     /**

@@ -3,15 +3,17 @@
 @section('content')
     @include('admin.partials.flash')
     <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="row header_part">
+            <div class="col-12">
+                <h1 class="ddheadline"><img src="{{url('/public/img/icons/30food32.png')}}" width="36" height="36" /> Edit Food Item</h1>
+            </div>
+            <hr>
+        </div>
         <div class="row">
             <div class="col-lg-12">
                 <div class="ibox ">
                     <div class="ibox-title">
-                        <h5><i class="fa fa-book"></i> food {{ trans('common.create')}}</h5>
-                        <div class="ibox-tools">
-                            <a style="margin-top: -8px;" href="{{ route( strtolower($pageTitle) . '.index') }}" class="btn btn-primary"><i
-                                    class="fa fa-list"></i> {{ trans('common.list')}}</a>
-                        </div>
+                        <a class="backToList" href="{{route( strtolower($pageTitle) . '.index')}}"><i class="fa fa-angle-left"></i> Back to {{ trans('common.go_back')}}</a>
                     </div>
                     <div class="ibox-content">
 
@@ -59,7 +61,7 @@
                                     <!--- restaurant_id --->
                                     <div class="form-group">
                                         <label for="restaurant_id" class="font-bold">{{ trans('food.restaurant_id')}}</label>
-                                        <select id="restaurant_id" class="form-control custom-select mt-15" name="restaurant_id" required>
+                                        <select id="restaurant_id" class="form-control restaurant-select mt-15" name="restaurant_id" required>
                                             <option value="">{{ trans('food.restaurant_id')}}</option>
                                             @foreach($restaurants as $key => $restaurant)
                                                 @if (old('restaurant_id', $food->restaurant_id) == $restaurant->id)
@@ -75,7 +77,7 @@
                                     <!--- category_id --->
                                     <div class="form-group">
                                         <label for="category_id" class="font-bold">{{ trans('food.category_id')}}</label>
-                                        <select id="category_id" class="form-control custom-select mt-15" name="category_id" required>
+                                        <select id="category_id" class="form-control category-select mt-15" name="category_id" required>
                                             <option value="">{{ trans('food.category_id')}}</option>
                                             @foreach($categories as $key => $category)
                                                 @if (old('category_id', $food->category_id) == $category->id)
@@ -156,8 +158,7 @@
                                 <div class="col-12">
                                     <!---CONTROL BUTTON--->
                                     <div class="form-group">
-                                        <button class="btn btn-success" type="submit"><i class="fa fa-fw fa-lg fa-check-circle"></i>{{ trans('common.submit')}}</button>
-                                        <a class="btn btn-danger" href="{{route( strtolower($pageTitle) . '.index')}}"><i class="fa fa-fw fa-lg fa-arrow-left"></i>{{ trans('common.go_back')}}</a>
+                                        <button class="btn btn-success" type="submit"><i class="fa fa-fw fa-lg fa-check-circle"></i>Edit Food</button>
                                     </div>
                                 </div>
                             </div>
@@ -211,10 +212,8 @@
             $(this).closest('#inputExtraFormRow').remove();
         });
 
-        //INITIALIZE SELECT@
         $(document).ready(function() {
-            $('#restaurant_id').select2();
-            $('#category_id').select2();
+            $('.category-select, .restaurant-select').select2();
         });
     </script>
 @endpush

@@ -126,6 +126,20 @@ class RestaurantController extends BaseController
     {
         $params = $request->except('_token');
 
+        if($request->is_favorite == null){
+            $params['is_favorite'] = 'no';
+        }
+        if($request->is_discounted == null){
+            $params['discount'] = 0.00;
+            $params['is_discounted'] = 'no';
+        }
+        if($request->is_trending == null){
+            $params['is_trending'] = 'no';
+        }
+        if($request->is_popular == null){
+            $params['is_popular'] = 'no';
+        }
+
         if ($request->file('image') != null){
 
             $params['image'] = $this->saveImages($request->file('image'), 'img/restaurant/', 200, 200);
@@ -139,7 +153,9 @@ class RestaurantController extends BaseController
 
         event(new \App\Events\NewRegistration());
 
-        return $this->responseRedirect('restaurants.index', trans('common.create_success'), 'success', false, false);
+        return redirect('admin/restaurants/'. $restaurant->id .'/edit');
+
+        //return $this->responseRedirect('restaurants.index', trans('common.create_success'), 'success', false, false);
     }
 
     /**
@@ -172,6 +188,23 @@ class RestaurantController extends BaseController
     public function update(RestaurantUpdateFormRequest $request, Restaurant $RestaurantModel)
     {
         $params = $request->except('_token');
+
+        if($request->status == null){
+            $params['status'] = 'inactive';
+        }
+        if($request->is_favorite == null){
+            $params['is_favorite'] = 'no';
+        }
+        if($request->is_discounted == null){
+            $params['discount'] = 0.00;
+            $params['is_discounted'] = 'no';
+        }
+        if($request->is_trending == null){
+            $params['is_trending'] = 'no';
+        }
+        if($request->is_popular == null){
+            $params['is_popular'] = 'no';
+        }
 
         if ($request->has('image')) {
 

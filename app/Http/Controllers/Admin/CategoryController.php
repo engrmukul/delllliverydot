@@ -85,7 +85,9 @@ class CategoryController extends BaseController
         if (!$category) {
             return $this->responseRedirectBack(trans('common.create_error'), 'error', true, true);
         }
-        return $this->responseRedirect('categories.index', trans('common.create_success'), 'success', false, false);
+
+        return redirect('admin/categories/'. $category->id .'/edit');
+        //return $this->responseRedirect('categories.index', trans('common.create_success'), 'success', false, false);
     }
 
     /**

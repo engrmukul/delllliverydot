@@ -99,10 +99,10 @@ Route::group(['prefix' => 'admin'], function () {
         });
 
         // payment route
-        Route::group(['prefix' => 'payments'], function () {
-            Route::get('/', 'Admin\PaymentController@index')->name('payments.index');
-            Route::get('/get-data', 'Admin\PaymentController@getData')->name('coupons.get-data');
-        });
+//        Route::group(['prefix' => 'payments'], function () {
+//            Route::get('/', 'Admin\PaymentController@index')->name('payments.index');
+//            Route::get('/get-data', 'Admin\PaymentController@getData')->name('coupons.get-data');
+//        });
 
         // Customers route
         Route::group(['prefix' => 'customers'], function (){
@@ -127,7 +127,7 @@ Route::group(['prefix' => 'admin'], function () {
         });
 
         // help and support route
-        Route::group(['prefix' => 'help-and-supports'], function (){
+        Route::group(['prefix' => 'helpandsupports'], function (){
             Route::get('/', 'Admin\HelpAndSupportController@index')->name('helpandsupports.index');
             Route::get('/create', 'Admin\HelpAndSupportController@create')->name('helpandsupports.create');
             Route::post('/store', 'Admin\HelpAndSupportController@store')->name('helpandsupports.store');
@@ -140,6 +140,7 @@ Route::group(['prefix' => 'admin'], function () {
         // terms and conditions
         Route::group(['prefix' => 'termsandconditions'], function (){
             Route::get('/', 'Admin\TermsAndConditionController@index')->name('termsandconditions.index');
+            Route::get('/get-data', 'Admin\TermsAndConditionController@getData')->name('termsandconditions.get-data');
             Route::get('/{id}/edit', 'Admin\TermsAndConditionController@edit')->name('termsandconditions.edit');
             Route::put('/update', 'Admin\TermsAndConditionController@update')->name('termsandconditions.update');
         });

@@ -7,6 +7,7 @@ use App\Models\HelpAndSupport;
 use Illuminate\Database\QueryException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Doctrine\Instantiator\Exception\InvalidArgumentException;
+use Illuminate\Support\Str;
 use Yajra\DataTables\DataTables;
 
 class HelpAndSupportRepository extends BaseRepository implements HelpAndSupportContract
@@ -37,17 +38,23 @@ class HelpAndSupportRepository extends BaseRepository implements HelpAndSupportC
             ->addColumn('action', function ($row) {
                 $actions = '';
 
-                $actions.= '<a class="btn btn-primary btn-xs float-left mr-1" href="' . route('helpAndSupports.edit', [$row->id]) . '" title="HelpAndSupport Edit"><i class="fa fa-pencil"></i> '. trans("common.edit") . '</a>';
+                $actions.= '<a class="btn btn-primary btn-xs float-left mr-1" href="' . route('helpandsupports.edit', [$row->id]) . '" title="HelpAndSupport Edit"><i class="fa fa-pencil"></i> '. trans("common.edit") . '</a>';
 
                 $actions.= '
-                    <form action="'.route('helpAndSupports.destroy', [$row->id]).'" method="POST">
+                    <form action="'.route('helpandsupports.destroy', [$row->id]).'" method="POST">
                         <input type="hidden" name="_method" value="delete">
                         <input type="hidden" name="_token" value="'.csrf_token().'">
-                        <button type="submit" class="btn btn-danger btn-xs"><i class="fa fa-remove"></i> '. trans("common.delete") . '</button>
+                        <button type="submit" class="btn btn-danger btn-xs"><i class="fa fa-remove"></i> </button>
                     </form>
                 ';
 
                 return $actions;
+            })
+            ->editColumn('question', function ($row) {
+                return  Str::words(strip_tags($row->question), '10');
+            })
+            ->editColumn('answer', function ($row) {
+                return  Str::words(strip_tags($row->answer), '10');
             })
             ->make(true);
     }

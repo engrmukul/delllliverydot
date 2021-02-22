@@ -29,6 +29,10 @@ class Restaurant extends Model
         'email_verified_at',
         'password',
         'status',
+        'is_favorite',
+        'is_discounted',
+        'is_trending',
+        'is_popular',
         'device_token',
         'created_at',
         'updated_at',
@@ -54,6 +58,12 @@ class Restaurant extends Model
     }
 
     public function coupon(){
+        $coupon = $this->getCoupon();
+
+        return $coupon ? $coupon : array('code' => 'FOOD');
+    }
+
+    public function getCoupon(){
         return $this->hasOne('App\Models\Coupon');
     }
 

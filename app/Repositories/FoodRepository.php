@@ -6,6 +6,8 @@ use App\Contracts\FoodContract;
 use App\Models\Extra;
 use App\Models\Food;
 use App\Models\FoodVariant;
+use App\Models\Order;
+use App\Models\OrderDetail;
 use Illuminate\Database\QueryException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Doctrine\Instantiator\Exception\InvalidArgumentException;
@@ -209,10 +211,18 @@ class FoodRepository extends BaseRepository implements FoodContract
      */
     public function deleteFood($id, array $params)
     {
-        $Food = $this->findFoodById($id);
+        //CHECK IF FOOD USE IN ORDER
+        $count = OrderDetail::where('food_id', $id)->count();
 
-        $Food->delete();
+        if($count > 0){
+            return false;
+        }else{
+            $Food = $this->findFoodById($id);
+            $Food->delete();
 
-        return $Food;
+            Extra::where('food_id', $id)->delete();
+
+            return true;
+        }
     }
 }

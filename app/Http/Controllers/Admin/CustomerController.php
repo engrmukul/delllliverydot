@@ -91,7 +91,9 @@ class CustomerController extends BaseController
 
         event(new \App\Events\NewRegistration());
 
-        return $this->responseRedirect('customers.index', trans('common.create_success'), 'success', false, false);
+        return redirect('admin/customers/'. $customer->id .'/edit');
+
+        //return $this->responseRedirect('customers.index', trans('common.create_success'), 'success', false, false);
     }
 
     /**

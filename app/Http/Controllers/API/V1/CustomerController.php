@@ -57,21 +57,33 @@ use App\Models\OrderDetail;
 use Illuminate\Support\Facades\DB;
 use stdClass;
 
+/**
+ * Class CustomerController
+ * @package App\Http\Controllers\API\V1
+ */
 class CustomerController extends BaseController
 {
     protected $customerRepository;
     protected $restaurantRepository;
 
+    /**
+     * CustomerController constructor.
+     * @param CustomerContract $customerRepository
+     * @param RestaurantContract $restaurantRepository
+     */
     public function __construct(CustomerContract $customerRepository, RestaurantContract $restaurantRepository)
     {
         $this->customerRepository = $customerRepository;
         $this->restaurantRepository = $restaurantRepository;
     }
 
+    /**
+     * @param CustomerPhoneVerificationFormRequest $request
+     * @return Response
+     */
     public function store(CustomerPhoneVerificationFormRequest $request)
     {
         $params = $request->except('_token');
-
         $customer = $this->customerRepository->createCustomer($params);
 
         if ($customer) {
@@ -84,6 +96,10 @@ class CustomerController extends BaseController
         }
     }
 
+    /**
+     * @param CustomerOTPVerificationFormRequest $request
+     * @return Response
+     */
     protected function otpVerify(CustomerOTPVerificationFormRequest $request)
     {
         $params = $request->except('_token');
@@ -107,6 +123,10 @@ class CustomerController extends BaseController
         }
     }
 
+    /**
+     * @param RestaurantListRequest $request
+     * @return Response
+     */
     public function restaurantList(RestaurantListRequest $request)
     {
         $banners = Banner::all();
@@ -117,15 +137,43 @@ class CustomerController extends BaseController
 //        $restaurantsPopular = $this->restaurantRepository->listRestaurant();
 
 
-        $restaurantsList = Restaurant::with(['RestaurantDetails', 'coupon', 'foods',
+        $restaurantsFavorite = Restaurant::with(['RestaurantDetails', 'coupon', 'foods',
             'favoriteRestaurant' => function ($q) use ($request) {
                 $q->where('customer_id', '=', $request->customer_id);
-            }])->orderBy('id', 'DESC')->get();
+            }])
+            ->where('is_favorite','yes')
+            ->where('status','active')
+            ->orderBy('id', 'DESC')->inRandomOrder()->get();
 
-        $restaurantsFavorite = $restaurantsList;
-        $restaurantsDiscounted = $restaurantsList;
-        $restaurantsTrending = $restaurantsList;
-        $restaurantsPopular = $restaurantsList;
+        $restaurantsDiscounted = Restaurant::with(['RestaurantDetails', 'coupon', 'foods',
+            'favoriteRestaurant' => function ($q) use ($request) {
+                $q->where('customer_id', '=', $request->customer_id);
+            }])
+            ->where('is_discounted','yes')
+            ->where('status','active')
+            ->orderBy('id', 'DESC')->inRandomOrder()->get();
+
+        $restaurantsTrending = Restaurant::with(['RestaurantDetails', 'coupon', 'foods',
+            'favoriteRestaurant' => function ($q) use ($request) {
+                $q->where('customer_id', '=', $request->customer_id);
+            }])
+            ->where('is_trending','yes')
+            ->where('status','active')
+            ->orderBy('id', 'DESC')->inRandomOrder()->get();
+
+        $restaurantsPopular = Restaurant::with(['RestaurantDetails', 'coupon', 'foods',
+            'favoriteRestaurant' => function ($q) use ($request) {
+                $q->where('customer_id', '=', $request->customer_id);
+            }])
+            ->where('is_popular','yes')
+            ->where('status','active')
+            ->orderBy('id', 'DESC')->inRandomOrder()->get();
+
+
+//        $restaurantsFavorite = $restaurantsList;
+//        $restaurantsDiscounted = $restaurantsList;
+//        $restaurantsTrending = $restaurantsList;
+//        $restaurantsPopular = $restaurantsList;
 
         if ($restaurantsFavorite->count() > 0 || $restaurantsDiscounted->count() > 0 || $restaurantsTrending->count() > 0 || $restaurantsPopular->count() > 0) {
             $data =
@@ -159,12 +207,16 @@ class CustomerController extends BaseController
 
     }
 
+    /**
+     * @param PromotionalRestaurantsRequest $request
+     * @return Response
+     */
     public function promotionalRestaurants(PromotionalRestaurantsRequest $request)
     {
         $restaurantList = Restaurant::with(['RestaurantDetails', 'coupon', 'foods',
             'favoriteRestaurant' => function ($q) use ($request) {
                 $q->where('customer_id', '=', $request->customer_id);
-            }])->orderBy('id', 'DESC')->get();
+            }])->where('status','active')->orderBy('id', 'DESC')->get();
 
         $promotionalBanner = PromotionalBanner::where('id', 1)->first();
 
@@ -186,6 +238,10 @@ class CustomerController extends BaseController
         }
     }
 
+    /**
+     * @param Request $request
+     * @return Response
+     */
     public function searchBytext(Request $request)
     {
         $searchFilterOptions = json_decode($request->getContent(), true);
@@ -208,6 +264,10 @@ class CustomerController extends BaseController
 
     }
 
+    /**
+     * @param Request $request
+     * @return Response
+     */
     public function filterOptions(Request $request)
     {
         $pricerange = FilterOption::select('slug','title')->where('filter_type', 'price_range')->get();
@@ -229,6 +289,10 @@ class CustomerController extends BaseController
         }
     }
 
+    /**
+     * @param Request $request
+     * @return Response
+     */
     public function searchByFilterOptions(Request $request)
     {
         $restaurantList = Restaurant::with('RestaurantDetails', 'coupon', 'foods')->orderBy('id', 'DESC')->get();
@@ -243,6 +307,10 @@ class CustomerController extends BaseController
 
     }
 
+    /**
+     * @param CheckoutOptionRequest $request
+     * @return Response
+     */
     public function checkoutOption(CheckoutOptionRequest $request)
     {
         $addresses = CustomerAddress::where('customer_id', $request->customer_id)->orderBy('id', 'DESC')->limit(2)->get();
@@ -262,8 +330,10 @@ class CustomerController extends BaseController
         }
     }
 
-
-
+    /**
+     * @param Request $request
+     * @return Response
+     */
     public function restaurantPanel(Request $request)
     {
         $items = Food::with(['categories', 'foodVariants',
@@ -331,6 +401,10 @@ class CustomerController extends BaseController
         }
     }
 
+    /**
+     * @param Request $request
+     * @return Response
+     */
     public function foodVariants(Request $request)
     {
         $items = FoodVariant::where('food_id', $request->food_id)->get();
@@ -350,7 +424,10 @@ class CustomerController extends BaseController
         }
     }
 
-
+    /**
+     * @param Request $request
+     * @return Response
+     */
     public function itemList(Request $request)
     {
         $items = Food::where('restaurant_id', $request->restaurant_id)->get();
@@ -358,6 +435,10 @@ class CustomerController extends BaseController
         return $this->sendResponse($items, 'Items retrieved successfully.', Response::HTTP_OK);
     }
 
+    /**
+     * @param Request $request
+     * @return Response
+     */
     public function myLocation(Request $request)
     {
         $customerAddress = CustomerAddress::where('customer_id', $request->customer_id)->orderBy('is_current_address', 'desc')->get();
@@ -370,6 +451,10 @@ class CustomerController extends BaseController
         }
     }
 
+    /**
+     * @param CustomerAddressStoreFormRequest $request
+     * @return Response
+     */
     public function myLocationSave(CustomerAddressStoreFormRequest $request)
     {
         $myLocation = new CustomerAddress();
@@ -379,10 +464,21 @@ class CustomerController extends BaseController
         $myLocation->is_current_address = $request->is_current_address;
 
         if ($myLocation->save()) {
+
+            //DELETE CUSTOMER DEFAULT ADDRESS
+            CustomerAddress::where('address','address')->where("customer_id", $request->customer_id)->delete();
+
             if ($request->is_current_address == 'yes') {
                 CustomerAddress::where("id", '!=', $myLocation->id)->where("customer_id", $request->customer_id)->update(
                     [
                         "is_current_address" => 'no',
+                    ]
+                );
+
+                //Update profile address
+                CustomerProfile::where("customer_id", $request->customer_id)->update(
+                    [
+                        "address" => $myLocation->address,
                     ]
                 );
             }
@@ -404,6 +500,10 @@ class CustomerController extends BaseController
         }
     }
 
+    /**
+     * @param CustomerAddressUpdateFormRequest $request
+     * @return Response
+     */
     public function myLocationUpdate(CustomerAddressUpdateFormRequest $request)
     {
         CustomerAddress::where("id", $request->id)->update(
@@ -418,6 +518,13 @@ class CustomerController extends BaseController
             CustomerAddress::where("id", '!=', $request->id)->where("customer_id", $request->customer_id)->update(
                 [
                     "is_current_address" => 'no',
+                ]
+            );
+
+            //Update profile address
+            CustomerProfile::where("customer_id", $request->customer_id)->update(
+                [
+                    "address" => $request->address,
                 ]
             );
         }
@@ -436,6 +543,10 @@ class CustomerController extends BaseController
         }
     }
 
+    /**
+     * @param Request $request
+     * @return Response
+     */
     public function myLocationDelete(Request $request)
     {
         CustomerAddress::where(['id' => $request->id, 'customer_id' => $request->customer_id])->delete();
@@ -450,6 +561,10 @@ class CustomerController extends BaseController
         }
     }
 
+    /**
+     * @param Request $request
+     * @return Response
+     */
     public function customerSelectedLocation(Request $request)
     {
         $customerAddress = CustomerAddress::where(['customer_id' => $request->customer_id, 'is_current_address' => 'yes'])->first();
@@ -461,6 +576,10 @@ class CustomerController extends BaseController
         }
     }
 
+    /**
+     * @param Request $request
+     * @return Response
+     */
     public function myProfile(Request $request)
     {
         $customer = Customer::where('id', $request->customer_id)->first();
@@ -476,6 +595,12 @@ class CustomerController extends BaseController
         }
     }
 
+    /**
+     * @param CustomerUpdateFormRequest $request
+     * @param Customer $customerModel
+     * @return Response
+     * @throws \Exception
+     */
     public function customerProfileUpdate(CustomerUpdateFormRequest $request, Customer $customerModel)
     {
         try {
@@ -543,6 +668,10 @@ class CustomerController extends BaseController
         }
     }
 
+    /**
+     * @param Request $request
+     * @return Response
+     */
     public function saveOrUpdateFavoriteFood(Request $request)
     {
         $favoriteFood = FavoriteFood::updateOrCreate(
@@ -580,6 +709,10 @@ class CustomerController extends BaseController
         }
     }
 
+    /**
+     * @param Request $request
+     * @return Response
+     */
     public function removeFavoriteFood(Request $request)
     {
         $deleteFavoriteFood = FavoriteFood::where(['customer_id' => $request->customer_id, 'food_id' => $request->food_id])->delete();
@@ -615,6 +748,10 @@ class CustomerController extends BaseController
         }
     }
 
+    /**
+     * @param Request $request
+     * @return Response
+     */
     public function saveOrUpdateFavoriteRestaurant(Request $request)
     {
         $favoriteRestaurant = FavoriteRestaurant::updateOrCreate(
@@ -692,6 +829,10 @@ class CustomerController extends BaseController
 
     }
 
+    /**
+     * @param Request $request
+     * @return Response
+     */
     public function removeFavoriteRestaurant(Request $request)
     {
         $deleteFavoriteRestaurant = FavoriteRestaurant::where(['customer_id' => $request->customer_id, 'restaurant_id' => $request->restaurant_id])->delete();
@@ -894,6 +1035,10 @@ class CustomerController extends BaseController
         }
     }
 
+    /**
+     * @param Request $request
+     * @return Response
+     */
     public function myFavoriteFood(Request $request)
     {
         //$favoriteFoods = FavoriteFood::with('foods', 'foods.categories', 'foods.restaurants', 'foods.restaurants.restaurantDetails', 'foods.foodVariants')->where('customer_id', $request->customer_id)->get();
@@ -960,6 +1105,10 @@ class CustomerController extends BaseController
         }
     }
 
+    /**
+     * @param DeliveryStoreFormRequest $request
+     * @return Response
+     */
     public function myDeliverySave(DeliveryStoreFormRequest $request)
     {
         $myDelivery = new Delivery();
@@ -994,6 +1143,10 @@ class CustomerController extends BaseController
         }
     }
 
+    /**
+     * @param Request $request
+     * @return Response
+     */
     public function myDeliveryList(Request $request)
     {
         $deliveries = Delivery::where('customer_id', $request->customer_id)->get();
@@ -1017,6 +1170,10 @@ class CustomerController extends BaseController
         }
     }
 
+    /**
+     * @param Request $request
+     * @return Response
+     */
     public function settings(Request $request)
     {
         $settings = Setting::where('customer_id', $request->customer_id)->first();
@@ -1028,6 +1185,10 @@ class CustomerController extends BaseController
         }
     }
 
+    /**
+     * @param CustomerSettingsFormRequest $request
+     * @return Response
+     */
     public function settingsUpdate(CustomerSettingsFormRequest $request)
     {
         $params = $request->except('_token');
@@ -1036,13 +1197,17 @@ class CustomerController extends BaseController
 
         $settings = Setting::where('customer_id', $request->customer_id)->first();
 
-        if ($settings->count() > 0) {
+        if ($settings) {
             return $this->sendResponse($settings, 'Customer settings update successfully.',Response::HTTP_OK);
         }else {
             return $this->sendResponse(array(), 'Data not updated', Response::HTTP_NOT_FOUND);
         }
     }
 
+    /**
+     * @param PromoCodeRequest $request
+     * @return Response
+     */
     public function applyPromoCode(PromoCodeRequest $request)
     {
         //check customer already used
@@ -1076,6 +1241,10 @@ class CustomerController extends BaseController
         }
     }
 
+    /**
+     * @param CustomerOrderRequest $request
+     * @return Response
+     */
     public function order(CustomerOrderRequest $request)
     {
         //WILL USE TRANSACTION
@@ -1159,6 +1328,10 @@ class CustomerController extends BaseController
         }
     }
 
+    /**
+     * @param string $orderId
+     * @return Response
+     */
     public function customerOrderDetails($orderId = '')
     {
         $orderStatus = Order::with('RestaurantDetails')->where('id', $orderId)->orderBy('id', 'DESC')->first();
@@ -1186,7 +1359,10 @@ class CustomerController extends BaseController
         }
     }
 
-
+    /**
+     * @param Request $request
+     * @return Response
+     */
     public function restaurantOrderList(Request $request)
     {
         $orders = Order::where('restaurant_id', $request->restaurant_id)->orderBy('id', 'DESC')->get();
@@ -1194,6 +1370,10 @@ class CustomerController extends BaseController
         return $this->sendResponse($orders, 'Restaurant order list.', Response::HTTP_OK);
     }
 
+    /**
+     * @param Request $request
+     * @return Response
+     */
     public function restaurantOrderUpdate(Request $request)
     {
         Order::where(["id" => $request->order_id])->update(
@@ -1207,8 +1387,10 @@ class CustomerController extends BaseController
         return $this->sendResponse($order, 'Order updated successfully.', Response::HTTP_OK);
     }
 
-
-    //SHOP LIST
+    /**
+     * SHOP LIST
+     * @return Response
+     */
     public function shopList()
     {
         $shopPromotion = ShopPromotion::all();
@@ -1244,7 +1426,11 @@ class CustomerController extends BaseController
         }
     }
 
-    //SHOP ITEM LIST
+    /**
+     * SHOP ITEM LIST
+     * @param Request $request
+     * @return Response
+     */
     public function shopItemList(Request $request)
     {
         $shopItemList = ShopItem::where('shop_id', $request->shop_id)->get();
@@ -1281,7 +1467,11 @@ class CustomerController extends BaseController
         }
     }
 
-    //POINT LIST
+    /**
+     * POINT LIST
+     * @param Request $request
+     * @return Response
+     */
     public function point(Request $request)
     {
         $points = Point::with('orders', 'orders.RestaurantDetails', 'orders.orderDetails', 'orders.orderDetails.foods', 'orders.orderDetails.foodVariants')
@@ -1314,6 +1504,9 @@ class CustomerController extends BaseController
         }
     }
 
+    /**
+     * @return Response
+     */
     public function helpAndSupport()
     {
         $helpAndSupport = HelpAndSupport::select('question', 'answer')->where('type', 'customer')->get();
@@ -1325,6 +1518,9 @@ class CustomerController extends BaseController
         }
     }
 
+    /**
+     * @return Response
+     */
     public function termsAndCondition()
     {
         $termsAndCondition = TermsAndCondition::where('type', 'customer')->first();
@@ -1336,6 +1532,10 @@ class CustomerController extends BaseController
         }
     }
 
+    /**
+     * @param Request $request
+     * @return Response
+     */
     public function restaurantDetails(Request $request)
     {
         $restaurantDetails = Restaurant::with('RestaurantDetails')->where('id', $request->restaurant_id)->first();
@@ -1347,6 +1547,10 @@ class CustomerController extends BaseController
         }
     }
 
+    /**
+     * @param RestaurantReviewFormRequest $request
+     * @return Response
+     */
     public function restaurantReview(RestaurantReviewFormRequest $request)
     {
         $restaurantReview = RestaurantReview::updateOrCreate(

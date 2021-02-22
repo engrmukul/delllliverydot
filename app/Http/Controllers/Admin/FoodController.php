@@ -105,7 +105,9 @@ class FoodController extends BaseController
         if (!$food) {
             return $this->responseRedirectBack(trans('common.create_error'), 'error', true, true);
         }
-        return $this->responseRedirect('foods.index', trans('common.create_success'), 'success', false, false);
+
+        return redirect('admin/foods/'. $food->id .'/edit');
+        //return $this->responseRedirect('foods.index', trans('common.create_success'), 'success', false, false);
     }
 
     /**

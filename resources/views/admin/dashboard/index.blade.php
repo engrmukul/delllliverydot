@@ -9,56 +9,69 @@
 
 @section('content')
 
-    <div class="wrapper wrapper-content text-center">
+    <div class="wrapper wrapper-content dashboard">
 
-        <div class="row">
-            <div class="col-md-12">
-                <div class="widget lazur-bg col-md-3">
-                    <h1 class="m-xs">{{ $totalRestaurants }}</h1>
-                    <h3 class="font-bold no-margins">
-                        Total Restaurant
-                    </h3>
-                </div>
-                <div class="widget red-bg p-lg col-3">
-                    <h1 class="m-xs">{{ $totalCustomers }}</h1>
-                    <h3 class="font-bold no-margins">
-                        Total Customer
-                    </h3>
-                </div>
-                <div class="widget lazur-bg col-md-3">
-                    <h1 class="m-xs">{{ $totalRiders }}</h1>
-                    <h3 class="font-bold no-margins">
-                        Total Riders
-                    </h3>
-                </div>
-                <div class="widget red-bg p-lg text-center col-md-3">
-                    <h1 class="m-xs">{{ $totalOrders }}</h1>
-                    <h3 class="font-bold no-margins">
-                        Total Orders
-                    </h3>
-                </div>
+        <div class="row header_part">
+            <div class="col-12 col-md-6">
+                <h1 class="ddheadline"><img src="{{url('/public/img/icons/10dashboard32.png')}}" width="36" height="36" /> Dashboard</h1>
+            </div>
 
+            <hr>
+
+            <div class="col-12 col-md-6 text-center">   
+                <div class="row">
+                    <div class="widget col-3">
+                        <div class="lazur-bg">
+                            <h1 class="m-xs">{{ $totalRestaurants }}</h1>
+                            <h4 class="font-bold no-margins">
+                                Total Restaurant
+                            </h4>
+                        </div>
+                    </div>
+                    <div class="widget col-3">
+                        <div class="red-bg">
+                            <h1 class="m-xs">{{ $totalCustomers }}</h1>
+                            <h4 class="font-bold no-margins">
+                                Total Customer
+                            </h4>
+                        </div>
+                    </div>
+                    <div class="widget col-3">
+                        <div class="lazur-bg">
+                            <h1 class="m-xs">{{ $totalRiders }}</h1>
+                            <h4 class="font-bold no-margins">
+                                Total Riders
+                            </h4>
+                        </div>
+                    </div>
+                    <div class="widget col-3">
+                        <div class="red-bg">
+                            <h1 class="m-xs">{{ $totalOrders }}</h1>
+                            <h4 class="font-bold no-margins">
+                                Total Orders
+                            </h4>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="row">
-            <div class="col-md-7">
+        <hr>
+        <div class="row table_part">
+
+            <div class="col-md-6">
                 <div class="ibox ">
                     <div class="ibox-title">
                         <h5>Order list</h5>
-                        <div class="ibox-tools">
-                            <a class="collapse-link">
-                                <i class="fa fa-chevron-up"></i>
-                            </a>
-                            <a class="close-link">
-                                <i class="fa fa-times"></i>
-                            </a>
-                        </div>
+                        <!-- <div class="ibox-tools">
+                            <a class="collapse-link"> <i class="fa fa-chevron-up"></i> </a>
+                            <a class="close-link"> <i class="fa fa-times"></i> </a>
+                        </div> -->
                     </div>
                     <div class="ibox-content table-responsive">
                         <table class="table table-hover no-margins">
                             <thead>
                             <tr>
-                                <th>Status</th>
+                                <th class="text-center">Status</th>
                                 <th>Customer</th>
                                 <th>Restaurant</th>
                                 <th>Rider</th>
@@ -67,7 +80,7 @@
                             <tbody>
                             @forelse($orders as $order)
                             <tr>
-                                <td class="label-inverse">{{ ucfirst(str_replace('_',' ',$order->order_status)) }}</td>
+                                <td class="label-inverse text-center">{{ ucfirst(str_replace('_',' ',$order->order_status)) }}</td>
                                 <td>{{ $order->customer->phone_number }}</td>
                                 <td>{{ $order->restaurant->phone_number }}</td>
                                 <td>{{ isset($order->rider->phone_number) ? $order->rider->phone_number : "NA" }}</td>
@@ -80,18 +93,19 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-5">
+
+            <div class="col-md-6">
                 <div class="ibox ">
                     <div class="ibox-title">
                         <h5>User Registered</h5>
-                        <div class="ibox-tools">
+                        <!-- <div class="ibox-tools">
                             <a class="collapse-link">
                                 <i class="fa fa-chevron-up"></i>
                             </a>
                             <a class="close-link">
                                 <i class="fa fa-times"></i>
                             </a>
-                        </div>
+                        </div> -->
                     </div>
                     <div class="ibox-content table-responsive">
                         <table class="table table-hover no-margins">
@@ -106,7 +120,7 @@
                             @forelse($customers as $customer)
                                 <tr>
                                     <td>{{ $customer->phone_number }}</td>
-                                    <td class="label-info">{{ 'Customer' }}</td>
+                                    <td class="label-info text-center">{{ 'Customer' }}</td>
                                     <td>{{ date('Y-m-d',strtotime($customer->created_at))  }}</td>
                                 </tr>
                             @empty
@@ -114,7 +128,7 @@
                             @forelse($restaurants as $restaurant)
                                 <tr>
                                     <td>{{ $restaurant->phone_number }}</td>
-                                    <td class="label-warning">{{ 'Restaurant' }}</td>
+                                    <td class="label-warning text-center">{{ 'Restaurant' }}</td>
                                     <td>{{ date('Y-m-d',strtotime($restaurant->created_at))  }}</td>
                                 </tr>
                             @empty
@@ -122,7 +136,7 @@
                             @forelse($riders as $rider)
                                 <tr>
                                     <td>{{ $rider->phone_number }}</td>
-                                    <td class="label-primary">{{ 'Rider' }}</td>
+                                    <td class="label-primary text-center">{{ 'Rider' }}</td>
                                     <td>{{ date('Y-m-d',strtotime($rider->created_at))  }}</td>
                                 </tr>
                             @empty
@@ -133,6 +147,8 @@
                     </div>
                 </div>
             </div>
+
+            
         </div>
     </div>
 

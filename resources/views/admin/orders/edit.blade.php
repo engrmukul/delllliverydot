@@ -3,6 +3,12 @@
 @section('content')
     @include('admin.partials.flash')
     <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="row header_part">
+            <div class="col-12">
+                <h1 class="ddheadline"><img src="{{url('/public/img/icons/40orders32.png')}}" width="36" height="36" /> Edit Order</h1>
+            </div>
+            <hr>
+        </div>
         <div class="row">
             <div class="col-lg-12">
                 <div class="ibox ">

@@ -3,6 +3,12 @@
 @section('content')
     @include('admin.partials.flash')
     <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="row header_part">
+            <div class="col-12">
+                <h1 class="ddheadline"><img src="{{url('/public/img/icons/40orders32.png')}}" width="36" height="36" /> Create an Order</h1>
+            </div>
+            <hr>
+        </div>
         <div class="row">
             <div class="col-lg-12">
                 <div class="ibox ">
@@ -14,7 +20,6 @@
                         </div>
                     </div>
                     <div class="ibox-content">
-
                             <!---FORM--->
                             <form role="form" method="post" action="{{route( strtolower($pageTitle) . '.store')}}" enctype="multipart/form-data">
                                 @csrf
@@ -176,8 +181,7 @@
                                <div class="col-12">
                                    <!---CONTROL BUTTON--->
                                    <div class="form-group">
-                                       <button class="btn btn-success" type="submit"><i class="fa fa-fw fa-lg fa-check-circle"></i>{{ trans('common.submit')}}</button>
-                                       <a class="btn btn-danger" href="{{route( strtolower($pageTitle) . '.index')}}"><i class="fa fa-fw fa-lg fa-arrow-left"></i>{{ trans('common.go_back')}}</a>
+                                       <button class="btn btn-success" type="submit"><i class="fa fa-fw fa-lg fa-check-circle"></i> Create Order</button>
                                    </div>
                                </div>
                             </div>

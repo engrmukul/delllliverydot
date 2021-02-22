@@ -125,14 +125,14 @@ Route::post('/restaurant-device-token', 'API\V1\RestaurantController@saveDeviceT
 
 
 ##
-Route::post('/restaurant-new-category', 'API\V1\RestauranrController@storeCategory')->name('restaurant-new-category');
-Route::post('/restaurant-update-category', 'API\V1\RestauranrController@categoryUpdate')->name('restaurant-update-category');
-Route::post('/restaurant-delete-category', 'API\V1\RestauranrController@categoryDestroy')->name('restaurant-delete-category');
+Route::post('/restaurant-new-category', 'API\V1\RestaurantController@storeCategory')->name('restaurant-new-category');
+Route::post('/restaurant-update-category', 'API\V1\RestaurantController@categoryUpdate')->name('restaurant-update-category');
+Route::post('/restaurant-delete-category', 'API\V1\RestaurantController@categoryDestroy')->name('restaurant-delete-category');
 
 ##
-Route::post('/restaurant-new-coupon', 'API\V1\RestauranrController@storeCoupon')->name('restaurant-new-category');
-Route::post('/restaurant-update-coupon', 'API\V1\RestauranrController@couponUpdate')->name('restaurant-update-category');
-Route::post('/restaurant-delete-coupon', 'API\V1\RestauranrController@couponDestroy')->name('restaurant-delete-category');
+Route::post('/restaurant-new-coupon', 'API\V1\RestaurantController@storeCoupon')->name('restaurant-new-category');
+Route::post('/restaurant-update-coupon', 'API\V1\RestaurantController@couponUpdate')->name('restaurant-update-category');
+Route::post('/restaurant-delete-coupon', 'API\V1\RestaurantController@couponDestroy')->name('restaurant-delete-category');
 
 ##
 Route::post('/restaurant-location-save', 'API\V1\RestaurantController@restaurantLocationSave')->name('restaurant-location-save');
@@ -144,7 +144,7 @@ Route::post('/restaurant-selected-location', 'API\V1\RestaurantController@restau
 
 
 ##
-Route::post('/restaurant-complain', 'API\V1\RestauranrController@storeComplain')->name('restaurant-complain');
+Route::post('/restaurant-complain', 'API\V1\RestaurantController@storeComplain')->name('restaurant-complain');
 
 
 //SHOP API ROUTE

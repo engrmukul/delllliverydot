@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Contracts\CouponContract;
 use App\Models\Coupon;
+use App\Models\Order;
 use App\Models\User;
 use Illuminate\Database\QueryException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -128,10 +129,16 @@ class CouponRepository extends BaseRepository implements CouponContract
      */
     public function deleteCoupon($id, array $params)
     {
-        $Coupon = $this->findCouponById($id);
+        $coupon = Coupon::where('id', $id)->first()->code;
 
-        $Coupon->delete();
+        $count = Order::where('coupon_code', $coupon)->count();
 
-        return $Coupon;
+        if($count > 0){
+            return false;
+        }else{
+            $Coupon = $this->findCouponById($id);
+            $Coupon->delete();
+            return $Coupon;
+        }
     }
 }

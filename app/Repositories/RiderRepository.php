@@ -56,7 +56,15 @@ class RiderRepository extends BaseRepository implements RiderContract
             ->addColumn('action', function ($row) {
                 $actions = '';
 
-                $actions .= '<a class="btn btn-primary btn-xs float-left mr-1" href="' . route('riders.edit', [$row->id]) . '" title="Rider Edit"><i class="fa fa-pencil"></i> ' . trans("common.edit") . '</a>';
+                $actions .= '<a class="btn btn-primary btn-xs float-left mr-1 edit ridEdit" href="' . route('riders.edit', [$row->id]) . '" title="Rider Edit"><i class="fa fa-pencil"></i> ' . trans("common.edit") . '</a>';
+
+                $actions .= '
+                    <form action="' . route('riders.destroy', [$row->id]) . '" method="POST">
+                        <input type="hidden" name="_method" value="delete">
+                        <input type="hidden" name="_token" value="' . csrf_token() . '">
+                        <button type="submit" class="btn btn-danger btn-xs ridDelete delete"><i class="fa fa-remove"></i> </button>
+                    </form>
+                ';
 
                 return $actions;
             })
@@ -197,21 +205,22 @@ class RiderRepository extends BaseRepository implements RiderContract
 
             $rider->save();
 
-            $riderSettings = new RiderSetting();
-
-            $riderSettings->rider_id = $rider->id;
-            $riderSettings->notification = 1;
-            $riderSettings->popup_notification = 1;
-            $riderSettings->sms = 1;
-            $riderSettings->offer_and_promotion = 1;
-
-            $riderSettings->save();
+//            $riderSettings = new RiderSetting();
+//
+//            $riderSettings->rider_id = $rider->id;
+//            $riderSettings->notification = 1;
+//            $riderSettings->popup_notification = 1;
+//            $riderSettings->sms = 1;
+//            $riderSettings->offer_and_promotion = 1;
+//
+//            $riderSettings->save();
 
 
             $riderProfile = new RiderProfile();
 
             $riderProfile->rider_id = $rider->id;
             $riderProfile->nid = $collection['nid'];
+            $riderProfile->nid = $collection['address'];
 
             $riderProfile->save();
 
@@ -315,19 +324,20 @@ class RiderRepository extends BaseRepository implements RiderContract
      */
     public function deleteRider($id, array $params)
     {
-        $rider = $this->findRiderById($id);
+        $count = Order::where('restaurant_id', $id)->count();
 
-        $rider->delete();
+        if($count > 0){
+            return false;
+        }else {
+            $rider = $this->findRiderById($id);
+            $rider->delete();
 
-        $collection = collect($params)->except('_token');
+            RiderAddress::where('rider_id', $id)->delete();
+            RiderSetting::where('rider_id', $id)->delete();
+            RiderProfile::where('rider_id', $id)->delete();
 
-        $deleted_by = auth()->user()->id;
-
-        $merge = $collection->merge(compact('deleted_by'));
-
-        $rider->update($merge->all());
-
-        return $rider;
+            return $rider;
+        }
     }
 
     /**
@@ -369,6 +379,7 @@ class RiderRepository extends BaseRepository implements RiderContract
         RiderProfile::where('rider_id', $params['rider_id'])->update(
             array(
                 'nid' => $collection['nid'],
+                'address' => $collection['address'],
                 'image' => isset($collection['image']) ? isset($collection['image']) :  ($rider->image ? $rider->image : url('/').'/public/img/rider/default.png'),
             )
         );

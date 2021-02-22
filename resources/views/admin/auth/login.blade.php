@@ -4,8 +4,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" type="text/css" href="{{ asset('css/main.css') }}" />
-    <link rel="stylesheet" type="text/css" href="{{ asset('css/font-awesome/4.7.0/css/font-awesome.min.css') }}"/>
+    <link rel="stylesheet" type="text/css" href="{{ asset('public/css/main.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ asset('public/css/font-awesome/4.7.0/css/font-awesome.min.css') }}"/>
     <title>Login - {{ config('app.name') }}</title>
 </head>
 <body>
@@ -19,12 +19,12 @@
     <div class="login-box">
         <form class="login-form" action="{{ route('admin.login') }}" method="POST" role="form">
             @csrf
-            <h3 class="login-head"><i class="fa fa-lg fa-fw fa-user"></i>SIGN IN</h3>
-            <div class="form-group">
+            <h4 class="login-head">CREDENTISALS</h4>
+            <div class="form-group email">
                 <label class="control-label" for="email">Email Address</label>
                 <input class="form-control" type="email" id="email" name="email" placeholder="Email address" autofocus value="{{ old('email') }}">
             </div>
-            <div class="form-group">
+            <div class="form-group pass">
                 <label class="control-label" for="password">Password</label>
                 <input class="form-control" type="password" id="password" name="password" placeholder="Password">
             </div>
@@ -43,10 +43,5 @@
         </form>
     </div>
 </section>
-<script src="{{ asset('js/jquery-3.2.1.min.js') }}"></script>
-<script src="{{ asset('js/popper.min.js') }}"></script>
-<script src="{{ asset('js/bootstrap.min.js') }}"></script>
-<script src="{{ asset('js/main.js') }}"></script>
-<script src="{{ asset('js/plugins/pace.min.js') }}"></script>
 </body>
 </html>

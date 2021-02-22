@@ -3,7 +3,6 @@
         <ul class="nav metismenu" id="side-menu">
             <li class="nav-header">
                 <div class="dropdown profile-element">
-                    <h2 class="text-center text-light">DD</h2>
 {{--                    <a data-toggle="dropdown" class="dropdown-toggle" href="#">--}}
 {{--                        <span class="block m-t-xs font-bold">{{ auth()->user()->name  }}</span>--}}
 {{--                    </a>--}}
@@ -22,50 +21,165 @@
                         </li>
                     </ul>
                 </div>
-                <div class="logo-element">
-                    DD
-                </div>
+                <div class="logo-element"></div>
             </li>
+            <?php
+                //$arrowIcon = '<span class="fa fa-angle-right "></span>';
+                $arrowIcon = '<span class="fa arrow"></span>';
+                $menuLists = array(
+                    // Dashboard
+                    'Dashboard' => array(
+                        'trans' => 'admin.dashboard',
+                        'icon' => '<img src="'. asset('public/img/icons/10dashboard32.png') .'" class="menu_icon"/>',
+                        'activeClass' => array('dashboard.index', 'admin.dashboard',),
+                        'sub' => array(),
+                    ),
 
-            <li class="@if(in_array(Route::current()->getName(), array('dashboard.index'))) active @else  @endif"><a href="{{ route('admin.dashboard') }}"><i class="fa fa-list"></i>{{ trans('sidebar.dashboard')}}</a></li>
+                    // Restaurant Menu
+                    'Restaurant' => array(
+                        'trans' => 'sidebar.restaurant',
+                        'icon' => '<img src="'. asset('public/img/icons/20restaurants32.png') .'" class="menu_icon"/>',
+                        'activeClass' => array('restaurants.reviews', 'restaurants.index', 'restaurants.create', 'restaurants.edit'),
+                        'sub' => array(
+                            'Restaurants' => array(
+                                'trans' => 'restaurants.index',
+                                'icon' => '<img src="'. asset('public/img/icons/20restaurants32.png') .'" class="menu_icon"/>',
+                                'activeClass' => array('restaurants.index', 'restaurants.create', 'restaurants.edit'),
+                            ),
+                            'Restaurants Review' => array(
+                                'trans' => 'restaurants.reviews',
+                                'icon' => '<img src="'. asset('public/img/icons/21review32.png') .'" class="menu_icon"/>',
+                                'activeClass' => array('restaurants.reviews', 'reviews.index', 'reviews.create', 'reviews.edit'),
+                            ),
+                        ),
+                    ),
 
-            <li>
-                <a href="#"><i class="fa fa-book"></i> <span class="nav-label">{{ trans('sidebar.restaurant')}}</span><span class="fa arrow"></span></a>
-                <ul class="nav nav-second-level collapse">
-{{--                    <li class="@if(in_array(Route::current()->getName(), array('restaurants.index', 'restaurants.create', 'restaurants.edit')))  @else  @endif"><a href="{{ route('restaurants.requested') }}"><i class="fa fa-list"></i>{{ trans('sidebar.restaurant_requested')}}</a></li>--}}
-                    <li class="@if(in_array(Route::current()->getName(), array('restaurants.index', 'restaurants.create', 'restaurants.edit'))) active @else  @endif"><a href="{{ route('restaurants.index') }}"><i class="fa fa-list"></i>{{ trans('sidebar.restaurants')}}</a></li>
-                    <li class="@if(in_array(Route::current()->getName(), array('restaurants.index', 'restaurants.create', 'restaurants.edit')))  active @else  @endif"><a href="{{ route('restaurants.reviews') }}"><i class="fa fa-list"></i>{{ trans('sidebar.restaurant_reviews')}}</a></li>
-                </ul>
-            </li>
+                    // Food
+                    'Food' => array(
+                        'trans' => 'sidebar.food',
+                        'icon' => '<img src="'. asset('public/img/icons/30food32.png') .'" class="menu_icon"/>',
+                        'activeClass' => array(
+                            'categories.index', 'categories.create', 'categories.edit', 'foods.index', 'foods.create', 'foods.edit',
+                        ),
+                        'sub' => array(
+                            'Foods' => array(
+                                'trans' => 'foods.index',
+                                'icon' => '<img src="'. asset('public/img/icons/30food32.png') .'" class="menu_icon"/>',
+                                'activeClass' => array('foods.index', 'foods.create', 'foods.edit'),
+                            ),
+                            'Category' => array(
+                                'trans' => 'categories.index',
+                                'icon' => '<img src="'. asset('public/img/icons/31review32.png') .'" class="menu_icon"/>',
+                                'activeClass' => array('categories.index', 'categories.create', 'categories.edit'),
+                            ),
+                        ),
+                    ),
 
-            <li>
-                <a href="#"><i class="fa fa-book"></i> <span class="nav-label">{{ trans('sidebar.food')}}</span><span class="fa arrow"></span></a>
-                <ul class="nav nav-second-level collapse">
-                    <li class="@if(in_array(Route::current()->getName(), array('categories.index', 'categories.create', 'categories.edit'))) active @else  @endif"><a href="{{ route('categories.index') }}"><i class="fa fa-list"></i>{{ trans('sidebar.category')}}</a></li>
-                    <li class="@if(in_array(Route::current()->getName(), array('foods.index', 'foods.create', 'foods.edit')))  active @else  @endif"><a href="{{ route('foods.index') }}"><i class="fa fa-list"></i>{{ trans('sidebar.foods')}}</a></li>
-                </ul>
-            </li>
+                    // Order
+                    'Order' => array(
+                        'trans' => 'sidebar.order',
+                        'icon' => '<img src="'. asset('public/img/icons/40orders32.png') .'" class="menu_icon"/>',
+                        'activeClass' => array('orders.index', 'orders.create', 'orders.edit'),
+                        'sub' => array(
+                            'Orders' => array(
+                                'trans' => 'orders.index',
+                                'icon' => '<img src="'. asset('public/img/icons/40orders32.png') .'" class="menu_icon"/>',
+                                'activeClass' => array('orders.index', 'orders.create', 'orders.edit'),
+                            ),
+                        ),
+                    ),
 
-            <li>
-                <a href="#"><i class="fa fa-book"></i> <span class="nav-label">{{ trans('sidebar.order')}}</span><span class="fa arrow"></span></a>
-                <ul class="nav nav-second-level collapse">
-                    <li class="@if(in_array(Route::current()->getName(), array('orders.index', 'orders.create', 'orders.edit')))  active @else  @endif"><a href="{{ route('orders.index') }}"><i class="fa fa-list"></i>{{ trans('sidebar.orders')}}</a></li>
-                </ul>
-            </li>
+                    // Coupons
+                    'Coupons' => array(
+                        'trans' => 'coupons.index',
+                        'icon' => '<img src="'. asset('public/img/icons/50coupons32.png') .'" class="menu_icon"/>',
+                        'activeClass' => array('coupons.index', 'coupons.create', 'coupons.edit',),
+                        'sub' => array(),
+                    ),
 
-            <li class="@if(in_array(Route::current()->getName(), array('coupons.index', 'coupons.create', 'coupons.edit')))  @else  @endif"><a href="{{ route('coupons.index') }}"><i class="fa fa-list"></i>{{ trans('sidebar.coupons')}}</a></li>
-            <li class="@if(in_array(Route::current()->getName(), array('customers.index', 'customers.create', 'customers.edit')))  @else  @endif"><a href="{{ route('customers.index') }}"><i class="fa fa-list"></i>{{ trans('sidebar.customers')}}</a></li>
-            <li class="@if(in_array(Route::current()->getName(), array('riders.index', 'riders.create', 'riders.edit')))  @else  @endif"><a href="{{ route('riders.index') }}"><i class="fa fa-list"></i>{{ trans('sidebar.riders')}}</a></li>
+                    // Riders
+                    'Rriders' => array(
+                        'trans' => 'riders.index',
+                        'icon' => '<img src="'. asset('public/img/icons/60riders32.png') .'" class="menu_icon"/>',
+                        'activeClass' => array('riders.index', 'riders.create', 'riders.edit',),
+                        'sub' => array(),
+                    ),
+                    
+                    // Customers
+                    'Customers' => array(
+                        'trans' => 'customers.index',
+                        'icon' => '<img src="'. asset('public/img/icons/70customers32.png') .'" class="menu_icon"/>',
+                        'activeClass' => array('customers.index', 'customers.create', 'customers.edit',),
+                        'sub' => array(),
+                    ),
 
-            <li>
-                <a href="#"><i class="fa fa-gears"></i> <span class="nav-label">{{ trans('sidebar.settings')}}</span><span class="fa arrow"></span></a>
-                <ul class="nav nav-second-level collapse">
-                    <li class="@if(in_array(Route::current()->getName(), array('helpandsupports.index', 'helpandsupports.create', 'helpandsupports.edit'))) active @else  @endif"><a href="{{ route('helpandsupports.index') }}"><i class="fa fa-list"></i>{{ trans('sidebar.help&supports')}}</a></li>
-                    <li class="@if(in_array(Route::current()->getName(), array('termsandconditions.index', 'termsandconditions.edit')))  active @else  @endif"><a href="{{ route('termsandconditions.index') }}"><i class="fa fa-list"></i>{{ trans('sidebar.terms&conditions')}}</a></li>
-                    <li class="@if(in_array(Route::current()->getName(), array('settings.edit')))  active @else  @endif"><a href="{{ route('settings.edit') }}"><i class="fa fa-list"></i>{{ trans('sidebar.settings')}}</a></li>
-                </ul>
-            </li>
+                    // Settings
+                    'Settings' => array(
+                        'trans' => 'sidebar.settings',
+                        'icon' => '<img src="'. asset('public/img/icons/90settings32.png') .'" class="menu_icon"/>',
+                        'activeClass' => array(
+                            'helpandsupports.index', 'helpandsupports.create', 'helpandsupports.edit', 'termsandconditions.index', 'termsandconditions.edit', 'settings.edit'
+                        ),
+                        'sub' => array(
+                            'Settings' => array(
+                                'trans' => 'settings.edit',
+                                'icon' => '<img src="'. asset('public/img/icons/90settings32.png') .'" class="menu_icon"/>',
+                                'activeClass' => array('settings.edit'),
+                            ),
+                            'Terms & Condition' => array(
+                                'trans' => 'termsandconditions.index',
+                                'icon' => '<img src="'. asset('public/img/icons/92terms32.png') .'" class="menu_icon"/>',
+                                'activeClass' => array('termsandconditions.index', 'termsandconditions.edit'),
+                            ),
+                            'Help & Supports' => array(
+                                'trans' => 'helpandsupports.index',
+                                'icon' => '<img src="'. asset('public/img/icons/91heplandsupport32.png') .'" class="menu_icon"/>',
+                                'activeClass' => array('helpandsupports.index', 'helpandsupports.create', 'helpandsupports.edit'),
+                            ),
+                        ),
+                    ),
+                    
+                );
 
+                foreach($menuLists as $menuName => $menuList){
+                    $name = $menuName;
+                    $sub = $menuList['sub']; 
+                    $url = (!empty($sub)) ? '#' : route($menuList['trans']) ;
+                    $icon = $menuList['icon'];
+                    $active = $menuList['activeClass']; ?>
+
+                    <li class="@if(in_array(Route::current()->getName(), $active )) active @else  @endif">
+                        <a href="{{$url}}">
+                            <?php echo $icon    ?>
+                            <?php 
+                                if($url=='#'){
+                                    echo '<span class="nav-label">'.$name .'</span>'.$arrowIcon;
+                                }else{
+                                    echo $name;
+                                }
+                            ?>
+                        </a>
+                       
+                        <?php
+                            if($url=='#'){ ?>
+                                <ul class="nav nav-second-level collapse">
+                                    <?php foreach($sub as $subMenuName => $subMenuList){
+                                        $subName = $subMenuName;
+                                        $subUrl = route($subMenuList['trans']);
+                                        $subIcon = $subMenuList['icon'];
+                                        $subActive = $subMenuList['activeClass']; ?>
+                                        <li class="@if(in_array(Route::current()->getName(), $subActive )) active @else  @endif">
+                                            <a href="{{ $subUrl }}">
+                                                <?php echo $subIcon . $subName ?>
+                                            </a>
+                                        </li>
+                                    <?php } ?>
+                                </ul>
+                            <?php } ?>  
+                    </li>
+
+                <?php }
+            ?>
 
         </ul>
 

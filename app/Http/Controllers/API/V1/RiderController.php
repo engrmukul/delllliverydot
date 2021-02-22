@@ -145,11 +145,21 @@ class RiderController extends BaseController
         $riderLocation->address = $request->address;
         $riderLocation->is_current_address = $request->is_current_address;
 
+        //DELETE DEFAULT ADDRESS
+        RiderAddress::where('address','address')->where("rider_id", $request->rider_id)->delete();
+
         if ($riderLocation->save()) {
             if ($request->is_current_address == 'yes') {
                 RiderAddress::where("id", '!=', $riderLocation->id)->where("rider_id", $request->rider_id)->update(
                     [
                         "is_current_address" => 'no',
+                    ]
+                );
+
+                //Update profile address
+                RiderProfile::where("rider_id", $request->rider_id)->update(
+                    [
+                        "address" => $riderLocation->address,
                     ]
                 );
             }
@@ -181,6 +191,13 @@ class RiderController extends BaseController
             RiderAddress::where("id", '!=', $request->id)->where("rider_id", $request->rider_id)->update(
                 [
                     "is_current_address" => 'no',
+                ]
+            );
+
+            //Update profile address
+            RiderProfile::where("rider_id", $request->rider_id)->update(
+                [
+                    "address" => $riderLocation->address,
                 ]
             );
         }

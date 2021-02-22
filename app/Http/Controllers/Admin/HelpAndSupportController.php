@@ -29,7 +29,7 @@ class HelpAndSupportController extends BaseController
      */
     public function index()
     {
-        $this->setPageTitle('HelpAndSupports', 'HelpAndSupports List');
+        $this->setPageTitle('helpandsupports', 'HelpAndSupports List');
         $data = [
             'tableHeads' => [
                 trans('helpAndSupprt.SN'),
@@ -38,7 +38,7 @@ class HelpAndSupportController extends BaseController
                 trans('helpAndSupprt.answer'),
                 trans('helpAndSupprt.action')
             ],
-            'dataUrl' => 'admin/helpAndSupports/get-data',
+            'dataUrl' => 'admin/helpandsupports/get-data',
             'columns' => [
                 ['data' => 'id', 'name' => 'id'],
                 ['data' => 'type', 'name' => 'type'],
@@ -47,6 +47,7 @@ class HelpAndSupportController extends BaseController
                 ['data' => 'action', 'name' => 'action', 'orderable' => false]
             ],
         ];
+
         return view('admin.help_and_supports.index', $data);
     }
 
@@ -64,7 +65,7 @@ class HelpAndSupportController extends BaseController
      */
     public function create()
     {
-        $this->setPageTitle('HelpAndSupports', 'Create HelpAndSupprt');
+        $this->setPageTitle('helpandsupports', 'Create HelpAndSupprt');
 
         $types = array(
             'customer' => 'customer',
@@ -88,7 +89,7 @@ class HelpAndSupportController extends BaseController
         if (!$helpAndSupprt) {
             return $this->responseRedirectBack(trans('common.create_error'), 'error', true, true);
         }
-        return $this->responseRedirect('helpAndSupports.index', trans('common.create_success'), 'success', false, false);
+        return $this->responseRedirect('helpandsupports.index', trans('common.create_success'), 'success', false, false);
     }
 
     /**
@@ -97,7 +98,7 @@ class HelpAndSupportController extends BaseController
      */
     public function edit($id)
     {
-        $this->setPageTitle('HelpAndSupports', 'Edit HelpAndSupport');
+        $this->setPageTitle('helpandsupports', 'Edit HelpAndSupport');
 
         $types = array(
             'customer' => 'customer',
@@ -105,9 +106,9 @@ class HelpAndSupportController extends BaseController
             'rider' => 'rider'
         );
 
-        $helpAndSupprt = $this->helpAndSupportRepository->findHelpAndSupportById($id);
+        $helpAndSupport = $this->helpAndSupportRepository->findHelpAndSupportById($id);
 
-        return view('admin.help_and_supports.edit', compact('helpAndSupprt',compact('types')));
+        return view('admin.help_and_supports.edit', compact('helpAndSupport','types'));
     }
 
     /**
@@ -123,7 +124,7 @@ class HelpAndSupportController extends BaseController
         if (!$helpAndSupport) {
             return $this->responseRedirectBack(trans('common.update_error'), 'error', true, true);
         }
-        return $this->responseRedirect('helpAndSupports.index', trans('common.update_success'), 'success', false, false);
+        return $this->responseRedirect('helpandsupports.index', trans('common.update_success'), 'success', false, false);
     }
 
     /**
@@ -138,6 +139,6 @@ class HelpAndSupportController extends BaseController
         if (!$helpAndSupport) {
             return $this->responseRedirectBack(trans('common.delete_error'), 'error', true, true);
         }
-        return $this->responseRedirect('helpAndSupports.index', trans('common.delete_success'), 'success', false, false);
+        return $this->responseRedirect('helpandsupports.index', trans('common.delete_success'), 'success', false, false);
     }
 }

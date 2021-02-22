@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Contracts\CategoryContract;
 use App\Models\Category;
+use App\Models\Food;
 use Illuminate\Database\QueryException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Doctrine\Instantiator\Exception\InvalidArgumentException;
@@ -117,10 +118,14 @@ class CategoryRepository extends BaseRepository implements CategoryContract
      */
     public function deleteCategory($id, array $params)
     {
-        $Category = $this->findCategoryById($id);
+        $count = Food::where('category_id', $id)->count();
 
-        $Category->delete();
-
-        return $Category;
+        if($count > 0){
+            return false;
+        }else{
+            $Category = $this->findCategoryById($id);
+            $Category->delete();
+            return true;
+        }
     }
 }

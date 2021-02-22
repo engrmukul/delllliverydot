@@ -3,15 +3,17 @@
 @section('content')
     @include('admin.partials.flash')
     <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="row header_part">
+            <div class="col-12 ">
+                <h1 class="ddheadline"><img src="{{url('/public/img/icons/20restaurants32.png')}}" width="36" height="36" /> Add new Restaurant</h1>
+            </div>
+            <hr>
+        </div>
         <div class="row">
             <div class="col-lg-12">
                 <div class="ibox ">
                     <div class="ibox-title">
-                        <h5><i class="fa fa-book"></i> restaurant {{ trans('common.create')}}</h5>
-                        <div class="ibox-tools">
-                            <a style="margin-top: -8px;" href="{{ route( strtolower($pageTitle) . '.index') }}"
-                               class="btn btn-primary"><i class="fa fa-list"></i> {{ trans('common.list')}}</a>
-                        </div>
+                        <a class="backToList" href="{{route( strtolower($pageTitle) . '.index')}}"><i class="fa fa-angle-left"></i> Back to {{ trans('common.go_back')}}</a>
                     </div>
                     <div class="ibox-content">
 
@@ -118,6 +120,24 @@
                                         <input type="file" id="images" name="image" class="form-control">
                                         <span class="form-text m-b-none text-danger"> @error('image') {{ $message }} @enderror </span>
                                     </div>
+
+                                    <!---CHECKBOX--->
+                                    <div class="form-group">
+                                        <label for="category" class="font-bold">Category Check</label>
+                                        <div class="col-sm-10">
+                                            <label class="checkbox-inline"><input type="checkbox" name="is_favorite" value="{{ old('is_favorite', 'yes') }}"  id="inlineCheckbox2"> Is Favorite </label>
+                                            <label class="checkbox-inline"><input type="checkbox" name="is_discounted" value="{{ old('is_discounted', 'yes') }}" id="isDiscounted"> Is Discounted </label>
+                                            <label class="checkbox-inline"><input type="checkbox" name="is_trending" value="{{ old('is_trending', 'yes') }}" id="inlineCheckbox2"> Is Trending </label>
+                                            <label class="checkbox-inline"><input type="checkbox" name="is_popular" value="{{ old('is_popular', 'yes') }}" id="inlineCheckbox2"> Is Popular </label>
+                                        </div>
+                                    </div>
+
+                                    <!---discount--->
+                                    <div class="form-group discount d-none">
+                                        <label for="discount" class="font-bold">{{ trans('restaurant.discount')}}</label>
+                                        <input type="number" name="discount" value="{{ old('discount') }}" placeholder="{{ trans('restaurant.discount')}}" class="form-control">
+                                        <span class="form-text m-b-none text-danger"> @error('discount') {{ $message }} @enderror </span>
+                                    </div>
                                 </div>
                             </div>
 
@@ -125,8 +145,7 @@
                                 <div class="col-12">
                                     <!---CONTROL BUTTON--->
                                     <div class="form-group">
-                                        <button class="btn btn-success" type="submit"><i class="fa fa-fw fa-lg fa-check-circle"></i>{{ trans('common.submit')}}</button>
-                                        <a class="btn btn-danger" href="{{route( strtolower($pageTitle) . '.index')}}"><i class="fa fa-fw fa-lg fa-arrow-left"></i>{{ trans('common.go_back')}}</a>
+                                        <button class="btn btn-success" type="submit"><i class="fa fa-fw fa-lg fa-check-circle"></i> Add Restaurant</button>
                                     </div>
                                 </div>
                             </div>
@@ -137,3 +156,20 @@
         </div>
     </div>
 @endsection
+
+@push('scripts')
+    <script>
+        $(document).ready(function() {
+            $("#isDiscounted").click(function() {
+                if ($("input[type=checkbox]").is(":checked")) {
+
+                    $('.discount').removeClass('d-none');
+
+                } else {
+                    $('.discount').addClass('d-none');
+                    $('input[name=discount]').val('');
+                }
+            });
+        });
+    </script>
+@endpush

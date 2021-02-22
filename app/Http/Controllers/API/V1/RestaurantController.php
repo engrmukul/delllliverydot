@@ -16,6 +16,7 @@ use App\Models\Food;
 use App\Models\Order;
 use App\Models\Restaurant;
 use App\Models\RestaurantAddress;
+use App\Models\RestaurantProfile;
 use App\Models\RestaurantSetting;
 use App\Models\Rider;
 use App\Traits\UploadTrait;
@@ -454,11 +455,21 @@ class RestaurantController extends BaseController
         $restaurantLocation->address = $request->address;
         $restaurantLocation->is_current_address = $request->is_current_address;
 
+        //DELETE DEFAULT ADDRESS
+        RestaurantAddress::where('address','address')->where("restaurant_id", $request->restaurant_id)->delete();
+
         if ($restaurantLocation->save()) {
             if ($request->is_current_address == 'yes') {
                 RestaurantAddress::where("id", '!=', $restaurantLocation->id)->where("restaurant_id", $request->restaurant_id)->update(
                     [
                         "is_current_address" => 'no',
+                    ]
+                );
+
+                //Update profile address
+                RestaurantProfile::where("restaurant_id", $request->restaurant_id)->update(
+                    [
+                        "address" => $restaurantLocation->address,
                     ]
                 );
             }
@@ -490,6 +501,13 @@ class RestaurantController extends BaseController
             RestaurantAddress::where("id", '!=', $request->id)->where("restaurant_id", $request->restaurant_id)->update(
                 [
                     "is_current_address" => 'no',
+                ]
+            );
+
+            //Update profile address
+            RestaurantProfile::where("restaurant_id", $request->restaurant_id)->update(
+                [
+                    "address" => $restaurantLocation->address,
                 ]
             );
         }
