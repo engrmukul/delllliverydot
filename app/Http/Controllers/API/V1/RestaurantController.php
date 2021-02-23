@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API\V1;
 
 use App\Contracts\RestaurantContract;
+use App\Http\Requests\DeliveryManagementFormRequest;
 use App\Http\Requests\RestaurantAddressStoreFormRequest;
 use App\Http\Requests\RestaurantAddressUpdateFormRequest;
 use App\Http\Requests\RestaurantDeviceTokenStoreFormRequest;
@@ -13,12 +14,14 @@ use App\Http\Requests\RestaurantStoreFormRequest;
 use App\Http\Requests\RestaurantUpdateFormRequest;
 use App\Http\Requests\RiderDeviceTokenStoreFormRequest;
 use App\Models\Food;
+use App\Models\HelpAndSupport;
 use App\Models\Order;
 use App\Models\Restaurant;
 use App\Models\RestaurantAddress;
 use App\Models\RestaurantProfile;
 use App\Models\RestaurantSetting;
 use App\Models\Rider;
+use App\Models\TermsAndCondition;
 use App\Traits\UploadTrait;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -101,7 +104,7 @@ class RestaurantController extends BaseController
                 ]
             );
 
-            $order = Order::with('customer')->where('id',  $request->order_id)->first();
+            $order = Order::with('customer')->where('id', $request->order_id)->first();
 
             event(new \App\Events\NewRegistration());
 
@@ -129,7 +132,7 @@ class RestaurantController extends BaseController
             } else {
                 return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
             }
-        }catch (\Exception $e){
+        } catch (\Exception $e) {
             return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
         }
 
@@ -181,10 +184,10 @@ class RestaurantController extends BaseController
 
         event(new \App\Events\NewRegistration());
 
-            //SEND PUSH NOTIFICATION
+        //SEND PUSH NOTIFICATION
         $riders = Rider::whereNotNull('device_token')->get();
 
-        $orderDetail = Order::with('customer','RestaurantDetails', 'orderDetails', 'orderDetails.foods', 'orderDetails.foodVariants')->where('id', $request->order_id)->first();
+        $orderDetail = Order::with('customer', 'RestaurantDetails', 'orderDetails', 'orderDetails.foods', 'orderDetails.foodVariants')->where('id', $request->order_id)->first();
 
 
         //SEND FCM NOTIFICATION TO USER
@@ -376,13 +379,15 @@ class RestaurantController extends BaseController
     {
         $params = $request->except('_token');
 
-        $restaurant = $this->restaurantRepository->settingsUpdate($params);
+        $this->restaurantRepository->settingsUpdate($params);
 
-        if ($restaurant) {
-            return $this->sendResponse($restaurant, 'Restaurant settings update successfully.', Response::HTTP_OK);
+        $settings = RestaurantSetting::where('restaurant_id', $request->restaurant_id)->first();
+
+        if ($settings->count() > 0) {
+            return $this->sendResponse($settings, 'Restaurant settings update successfully.', Response::HTTP_OK);
+        } else {
+            return $this->sendResponse(array(), 'Data not updated', Response::HTTP_NOT_FOUND);
         }
-        return $this->sendError('Unable to update.', 'Internal Server Error', Response::HTTP_INTERNAL_SERVER_ERROR);
-
     }
 
     /**
@@ -456,7 +461,7 @@ class RestaurantController extends BaseController
         $restaurantLocation->is_current_address = $request->is_current_address;
 
         //DELETE DEFAULT ADDRESS
-        RestaurantAddress::where('address','address')->where("restaurant_id", $request->restaurant_id)->delete();
+        RestaurantAddress::where('address', 'address')->where("restaurant_id", $request->restaurant_id)->delete();
 
         if ($restaurantLocation->save()) {
             if ($request->is_current_address == 'yes') {
@@ -636,7 +641,7 @@ class RestaurantController extends BaseController
 
     public function restaurantFoodList(Request $request)
     {
-        $restaurantFoodList = Food::where('restaurant_id', $request->restaurant_id )->get();
+        $restaurantFoodList = Food::where('restaurant_id', $request->restaurant_id)->get();
 
         if ($restaurantFoodList->count() > 0) {
             return $this->sendResponse($restaurantFoodList, 'Food list.', Response::HTTP_OK);
@@ -645,6 +650,64 @@ class RestaurantController extends BaseController
         }
     }
 
+    public function helpAndSupport()
+    {
+        $helpAndSupport = HelpAndSupport::select('question', 'answer')->where('type', 'restaurant')->get();
+
+        if ($helpAndSupport->count() > 0) {
+            return $this->sendResponse($helpAndSupport, 'Help and support list', Response::HTTP_OK);
+        } else {
+            return $this->sendResponse(array(), 'No help and support', Response::HTTP_NOT_FOUND);
+        }
+    }
+
+    public function termsAndCondition()
+    {
+        $termsAndCondition = TermsAndCondition::where('type', 'restaurant')->first();
+
+        if ($termsAndCondition) {
+            return $this->sendResponse(strip_tags($termsAndCondition->description), 'Terms and condition list', Response::HTTP_OK);
+        } else {
+            return $this->sendResponse(array(), 'No terms and condition', Response::HTTP_NOT_FOUND);
+        }
+    }
+
+    /**
+     * @param deliveryManagementFormRequest $request
+     */
+    public function deliveryManagement(DeliveryManagementFormRequest $request)
+    {
+        $orders = Order::with('rider', 'orderDetails', 'orderDetails.foods')
+                        ->where('restaurant_id', $request->restaurant_id)
+                        ->where('rider_id', '!=', '')
+                        ->get();
+
+        $orderArray = $orders->toArray();
+
+        $deliveryMngArray = array();
+
+        if ($orderArray) {
+
+            foreach ($orderArray as $index => $order) {
+
+                $deliveryMng['deliveryDate'] = $order['order_date'];
+                $deliveryMng['rider'] = $order['rider']['name'];
+                $deliveryMng['order_status'] = $order['order_status'];
+                $deliveryMng['food'] = $order['order_details'][0]['foods']['name'];
+
+                $deliveryMngArray[] = $deliveryMng;
+            }
+
+            if ($deliveryMngArray) {
+                return $this->sendResponse($deliveryMngArray, 'Delivery management', Response::HTTP_OK);
+            } else {
+                return $this->sendResponse(array(), 'No delivery management', Response::HTTP_NOT_FOUND);
+            }
+        }else{
+            return $this->sendResponse(array(), 'No delivery management', Response::HTTP_NOT_FOUND);
+        }
 
 
+
+    }
 }

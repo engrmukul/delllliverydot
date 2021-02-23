@@ -40,7 +40,7 @@ class Order extends Model
      * @var array
      */
     protected $casts  = [
-        'order_date'  => 'date:Y-m-d',
+        'order_date'  => 'date:Y-m-d m:i:s a',
         'customer_id'  => 'int',
         'total_price'  => 'double',
         'discount'  => 'double',
@@ -77,6 +77,19 @@ class Order extends Model
     public function rider()
     {
         return $this->hasOne(Rider::class,'id', 'rider_id');
+    }
+
+    public function getOrderStatusAttribute($value)
+    {
+        if($value == "rider_accepted"){
+            return "On the way to restaurant";
+        }elseif ($value == "delivery_on_the_way"){
+            return "On the way to customer";
+        }elseif ($value == "delivered"){
+            return "Delivered";
+        }else{
+            return $value;
+        }
     }
 
 

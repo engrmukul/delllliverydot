@@ -553,9 +553,9 @@ class RestaurantRepository extends BaseRepository implements RestaurantContract
 
         $collection = collect($params)->except('_token');
 
-        $notification = 1;
+        $restaurant_id = $collection['restaurant_id'];
 
-        $merge = $collection->merge(compact('notification'));
+        $merge = $collection->merge(compact('restaurant_id'));
 
         $affected = $settings->where('restaurant_id', $params['restaurant_id'])->update($merge->all());
 

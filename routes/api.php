@@ -122,6 +122,9 @@ Route::post('/restaurant-order-history', 'API\V1\RestaurantController@index')->n
 Route::post('/restaurant-profile-update', 'API\V1\RestaurantController@restaurantProfileUpdate')->name('restaurant-profile-update');
 Route::post('/restaurant-settings', 'API\V1\RestaurantController@settingsUpdate')->name('restaurant-settings');
 Route::post('/restaurant-device-token', 'API\V1\RestaurantController@saveDeviceToken')->name('restaurant-device-token');
+Route::get('/restaurant-help-and-support', 'API\V1\RestaurantController@helpAndSupport')->name('restaurant-help-and-support');
+Route::get('/restaurant-terms-and-condition', 'API\V1\RestaurantController@termsAndCondition')->name('restaurant-terms-and-condition');
+Route::post('/restaurant-delivery-management', 'API\V1\RestaurantController@deliveryManagement')->name('restaurant-delivery-management');
 
 
 ##

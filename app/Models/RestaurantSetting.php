@@ -32,7 +32,10 @@ class RestaurantSetting extends Model
      * @var array
      */
     protected $casts  = [
-
+        'notification' => 'boolean',
+        'popup_notification' => 'boolean',
+        'sms' => 'boolean',
+        'offer_and_promotion' => 'boolean',
     ];
 
 }
