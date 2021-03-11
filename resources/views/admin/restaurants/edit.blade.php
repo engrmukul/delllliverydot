@@ -150,6 +150,13 @@
                                         </div>
                                     </div>
 
+                                    <div class="form-group">
+                                        <label for="status" class="font-bold">Is Verified</label>
+                                        <div class="col-sm-10">
+                                            <label class="checkbox-inline"><input type="checkbox" name="isVerified" value="1" @if($restaurant->isVerified == '1') checked @else @endif id="inlineCheckbox2"> Is Verified</label>
+                                        </div>
+                                    </div>
+
                                 </div>
                             </div>
 

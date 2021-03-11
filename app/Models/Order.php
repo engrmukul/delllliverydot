@@ -82,11 +82,11 @@ class Order extends Model
     public function getOrderStatusAttribute($value)
     {
         if($value == "rider_accepted"){
-            return "On the way to restaurant";
+            return "on_the_way_to_restaurant";
         }elseif ($value == "delivery_on_the_way"){
-            return "On the way to customer";
+            return "on_the_way_to_customer";
         }elseif ($value == "delivered"){
-            return "Delivered";
+            return "delivered";
         }else{
             return $value;
         }

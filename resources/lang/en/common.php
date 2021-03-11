@@ -28,7 +28,7 @@ return [
     'update_success' => 'Successfully updated',
     'update_error' => 'Update error',
     'delete_success' => 'Successfully deleted',
-    'delete_error' => 'Delete error',
+    'delete_error' => 'You can not delete this data as it is an active ID, You may Inactive / Active',
     'restore_success' => 'Successfully restored',
     'restore_error' => 'Restore error',
 

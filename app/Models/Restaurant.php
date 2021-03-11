@@ -58,13 +58,12 @@ class Restaurant extends Model
     }
 
     public function coupon(){
-        $coupon = $this->getCoupon();
-
-        return $coupon ? $coupon : array('code' => 'FOOD');
+        return $this->getCoupon();
     }
 
     public function getCoupon(){
         return $this->hasOne('App\Models\Coupon');
+        
     }
 
     public function foods(){
