@@ -45,7 +45,7 @@ class RestaurantRepository extends BaseRepository implements RestaurantContract
 
         $query = $this->model::latest()->get();
 
-        return Datatables::of($query)
+        return Datatables::of($query)->with('restaurantDetails')
             ->addColumn('action', function ($row) {
                 $actions = '';
 
@@ -61,6 +61,17 @@ class RestaurantRepository extends BaseRepository implements RestaurantContract
 
                 return $actions;
             })
+            ->editColumn('image', function ($row) {
+                if ($row->restaurantDetails->image) {
+                    return sprintf(
+                        '<a href="%s" target="_blank"><img class="imgae_preview restaurant_preview" src="%s" width="50px" height="50px"></a>',
+                        $row->restaurantDetails->image,
+                        $row->restaurantDetails->image
+                    );
+                }
+
+                return '';
+            })->rawColumns(['image', 'action'])
             ->make(true);
     }
 
@@ -456,11 +467,11 @@ class RestaurantRepository extends BaseRepository implements RestaurantContract
 
             if (isset($params['image'])) {
                 $image = url('/') . '/public/img/restaurant/' . $params['image'];
-            } else {
-                $image = url('/') . '/public/img/restaurant/default.png';
+                $merge = $collection->merge(compact('updated_at', 'updated_by', 'phone_number', 'image'));
+            }else{
+                $merge = $collection->merge(compact('updated_at', 'updated_by', 'phone_number'));
             }
 
-            $merge = $collection->merge(compact('updated_at', 'updated_by', 'phone_number', 'image'));
 
             $restaurant->update($merge->all());
 

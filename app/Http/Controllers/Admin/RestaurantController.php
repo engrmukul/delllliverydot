@@ -72,6 +72,7 @@ class RestaurantController extends BaseController
         $data = [
             'tableHeads' => [
                 trans('restaurant.SN'),
+                trans('restaurant.image'),
                 trans('restaurant.name'),
                 trans('restaurant.email'),
                 trans('restaurant.phone_number'),
@@ -82,6 +83,7 @@ class RestaurantController extends BaseController
             'dataUrl' => 'admin/restaurants/get-data',
             'columns' => [
                 ['data' => 'id', 'name' => 'id'],
+                ['data' => 'image', 'name' => 'image'],
                 ['data' => 'name', 'name' => 'name'],
                 ['data' => 'email', 'name' => 'email'],
                 ['data' => 'phone_number', 'name' => 'phone_number'],
@@ -208,7 +210,7 @@ class RestaurantController extends BaseController
 
         if ($request->has('image')) {
 
-            $params['image'] = $this->saveImages($request->file('image'), 'img/restaurant/', 500, 500);
+            $params['image'] = $this->saveImages($request->file('image'), 'img/restaurant/', 200, 200);
         }
 
         $restaurant = $this->restaurantRepository->updateRestaurantByAdmin($params);

@@ -35,6 +35,7 @@ class FoodController extends BaseController
         $data = [
             'tableHeads' => [
                 trans('food.SN'),
+                trans('food.image'),
                 trans('food.category'),
                 trans('food.name'),
                 trans('food.restaurant'),
@@ -44,6 +45,7 @@ class FoodController extends BaseController
             'dataUrl' => 'admin/foods/get-data',
             'columns' => [
                 ['data' => 'id', 'name' => 'id'],
+                ['data' => 'image', 'name' => 'image'],
                 ['data' => 'category', 'name' => 'category'],
                 ['data' => 'name', 'name' => 'name'],
                 ['data' => 'restaurant', 'name' => 'restaurant'],
@@ -87,7 +89,7 @@ class FoodController extends BaseController
 
         if ($request->file('image') != null){
 
-            $params['image'] = $this->saveImages($request->file('image'), 'img/food/', 100, 100);
+            $params['image'] = $this->saveImages($request->file('image'), 'img/food/', 200, 200);
         }
 
         $food = $this->foodRepository->createFood($params);
@@ -126,7 +128,7 @@ class FoodController extends BaseController
 
         if ($request->has('image')) {
 
-            $params['image'] = $this->saveImages($request->file('image'), 'img/food/', 100, 100);
+            $params['image'] = $this->saveImages($request->file('image'), 'img/food/', 200, 200);
         }
 
         $food = $this->foodRepository->updateFood($params);

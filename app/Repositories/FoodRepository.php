@@ -56,7 +56,17 @@ class FoodRepository extends BaseRepository implements FoodContract
             })
             ->editColumn('restaurant', function ($row) {
                 return $row->restaurants->name;
-            })
+            })->editColumn('image', function ($row) {
+                if ($photo = $row->image) {
+                    return sprintf(
+                        '<a href="%s" target="_blank"><img class="image_preview food_preview" src="%s" width="50px" height="50px"></a>',
+                        $row->image,
+                        $row->image
+                    );
+                }
+
+                return '';
+            })->rawColumns(['image', 'action'])
             ->make(true);
     }
 
@@ -159,11 +169,11 @@ class FoodRepository extends BaseRepository implements FoodContract
 
         if(isset($params['image'])){
             $image = url('/').'/public/img/food/'.$params['image'];
+            $merge = $collection->merge(compact('short_description', 'description','updated_at','updated_by','image'));
         }else{
-            $image = url('/').'/public/img/food/default.png';
+            $merge = $collection->merge(compact('short_description', 'description','updated_at','updated_by'));
         }
 
-        $merge = $collection->merge(compact('short_description', 'description','updated_at','updated_by','image'));
 
         $food->update($merge->all());
 

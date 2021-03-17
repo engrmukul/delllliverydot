@@ -34,4 +34,9 @@ class FoodVariant extends Model
         'food_id' => 'int',
     ];
 
+    public function getNameAttribute($value)
+    {
+        return '';
+    }
+
 }

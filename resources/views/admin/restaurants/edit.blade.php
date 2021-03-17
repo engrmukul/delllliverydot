@@ -118,7 +118,10 @@
                                     </div>
 
                                     <!---image--->
-                                    <div class="form-group">
+                                    <div class="form-group col-md-6">
+                                        <img src="{{$restaurant->restaurantDetails->image}}" alt="">
+                                    </div>
+                                    <div class="form-group col-md-6">
                                         <label for="images" class="font-bold">{{ trans('restaurant.image')}}</label>
                                         <input type="file" id="images" name="image" class="form-control">
                                         <span class="form-text m-b-none text-danger"> @error('image') {{ $message }} @enderror </span>
