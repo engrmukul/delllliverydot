@@ -44,6 +44,7 @@ use App\Models\Shop;
 use App\Models\ShopItem;
 use App\Models\ShopPromotion;
 use App\Models\TermsAndCondition;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
@@ -1324,81 +1325,86 @@ class CustomerController extends BaseController
 
         $orderData = json_decode($request->getContent(), true);
 
-        if ($orderData) {
-            $order = new Order();
+        if (User::where('id', $orderData['customer_id'])->exists()){
+            if ($orderData) {
+                $order = new Order();
 
-            $order->customer_id = $orderData['customer_id'];
-            $order->delivery_address = $orderData['address'];
-            $order->order_date = date('Y-m-d');
-            $order->order_status = 'order_placed';
-            $order->payment_method = 'cash_on_delivery';//$orderData['payment_method;
-            $order->payment_status = 'not_paid';//$orderData['payment_status;
-            $order->total_price = $orderData['sub_total'];
-            $order->discount = $orderData['discount'];
-            $order->vat = $orderData['vat_amount'];
-            $order->delivery_fee = $orderData['delivery_fee'];
-            $order->instructions = $orderData['instructions'];
-            $order->restaurant_id = $orderData['restaurantId'];
-            $order->coupon_code = $orderData['coupon_code'];
+                $order->customer_id = $orderData['customer_id'];
+                $order->delivery_address = $orderData['address'];
+                $order->order_date = date('Y-m-d');
+                $order->order_status = 'order_placed';
+                $order->payment_method = 'cash_on_delivery';//$orderData['payment_method;
+                $order->payment_status = 'not_paid';//$orderData['payment_status;
+                $order->total_price = $orderData['sub_total'];
+                $order->discount = $orderData['discount'];
+                $order->vat = $orderData['vat_amount'];
+                $order->delivery_fee = $orderData['delivery_fee'];
+                $order->instructions = $orderData['instructions'];
+                $order->restaurant_id = $orderData['restaurantId'];
+                $order->coupon_code = $orderData['coupon_code'];
 
-            $order->save();
+                $order->save();
 
-            $foodArray = array();
-            foreach ($orderData['carts'] as $key => $item) {
+                $foodArray = array();
+                foreach ($orderData['carts'] as $key => $item) {
 
-                if ($item['extraItemId'] == 0 || $item['extraItemId'] == NULL) {
-                    $item['extraItemId'] = NULL;
-                } else {
-                    $item['extraItemId'] = $item['extraItemId'];
+                    if ($item['extraItemId'] == 0 || $item['extraItemId'] == NULL) {
+                        $item['extraItemId'] = NULL;
+                    } else {
+                        $item['extraItemId'] = $item['extraItemId'];
+                    }
+
+                    $foodData['order_id'] = $order->id;
+                    $foodData['food_id'] = $item['foodId'];
+                    $foodData['food_variant_id'] = $item['foodVariantId'];
+                    $foodData['food_price'] = $item['price'];
+                    $foodData['food_quantity'] = $item['quantity'];
+                    $foodData['extra_id'] = $item['extraItemId'];
+                    $foodData['extra_price'] = $item['extraItemPrice'] ? $item['extraItemPrice'] : 0;
+                    $foodData['sub_total'] = ($item['price'] * $item['quantity']) + $item['extraItemPrice'];
+
+                    $foodArray[] = $foodData;
                 }
 
-                $foodData['order_id'] = $order->id;
-                $foodData['food_id'] = $item['foodId'];
-                $foodData['food_variant_id'] = $item['foodVariantId'];
-                $foodData['food_price'] = $item['price'];
-                $foodData['food_quantity'] = $item['quantity'];
-                $foodData['extra_id'] = $item['extraItemId'];
-                $foodData['extra_price'] = $item['extraItemPrice'] ? $item['extraItemPrice'] : 0;
-                $foodData['sub_total'] = ($item['price'] * $item['quantity']) + $item['extraItemPrice'];
 
-                $foodArray[] = $foodData;
-            }
+                OrderDetail::insert($foodArray);
 
 
-            OrderDetail::insert($foodArray);
+                //SEND NOTIFICATION
+                $orderId = $order->id;
+                $foodName = FoodVariant::where('id', $item['foodVariantId'])->first()->name;
+                $deviceToken = Restaurant::where('id', $orderData['restaurantId'])->first()->device_token;
+
+                //SENT NOTIFICATION
+                sendNotificationFCM($deviceToken, $orderId, $foodName, $orderFrom = 'Customer', 'NEW_ORDER_FOR_RESTAURANT');
 
 
-            //SEND NOTIFICATION
-            $orderId = $order->id;
-            $foodName = FoodVariant::where('id', $item['foodVariantId'])->first()->name;
-            $deviceToken = Restaurant::where('id', $orderData['restaurantId'])->first()->device_token;
+                //POINT SAVE
+                $pointData['customer_id'] = $orderData['customer_id'];
+                $pointData['order_id'] = $order->id;
+                $pointData['amount'] = doubleval($orderData['sub_total']);
+                $pointData['point'] = doubleval(($orderData['sub_total'] * 10) / 100);
 
-            //SENT NOTIFICATION
-            sendNotificationFCM($deviceToken, $orderId, $foodName, $orderFrom = 'Customer', 'NEW_ORDER_FOR_RESTAURANT');
+                Point::insert($pointData);
 
+                $orderStatus = Order::with('RestaurantDetails')->where('id', $order->id)->orderBy('id', 'DESC')->first();
 
-            //POINT SAVE
-            $pointData['customer_id'] = $orderData['customer_id'];
-            $pointData['order_id'] = $order->id;
-            $pointData['amount'] = doubleval($orderData['sub_total']);
-            $pointData['point'] = doubleval(($orderData['sub_total'] * 10) / 100);
+                if ($orderStatus) {
 
-            Point::insert($pointData);
+                    event(new \App\Events\NewRegistration());
 
-            $orderStatus = Order::with('RestaurantDetails')->where('id', $order->id)->orderBy('id', 'DESC')->first();
+                    return $this->sendResponse($orderStatus, 'We take your order. Allow sometimes for processing your food.', Response::HTTP_OK);
+                } else {
+                    return $this->sendResponse(array(), 'Order not successful due to technical isses.', Response::HTTP_NOT_FOUND);
+                }
 
-            if ($orderStatus) {
-
-                event(new \App\Events\NewRegistration());
-
-                return $this->sendResponse($orderStatus, 'My order list.', Response::HTTP_OK);
             } else {
-                return $this->sendResponse(array(), 'Data not save', Response::HTTP_NOT_FOUND);
+                return $this->sendResponse(array(), 'Order not successful due to technical isses', Response::HTTP_NOT_FOUND);
             }
-
-        } else {
-            return $this->sendResponse(array(), 'Data not save', Response::HTTP_NOT_FOUND);
+        }else{
+            return $this->sendResponse(array(), 'You are not authentic user.', Response::HTTP_NOT_FOUND);
         }
+
     }
 
     /**

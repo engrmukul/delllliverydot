@@ -26,8 +26,6 @@ class FoodStoreFormRequest extends FormRequest
     {
         return [
             'name' => 'required',
-            'ingredients' => 'required',
-            'featured' => 'required',
             'restaurant_id' => 'required'
         ];
     }

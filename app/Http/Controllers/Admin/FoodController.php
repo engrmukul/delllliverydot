@@ -70,20 +70,10 @@ class FoodController extends BaseController
     {
         $this->setPageTitle('foods', 'create food');
 
-        $features = array(
-            '0' => 'No',
-            '1' => 'Yes',
-        );
-
-        $deliverableFoods = array(
-            '0' => 'No',
-            '1' => 'Yes',
-        );
-
         $restaurants = Restaurant::all();
         $categories = Category::all();
 
-        return view('admin.foods.create', compact('features','deliverableFoods','restaurants','categories'));
+        return view('admin.foods.create', compact('restaurants','categories'));
 
     }
 
@@ -117,22 +107,14 @@ class FoodController extends BaseController
     public function edit($id)
     {
         $this->setPageTitle('foods', 'Edit Food');
-        $features = array(
-            '0' => 'No',
-            '1' => 'Yes',
-        );
-
-        $deliverableFoods = array(
-            '0' => 'No',
-            '1' => 'Yes',
-        );
 
         $restaurants = Restaurant::all();
+
         $categories = Category::all();
 
         $food = $this->foodRepository->findFoodById($id);
 
-        return view('admin.foods.edit', compact('food','features','deliverableFoods','restaurants','categories'));
+        return view('admin.foods.edit', compact('food','restaurants','categories'));
     }
     /**
      * @param UpdateFoodFormRequest $request

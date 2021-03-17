@@ -32,30 +32,12 @@
                                         <!--- food ingredients --->
                                         <div class="form-group">
                                             <label for="ingredients" class="font-bold">{{ trans('food.ingredients')}}</label>
-                                            <textarea name="ingredients" placeholder="{{ trans('food.ingredients')}}" class="form-control" required>{{ old('ingredients') }}</textarea>
+                                            <textarea name="ingredients" placeholder="{{ trans('food.ingredients')}}" class="form-control">{{ old('ingredients') }}</textarea>
                                             <span class="form-text m-b-none text-danger"> @error('ingredients') {{ $message }} @enderror </span>
                                         </div>
-
-                                        <!--- featured --->
-                                        <div class="form-group">
-                                            <label for="featured" class="font-bold">{{ trans('food.featured')}}</label>
-                                            <select id="featured" class="form-control custom-select mt-15" name="featured" required>
-                                                <option value="">{{ trans('food.featured')}}</option>
-                                                @foreach($features as $key => $feature)
-                                                    @if (old('featured') == $feature)
-                                                        <option value="{{ $feature }}" selected> {{ ucfirst($feature) }} </option>
-                                                    @else
-                                                        <option value="{{ $feature }}"> {{ ucfirst($feature) }} </option>
-                                                    @endif
-                                                @endforeach
-                                            </select>
-                                            <span class="form-text m-b-none text-danger"> @error('featured') {{ $message }} @enderror </span>
-                                        </div>
-
                                     </div>
 
                                     <div class="col-md-6">
-
 
                                     <!--- restaurant_id --->
                                     <div class="form-group">
