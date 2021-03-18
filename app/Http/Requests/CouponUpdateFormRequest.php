@@ -30,7 +30,6 @@ class CouponUpdateFormRequest extends FormRequest
             'discount_type' => 'required',
             'discount' => 'required',
             'description' => 'required',
-            'restaurant_id' => 'required',
             'expire_at' => 'required',
         ];
     }

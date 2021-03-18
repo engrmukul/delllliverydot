@@ -14,6 +14,7 @@ return [
     'food_id' => 'Food ID',
     'restaurant_id' => 'Restaurant ID',
     'category_id' => 'Category ID',
+    'minimum_order' => 'Minimum Order',
     'status' => 'Status',
     'action' => 'Action',
 ];

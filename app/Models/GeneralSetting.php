@@ -9,29 +9,26 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * Class Attribute
  * @package App\Models
  */
-class FoodVariant extends Model
+class GeneralSetting extends Model
 {
     /**
      * @var string
      */
-    protected $table = 'food_variants';
+    protected $table = 'general_settings';
     public $timestamps = false;
 
     /**
      * @var array
      */
     protected $fillable = [
-        'food_id',
-        'name',
-        'price',
+        'point_value'
     ];
 
     /**
      * @var array
      */
     protected $casts  = [
-        'price' => 'double',
-        'food_id' => 'int',
+        'point_value' => 'double',
     ];
 
 }

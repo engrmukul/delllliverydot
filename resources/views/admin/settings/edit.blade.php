@@ -23,6 +23,10 @@
                         <form role="form" method="post" action="{{route( strtolower($pageTitle) . '.update' )}}" enctype="multipart/form-data">
                             @method('PUT')
                             @csrf
+                            <input type="hidden" name="fcmId" value="{{$FCM->ID}}">
+                            <input type="hidden" name="pusherId" value="{{$PUSHER->ID}}">
+                            <input type="hidden" name="twilioId" value="{{$TWILIO->ID}}">
+                            <input type="hidden" name="generalSettingId" value="{{$GeneralSetting->id}}">
 
                             <h1>Firebase Cloud Messaging</h1>
                             <div class="row">
@@ -97,6 +101,17 @@
                                 </div>
                             </div>
 
+                            <hr><h1>SET POINT VALUE</h1>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="point_value" class="font-bold">{{ trans('point_value')}}</label>
+                                        <input type="text" name="point_value" value="{{ old('point_value', $GeneralSetting->point_value) }}" placeholder="{{ trans('point_value')}}" class="form-control" required>
+                                        <span class="form-text m-b-none text-danger"> @error('point_value') {{ $message }} @enderror </span>
+                                    </div>
+                                </div>
+
+                            </div>
                             <div class="row">
                                 <div class="col-12">
                                     <!---CONTROL BUTTON--->

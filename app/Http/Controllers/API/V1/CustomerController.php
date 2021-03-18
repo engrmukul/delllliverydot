@@ -34,6 +34,7 @@ use App\Models\FavoriteRestaurant;
 use App\Models\FilterOption;
 use App\Models\FoodReview;
 use App\Models\FoodVariant;
+use App\Models\GeneralSetting;
 use App\Models\HelpAndSupport;
 use App\Models\Point;
 use App\Models\PromotionalBanner;
@@ -131,13 +132,14 @@ class CustomerController extends BaseController
      */
     public function restaurantList(RestaurantListRequest $request)
     {
+        $promotion = Coupon::select('description')->where('restaurant_id', 0)
+            ->whereNull('food_id')
+            ->whereNull('category_id')
+            ->where('expire_at', '>', date('Y-m-d h:i:s'))
+            ->latest()->limit(1)
+            ->get();
+
         $banners = Banner::all();
-
-//        $restaurantsFavorite = $this->restaurantRepository->listRestaurant();
-//        $restaurantsDiscounted = $this->restaurantRepository->listRestaurant();
-//        $restaurantsTrending = $this->restaurantRepository->listRestaurant();
-//        $restaurantsPopular = $this->restaurantRepository->listRestaurant();
-
 
         $restaurantsFavorite = Restaurant::with(['RestaurantDetails', 'coupon', 'foods',
             'favoriteRestaurant' => function ($q) use ($request) {
@@ -235,6 +237,7 @@ class CustomerController extends BaseController
         if ($restaurantsFavorite->count() > 0 || $restaurantsDiscounted->count() > 0 || $restaurantsTrending->count() > 0 || $restaurantsPopular->count() > 0) {
             $data =
                 array(
+                    'promotion' => $promotion,
                     'banners' => $banners,
                     'restaurant' => array(
                         array(
@@ -1380,12 +1383,17 @@ class CustomerController extends BaseController
 
 
                 //POINT SAVE
+                $point = GeneralSetting::whereNotNull('point_value')->first();
+                $pointValue = $point ? $point->point_value : 0;
+
                 $pointData['customer_id'] = $orderData['customer_id'];
                 $pointData['order_id'] = $order->id;
                 $pointData['amount'] = doubleval($orderData['sub_total']);
-                $pointData['point'] = doubleval(($orderData['sub_total'] * 10) / 100);
+                $pointData['point'] = doubleval(($orderData['sub_total'] * $pointValue) / 100);
 
-                Point::insert($pointData);
+                if($pointData['point'] > 0){
+                    Point::insert($pointData);
+                }
 
                 $orderStatus = Order::with('RestaurantDetails')->where('id', $order->id)->orderBy('id', 'DESC')->first();
 

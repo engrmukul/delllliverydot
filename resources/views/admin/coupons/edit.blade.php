@@ -61,6 +61,13 @@
                                         <input type="text" name="discount" value="{{ old('discount', $coupon->discount) }}" placeholder="{{ trans('coupon.discount')}}" class="form-control" required>
                                         <span class="form-text m-b-none text-danger"> @error('discount') {{ $message }} @enderror </span>
                                     </div>
+
+                                    <!---minimum_orderminimum_order--->
+                                    <div class="form-group">
+                                        <label for="minimum_order" class="font-bold">{{ trans('coupon.minimum_order')}}</label>
+                                        <input type="text" name="minimum_order" value="{{ old('minimum_order', $coupon->minimum_order) }}" placeholder="{{ trans('coupon.minimum_order')}}" class="form-control">
+                                        <span class="form-text m-b-none text-danger"> @error('minimum_order') {{ $message }} @enderror </span>
+                                    </div>
                                 </div>
                                 <div class="col-md-6">
 
@@ -78,7 +85,7 @@
                                     <div class="form-group">
                                         <label for="restaurant_id">{{ trans('coupon.restaurant_id')}} <small>Hold <span>Ctrl/Command</span> key to select multiple</small></label>
                                         <input type="hidden" name="id" value="{{ $coupon->id }}">
-                                        <select id="restaurant_id" multiple class="form-control custom-select mt-15 multiple" name="restaurant_id[]" required>
+                                        <select id="restaurant_id" multiple class="form-control custom-select mt-15 multiple" name="restaurant_id[]">
                                         {{-- <select id="restaurant_id" class="form-control custom-select mt-15 select2" name="restaurant_id" required> --}}
                                             @foreach($restaurants as $key => $restaurant)
                                                 @if (old('restaurant_id', $coupon->restaurant_id) == $restaurant->id)

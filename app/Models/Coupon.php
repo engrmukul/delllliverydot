@@ -25,6 +25,7 @@ class Coupon extends Model
         'total_used_code',
         'discount_type',
         'discount',
+        'minimum_order',
         'description',
         'food_id',
         'restaurant_id',

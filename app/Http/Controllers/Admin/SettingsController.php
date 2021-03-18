@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\FCM;
+use App\Models\GeneralSetting;
 use App\Models\PUSHER;
 use App\Models\TWILIO;
 use App\Contracts\SettingsContract;
@@ -35,8 +36,9 @@ class SettingsController extends BaseController
         $FCM = FCM::first();
         $PUSHER = PUSHER::first();
         $TWILIO = TWILIO::first();
+        $GeneralSetting = GeneralSetting::first();
 
-        return view('admin.settings.edit', compact('FCM', 'PUSHER','TWILIO'));
+        return view('admin.settings.edit', compact('FCM', 'PUSHER','TWILIO','GeneralSetting'));
     }
 
     /**

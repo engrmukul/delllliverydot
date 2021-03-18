@@ -469,9 +469,10 @@ class RestaurantRepository extends BaseRepository implements RestaurantContract
                 $image = url('/') . '/public/img/restaurant/' . $params['image'];
                 $merge = $collection->merge(compact('updated_at', 'updated_by', 'phone_number', 'image'));
             }else{
-                $merge = $collection->merge(compact('updated_at', 'updated_by', 'phone_number'));
+                $rp = RestaurantProfile::where('restaurant_id', $restaurant->id)->first();
+                $image = $rp->image;
+                $merge = $collection->merge(compact('updated_at', 'updated_by', 'phone_number', 'image'));
             }
-
 
             $restaurant->update($merge->all());
 
