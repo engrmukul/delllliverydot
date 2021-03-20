@@ -227,13 +227,6 @@ class CustomerController extends BaseController
                 ->orderBy('id', 'DESC')->inRandomOrder()->get();
         }
 
-
-//        $restaurantsFavorite = $restaurantsList;
-//        $restaurantsDiscounted = $restaurantsList;
-//        $restaurantsTrending = $restaurantsList;
-//        $restaurantsPopular = $restaurantsList;
-
-
         if ($restaurantsFavorite->count() > 0 || $restaurantsDiscounted->count() > 0 || $restaurantsTrending->count() > 0 || $restaurantsPopular->count() > 0) {
             $data =
                 array(
@@ -275,17 +268,33 @@ class CustomerController extends BaseController
     {
 
         if(!empty($request->promotion_code) AND $request->promotion_code !=null AND $request->promotion_code !=''){
-            $restaurantList = Restaurant::with(['RestaurantDetails', 'coupon', 'foods',
-            'favoriteRestaurant' => function ($q) use ($request) {
-                $q->where('customer_id', '=', $request->customer_id);
-            }])->where('status','active')->orderBy('id', 'DESC')->get();
+            $restaurantList = Restaurant::with([
+                'RestaurantDetails', 'foods',
+                'coupon' => function ($q) use ($request) {
+                    $q->orWhere('code', 'like', '%'.$request->promotion_code.'%');
+                },
+                'favoriteRestaurant' => function ($q) use ($request) {
+                    $q->where('customer_id', '=', $request->customer_id);
+                }
+            ])
+                ->whereHas('coupon', function ($q) use ($request) {
+                    $q->where('code', '!=','');
+                    $q->orWhere('code', 'like', '%'.$request->promotion_code.'%');
+                })
+                ->where('status','active')
+                ->where('isVerified','1')
+                ->orderBy('id', 'DESC')
+                ->get();
         }else{
 
             $restaurantList = Restaurant::with(['RestaurantDetails', 'foods',
             'favoriteRestaurant' => function ($q) use ($request) {
                 $q->where('customer_id', '=', $request->customer_id);
-            }])->where('status','active')->orderBy('id', 'DESC')->get();
-
+            }])
+                ->where('status','active')
+                ->where('isVerified','1')
+                ->orderBy('id', 'DESC')
+                ->get();
         }
 
 
@@ -414,7 +423,8 @@ class CustomerController extends BaseController
             }])->where('restaurant_id', $request->restaurant_id)->get();
 
         //$promotionalFoods = Food::with('coupon')->get();
-        $promotionalFoods = Category::all();
+
+        $promotionalFoods = Category::whereIn('id', array_column($items->toArray(), 'category_id'))->get();
 
         //dd($promotionalFoods->toArray());
 
@@ -836,10 +846,25 @@ class CustomerController extends BaseController
         );
 
         if($request->is_promotional == 'true'){
-            $restaurantList = Restaurant::with(['RestaurantDetails', 'coupon', 'foods',
+            $coupon = Coupon::where('restaurant_id', $request->restaurant_id)->first();
+
+            $restaurantList = Restaurant::with([
+                'RestaurantDetails', 'foods',
+                'coupon' => function ($q) use ($coupon) {
+                    $q->orWhere('code', 'like', '%'.$coupon->code.'%');
+                },
                 'favoriteRestaurant' => function ($q) use ($request) {
                     $q->where('customer_id', '=', $request->customer_id);
-                }])->orderBy('id', 'DESC')->get();
+                }
+            ])
+                ->whereHas('coupon', function ($q) use ($coupon) {
+                    $q->where('code', '!=','');
+                    $q->orWhere('code', 'like', '%'.$coupon->code.'%');
+                })
+                ->where('status','active')
+                ->where('isVerified','1')
+                ->orderBy('id', 'DESC')
+                ->get();
 
             if ($restaurantList->count() > 0) {
 
@@ -857,20 +882,91 @@ class CustomerController extends BaseController
                 return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
             }
         }else{
-            /*$restaurantsFavorite = $this->restaurantRepository->listRestaurant();
-            $restaurantsDiscounted = $this->restaurantRepository->listRestaurant();
-            $restaurantsTrending = $this->restaurantRepository->listRestaurant();
-            $restaurantsPopular = $this->restaurantRepository->listRestaurant();*/
-
-            $restaurantsList = Restaurant::with(['RestaurantDetails', 'coupon', 'foods',
+            $restaurantsFavorite = Restaurant::with(['RestaurantDetails', 'coupon', 'foods',
                 'favoriteRestaurant' => function ($q) use ($request) {
                     $q->where('customer_id', '=', $request->customer_id);
-                }])->orderBy('id', 'DESC')->get();
+                }])
+                ->where('is_favorite','yes')
+                ->where('isVerified','1')
+                ->where('status','active')
+                ->orderBy('id', 'DESC')->inRandomOrder()->get();
 
-            $restaurantsFavorite = $restaurantsList;
-            $restaurantsDiscounted = $restaurantsList;
-            $restaurantsTrending = $restaurantsList;
-            $restaurantsPopular = $restaurantsList;
+            if($restaurantsFavorite->count() > 0){
+                $restaurantsFavorite = $restaurantsFavorite;
+            }else{
+                $restaurantsFavorite = Restaurant::with(['RestaurantDetails', 'coupon', 'foods',
+                    'favoriteRestaurant' => function ($q) use ($request) {
+                        $q->where('customer_id', '=', $request->customer_id);
+                    }])
+                    ->where('isVerified','1')
+                    ->where('status','active')
+                    ->orderBy('id', 'DESC')->inRandomOrder()->get();
+            }
+
+
+            $restaurantsDiscounted = Restaurant::with(['RestaurantDetails', 'coupon', 'foods',
+                'favoriteRestaurant' => function ($q) use ($request) {
+                    $q->where('customer_id', '=', $request->customer_id);
+                }])
+                ->where('is_discounted','yes')
+                ->where('isVerified',1)
+                ->where('status','active')
+                ->orderBy('id', 'DESC')->inRandomOrder()->get();
+
+            if($restaurantsDiscounted->count() > 0){
+                $restaurantsDiscounted = $restaurantsDiscounted;
+            }else{
+                $restaurantsDiscounted = Restaurant::with(['RestaurantDetails', 'coupon', 'foods',
+                    'favoriteRestaurant' => function ($q) use ($request) {
+                        $q->where('customer_id', '=', $request->customer_id);
+                    }])
+                    ->where('isVerified','1')
+                    ->where('status','active')
+                    ->orderBy('id', 'DESC')->inRandomOrder()->get();
+            }
+
+            $restaurantsTrending = Restaurant::with(['RestaurantDetails', 'coupon', 'foods',
+                'favoriteRestaurant' => function ($q) use ($request) {
+                    $q->where('customer_id', '=', $request->customer_id);
+                }])
+                ->where('is_trending','yes')
+                ->where('isVerified','1')
+                ->where('status','active')
+                ->orderBy('id', 'DESC')->inRandomOrder()->get();
+
+            if($restaurantsTrending->count() > 0){
+                $restaurantsTrending = $restaurantsTrending;
+            }else{
+                $restaurantsTrending = Restaurant::with(['RestaurantDetails', 'coupon', 'foods',
+                    'favoriteRestaurant' => function ($q) use ($request) {
+                        $q->where('customer_id', '=', $request->customer_id);
+                    }])
+                    ->where('isVerified','1')
+                    ->where('status','active')
+                    ->orderBy('id', 'DESC')->inRandomOrder()->get();
+            }
+
+
+            $restaurantsPopular = Restaurant::with(['RestaurantDetails', 'coupon', 'foods',
+                'favoriteRestaurant' => function ($q) use ($request) {
+                    $q->where('customer_id', '=', $request->customer_id);
+                }])
+                ->where('is_popular','yes')
+                ->where('isVerified','1')
+                ->where('status','active')
+                ->orderBy('id', 'DESC')->inRandomOrder()->get();
+
+            if($restaurantsPopular->count() > 0){
+                $restaurantsPopular = $restaurantsPopular;
+            }else{
+                $restaurantsPopular = Restaurant::with(['RestaurantDetails', 'coupon', 'foods',
+                    'favoriteRestaurant' => function ($q) use ($request) {
+                        $q->where('customer_id', '=', $request->customer_id);
+                    }])
+                    ->where('isVerified','1')
+                    ->where('status','active')
+                    ->orderBy('id', 'DESC')->inRandomOrder()->get();
+            }
 
 
             if ($restaurantsFavorite->count() > 0 || $restaurantsDiscounted->count() > 0 || $restaurantsTrending->count() > 0 || $restaurantsPopular->count() > 0) {
@@ -915,10 +1011,26 @@ class CustomerController extends BaseController
         $deleteFavoriteRestaurant = FavoriteRestaurant::where(['customer_id' => $request->customer_id, 'restaurant_id' => $request->restaurant_id])->delete();
 
         if($request->is_promotional == 'true'){
-            $restaurantList = Restaurant::with(['RestaurantDetails', 'coupon', 'foods',
+
+            $coupon = Coupon::where('restaurant_id', $request->restaurant_id)->first();
+
+            $restaurantList = Restaurant::with([
+                'RestaurantDetails', 'foods',
+                'coupon' => function ($q) use ($coupon) {
+                    $q->orWhere('code', 'like', '%'.$coupon->code.'%');
+                },
                 'favoriteRestaurant' => function ($q) use ($request) {
                     $q->where('customer_id', '=', $request->customer_id);
-                }])->orderBy('id', 'DESC')->get();
+                }
+            ])
+                ->whereHas('coupon', function ($q) use ($coupon) {
+                    $q->where('code', '!=','');
+                    $q->orWhere('code', 'like', '%'.$coupon->code.'%');
+                })
+                ->where('status','active')
+                ->where('isVerified','1')
+                ->orderBy('id', 'DESC')
+                ->get();
 
             if ($restaurantList->count() > 0) {
 
@@ -936,20 +1048,91 @@ class CustomerController extends BaseController
                 return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
             }
         }else{
-            /*$restaurantsFavorite = $this->restaurantRepository->listRestaurant();
-            $restaurantsDiscounted = $this->restaurantRepository->listRestaurant();
-            $restaurantsTrending = $this->restaurantRepository->listRestaurant();
-            $restaurantsPopular = $this->restaurantRepository->listRestaurant();*/
-
-            $restaurantsList = Restaurant::with(['RestaurantDetails', 'coupon', 'foods',
+            $restaurantsFavorite = Restaurant::with(['RestaurantDetails', 'coupon', 'foods',
                 'favoriteRestaurant' => function ($q) use ($request) {
                     $q->where('customer_id', '=', $request->customer_id);
-                }])->orderBy('id', 'DESC')->get();
+                }])
+                ->where('is_favorite','yes')
+                ->where('isVerified','1')
+                ->where('status','active')
+                ->orderBy('id', 'DESC')->inRandomOrder()->get();
 
-            $restaurantsFavorite = $restaurantsList;
-            $restaurantsDiscounted = $restaurantsList;
-            $restaurantsTrending = $restaurantsList;
-            $restaurantsPopular = $restaurantsList;
+            if($restaurantsFavorite->count() > 0){
+                $restaurantsFavorite = $restaurantsFavorite;
+            }else{
+                $restaurantsFavorite = Restaurant::with(['RestaurantDetails', 'coupon', 'foods',
+                    'favoriteRestaurant' => function ($q) use ($request) {
+                        $q->where('customer_id', '=', $request->customer_id);
+                    }])
+                    ->where('isVerified','1')
+                    ->where('status','active')
+                    ->orderBy('id', 'DESC')->inRandomOrder()->get();
+            }
+
+
+            $restaurantsDiscounted = Restaurant::with(['RestaurantDetails', 'coupon', 'foods',
+                'favoriteRestaurant' => function ($q) use ($request) {
+                    $q->where('customer_id', '=', $request->customer_id);
+                }])
+                ->where('is_discounted','yes')
+                ->where('isVerified',1)
+                ->where('status','active')
+                ->orderBy('id', 'DESC')->inRandomOrder()->get();
+
+            if($restaurantsDiscounted->count() > 0){
+                $restaurantsDiscounted = $restaurantsDiscounted;
+            }else{
+                $restaurantsDiscounted = Restaurant::with(['RestaurantDetails', 'coupon', 'foods',
+                    'favoriteRestaurant' => function ($q) use ($request) {
+                        $q->where('customer_id', '=', $request->customer_id);
+                    }])
+                    ->where('isVerified','1')
+                    ->where('status','active')
+                    ->orderBy('id', 'DESC')->inRandomOrder()->get();
+            }
+
+            $restaurantsTrending = Restaurant::with(['RestaurantDetails', 'coupon', 'foods',
+                'favoriteRestaurant' => function ($q) use ($request) {
+                    $q->where('customer_id', '=', $request->customer_id);
+                }])
+                ->where('is_trending','yes')
+                ->where('isVerified','1')
+                ->where('status','active')
+                ->orderBy('id', 'DESC')->inRandomOrder()->get();
+
+            if($restaurantsTrending->count() > 0){
+                $restaurantsTrending = $restaurantsTrending;
+            }else{
+                $restaurantsTrending = Restaurant::with(['RestaurantDetails', 'coupon', 'foods',
+                    'favoriteRestaurant' => function ($q) use ($request) {
+                        $q->where('customer_id', '=', $request->customer_id);
+                    }])
+                    ->where('isVerified','1')
+                    ->where('status','active')
+                    ->orderBy('id', 'DESC')->inRandomOrder()->get();
+            }
+
+
+            $restaurantsPopular = Restaurant::with(['RestaurantDetails', 'coupon', 'foods',
+                'favoriteRestaurant' => function ($q) use ($request) {
+                    $q->where('customer_id', '=', $request->customer_id);
+                }])
+                ->where('is_popular','yes')
+                ->where('isVerified','1')
+                ->where('status','active')
+                ->orderBy('id', 'DESC')->inRandomOrder()->get();
+
+            if($restaurantsPopular->count() > 0){
+                $restaurantsPopular = $restaurantsPopular;
+            }else{
+                $restaurantsPopular = Restaurant::with(['RestaurantDetails', 'coupon', 'foods',
+                    'favoriteRestaurant' => function ($q) use ($request) {
+                        $q->where('customer_id', '=', $request->customer_id);
+                    }])
+                    ->where('isVerified','1')
+                    ->where('status','active')
+                    ->orderBy('id', 'DESC')->inRandomOrder()->get();
+            }
 
             if ($restaurantsFavorite->count() > 0 || $restaurantsDiscounted->count() > 0 || $restaurantsTrending->count() > 0 || $restaurantsPopular->count() > 0) {
                 $data =
