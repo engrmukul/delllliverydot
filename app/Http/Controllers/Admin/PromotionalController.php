@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Models\Customer;
 use App\Models\Promotional;
 use Illuminate\Http\Request;
 use App\Contracts\PromotionalContract;
