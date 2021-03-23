@@ -115,6 +115,17 @@ Route::group(['prefix' => 'admin'], function () {
             Route::get('/get-data', 'Admin\CustomerController@getData')->name('customers.get-data');
         });
 
+        // Promotional Banner route
+        Route::group(['prefix' => 'promotionals'], function (){
+            Route::get('/', 'Admin\PromotionalController@index')->name('promotionals.index');
+            Route::get('/create', 'Admin\PromotionalController@create')->name('promotionals.create');
+            Route::post('/store', 'Admin\PromotionalController@store')->name('promotionals.store');
+            Route::get('/{id}/edit', 'Admin\PromotionalController@edit')->name('promotionals.edit');
+            Route::put('/update', 'Admin\PromotionalController@update')->name('promotionals.update');
+            Route::delete('/{id}/delete', 'Admin\PromotionalController@delete')->name('promotionals.destroy');
+            Route::get('/get-data', 'Admin\PromotionalController@getData')->name('promotionals.get-data');
+        });
+
         // Riders route
         Route::group(['prefix' => 'riders'], function (){
             Route::get('/', 'Admin\RiderController@index')->name('riders.index');

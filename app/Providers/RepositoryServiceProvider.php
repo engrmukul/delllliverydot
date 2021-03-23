@@ -10,6 +10,7 @@ use App\Contracts\FoodContract;
 use App\Contracts\GroupContract;
 use App\Contracts\HelpAndSupportContract;
 use App\Contracts\OrderContract;
+use App\Contracts\PromotionalContract;
 use App\Contracts\RestaurantContract;
 use App\Contracts\RiderContract;
 use App\Contracts\SettingsContract;
@@ -22,6 +23,7 @@ use App\Repositories\FoodRepository;
 use App\Repositories\GroupRepository;
 use App\Repositories\HelpAndSupportRepository;
 use App\Repositories\OrderRepository;
+use App\Repositories\PromotionalRepository;
 use App\Repositories\RestaurantRepository;
 use App\Repositories\RiderRepository;
 use App\Repositories\SettingsRepository;
@@ -43,6 +45,7 @@ class RepositoryServiceProvider extends ServiceProvider
         HelpAndSupportContract::class => HelpAndSupportRepository::class,
         TermsAndConditionContract::class => TermsAndConditionRepository::class,
         SettingsContract::class => SettingsRepository::class,
+        PromotionalContract::class => PromotionalRepository::class,
     ];
 
     /**
