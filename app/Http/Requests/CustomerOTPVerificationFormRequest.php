@@ -26,7 +26,7 @@ class CustomerOTPVerificationFormRequest extends FormRequest
     {
         return [
             'verification_code' => ['required', 'numeric'],
-            'phone_number' => ['required', 'string'],
+            'phone_number' => ['required', 'string','min:11','max:14'],
         ];
     }
 }

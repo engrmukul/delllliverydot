@@ -25,7 +25,7 @@ class RiderPhoneVerificationFormRequest extends FormRequest
     public function rules()
     {
         return [
-            'phone_number' => 'required'
+            'phone_number' => 'required|min:11|max:14'
         ];
     }
 }

@@ -243,7 +243,7 @@ class RestaurantRepository extends BaseRepository implements RestaurantContract
                 $restaurantSettings->save();
 
                 //Default food
-                $food = new Food();
+                /*$food = new Food();
                 $food->name = "Piza";
                 $food->short_description = "Piza";
                 $food->image = url('/') . '/public/img/restaurant/default.png';
@@ -261,20 +261,20 @@ class RestaurantRepository extends BaseRepository implements RestaurantContract
                 $food->created_by = 1;
                 $food->created_at = date('Y-m-d');
 
-                $food->save();
+                $food->save();*/
 
                 //SAVE FOOD VARIANT
-                $foodVariantData = array(
+              /*  $foodVariantData = array(
                     array('food_id' => $food->id, 'name' => 'Piza 6 inch', 'price' => 220.00),
                     array('food_id' => $food->id, 'name' => 'Piza 9 inch', 'price' => 420.00),
                     array('food_id' => $food->id, 'name' => 'Piza 12 inch', 'price' => 920.00),
-                );
+                );*/
 
-                FoodVariant::insert($foodVariantData);
+                //FoodVariant::insert($foodVariantData);
 
 
                 //SAVE COUPON
-                $coupon = new Coupon();
+                /*$coupon = new Coupon();
 
                 $coupon->code = "DD" . $restaurant->id;
                 $coupon->total_code = 100;
@@ -291,7 +291,7 @@ class RestaurantRepository extends BaseRepository implements RestaurantContract
                 $coupon->created_at = date('Y-m-d');
                 $coupon->created_by = 1;
 
-                $coupon->save();
+                $coupon->save();*/
 
                 DB::commit();
 

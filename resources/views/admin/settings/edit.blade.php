@@ -105,7 +105,7 @@
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="form-group">
-                                        <label for="point_value" class="font-bold">{{ trans('point_value')}}</label>
+                                        <label for="point_value" class="font-bold">{{ trans('point_value')}}( % )</label>
                                         <input type="text" name="point_value" value="{{ old('point_value', $GeneralSetting->point_value) }}" placeholder="{{ trans('point_value')}}" class="form-control" required>
                                         <span class="form-text m-b-none text-danger"> @error('point_value') {{ $message }} @enderror </span>
                                     </div>

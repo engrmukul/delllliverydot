@@ -91,7 +91,7 @@ class CustomerController extends BaseController
 
         if ($customer) {
 
-             event(new \App\Events\NewRegistration());
+            // event(new \App\Events\NewRegistration());
 
             return $this->sendResponse($customer, 'Customer create successfully.', Response::HTTP_OK);
         } else {
@@ -137,7 +137,7 @@ class CustomerController extends BaseController
             ->whereNull('category_id')
             ->where('expire_at', '>', date('Y-m-d h:i:s'))
             ->latest()->limit(1)
-            ->get();
+            ->first();
 
         $banners = Banner::all();
 
@@ -230,7 +230,7 @@ class CustomerController extends BaseController
         if ($restaurantsFavorite->count() > 0 || $restaurantsDiscounted->count() > 0 || $restaurantsTrending->count() > 0 || $restaurantsPopular->count() > 0) {
             $data =
                 array(
-                    'promotion' => $promotion,
+                    'promotion' => $promotion->description,
                     'banners' => $banners,
                     'restaurant' => array(
                         array(
