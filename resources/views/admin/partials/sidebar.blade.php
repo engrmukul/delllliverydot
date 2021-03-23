@@ -104,12 +104,20 @@
                         'activeClass' => array('riders.index', 'riders.create', 'riders.edit',),
                         'sub' => array(),
                     ),
-                    
+
                     // Customers
                     'Customers' => array(
                         'trans' => 'customers.index',
                         'icon' => '<img src="'. asset('public/img/icons/70customers32.png') .'" class="menu_icon"/>',
                         'activeClass' => array('customers.index', 'customers.create', 'customers.edit',),
+                        'sub' => array(),
+                    ),
+
+                    // Promotional banner
+                    'Promotional' => array(
+                        'trans' => 'promotionals.index',
+                        'icon' => '<img src="'. asset('public/img/icons/70customers32.png') .'" class="menu_icon"/>',
+                        'activeClass' => array('promotionals.index', 'promotionals.create', 'promotionals.edit',),
                         'sub' => array(),
                     ),
 
@@ -138,12 +146,12 @@
                             ),
                         ),
                     ),
-                    
+
                 );
 
                 foreach($menuLists as $menuName => $menuList){
                     $name = $menuName;
-                    $sub = $menuList['sub']; 
+                    $sub = $menuList['sub'];
                     $url = (!empty($sub)) ? '#' : route($menuList['trans']) ;
                     $icon = $menuList['icon'];
                     $active = $menuList['activeClass']; ?>
@@ -151,7 +159,7 @@
                     <li class="@if(in_array(Route::current()->getName(), $active )) active @else  @endif">
                         <a href="{{$url}}">
                             <?php echo $icon    ?>
-                            <?php 
+                            <?php
                                 if($url=='#'){
                                     echo '<span class="nav-label">'.$name .'</span>'.$arrowIcon;
                                 }else{
@@ -159,7 +167,7 @@
                                 }
                             ?>
                         </a>
-                       
+
                         <?php
                             if($url=='#'){ ?>
                                 <ul class="nav nav-second-level collapse">
@@ -175,7 +183,7 @@
                                         </li>
                                     <?php } ?>
                                 </ul>
-                            <?php } ?>  
+                            <?php } ?>
                     </li>
 
                 <?php }
