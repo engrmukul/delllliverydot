@@ -299,4 +299,15 @@ class RestaurantController extends BaseController
 //        }
 //        return $this->responseRedirect('admin.restaurants.review', trans('common.delete_success'), 'success', false, false);
 //    }
+
+
+
+    public function view($id)
+    {
+        $this->setPageTitle('Restaurant', 'View Restaurant');
+
+        $restaurantDetails =  $this->restaurantRepository->findRestaurantById($id);
+        //dd($riderDetails->toArray());
+        return view('admin.restaurants.view', compact('restaurantDetails'));
+    }
 }
