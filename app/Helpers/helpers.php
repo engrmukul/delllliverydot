@@ -219,3 +219,19 @@ function sendPushNotification($notificationData)
    // dd($response);
 }
 
+
+function getAddress($id, $type)
+{
+    if($type == 'customer'){
+       $addresss =  \App\Models\CustomerProfile::where('customer_id', $id)->first();
+    }
+    if($type == 'restaurant'){
+        $addresss =  \App\Models\RestaurantProfile::where('restaurant_id', $id)->first();
+    }
+    if($type == 'rider'){
+        $addresss =  \App\Models\RiderProfile::where('rider_id', $id)->first();
+    }
+
+    return $addresss->address ? $addresss->address : "-";
+}
+

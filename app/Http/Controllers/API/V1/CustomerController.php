@@ -1755,7 +1755,7 @@ class CustomerController extends BaseController
 
                 $pointData['point'] = $point['point'] . ' PTS';
                 $pointData['order_date'] = date('Y-m-d', strtotime($point['orders']['order_date']));
-                $pointData['item'] = $point['orders']['order_details'][0]['foods']['name'] . ', ' . $point['orders']['order_details'][0]['food_variants'][0]['name'] . ', ' . $point['orders']['restaurant_details']['name'];
+                //$pointData['item'] = $point['orders']['order_details'][0]['foods']['name'] . ', ' . $point['orders']['order_details'][0]['food_variants'][0]['name'] . ', ' . $point['orders']['restaurant_details']['name'];
 
                 $pointsList[] = $pointData;
             }

@@ -2,23 +2,20 @@
 
 namespace App\Repositories;
 
-use App\Models\Promotional;
+use App\Models\Banner;
 use App\Contracts\PromotionalContract;
-use App\Models\Order;
-use App\Models\Setting;
 use Illuminate\Database\QueryException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Doctrine\Instantiator\Exception\InvalidArgumentException;
-use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
 
 class PromotionalRepository extends BaseRepository implements PromotionalContract
 {
     /**
      * PromotionalRepository constructor.
-     * @param Promotional $model
+     * @param Banner $model
      */
-    public function __construct(Promotional $model)
+    public function __construct(Banner $model)
     {
         parent::__construct($model);
         $this->model = $model;
@@ -71,7 +68,7 @@ class PromotionalRepository extends BaseRepository implements PromotionalContrac
     /**
      * @param array $params
      * @param string $image
-     * @return Promotional|mixed
+     * @return Banner|mixed
      */
     public function createPromotional(array $params)
     {
@@ -88,7 +85,7 @@ class PromotionalRepository extends BaseRepository implements PromotionalContrac
 
             $merge = $collection->merge(compact('created_by','image'));
 
-            $promotional = new Promotional($merge->all());
+            $promotional = new Banner($merge->all());
 
             $promotional->save();
 

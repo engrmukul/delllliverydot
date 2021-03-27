@@ -18,7 +18,7 @@
 
             <hr>
 
-            <div class="col-12 col-md-6 text-center">   
+            <div class="col-12 col-md-6 text-center">
                 <div class="row">
                     <div class="widget col-3">
                         <div class="lazur-bg">
@@ -71,19 +71,21 @@
                         <table class="table table-hover no-margins">
                             <thead>
                             <tr>
+                                <th>Order#</th>
+                                <th>Date Time</th>
                                 <th class="text-center">Status</th>
-                                <th>Customer</th>
-                                <th>Restaurant</th>
+                                <th>Detail</th>
                                 <th>Rider</th>
                             </tr>
                             </thead>
                             <tbody>
                             @forelse($orders as $order)
                             <tr>
+                                <td><a href="#">{{ $order->id}}</a></td>
+                                <td>{{ $order->order_date}}</td>
                                 <td class="label-inverse text-center">{{ ucfirst(str_replace('_',' ',$order->order_status)) }}</td>
-                                <td>{{ $order->customer->phone_number }}</td>
-                                <td>{{ $order->restaurant->phone_number }}</td>
-                                <td>{{ isset($order->rider->phone_number) ? $order->rider->phone_number : "NA" }}</td>
+                                <td><a href="#">{{ $order->customer->name }}</a> ordered from <a href="#">{{ $order->restaurant->name }}</a></td>
+                                <td>{{ isset($order->rider->phone_number) ? $order->rider->phone_number : "-" }}</td>
                             </tr>
                             @empty
                             @endforelse
@@ -111,33 +113,25 @@
                         <table class="table table-hover no-margins">
                             <thead>
                             <tr>
-                                <th>Phone</th>
-                                <th>Type</th>
-                                <th>Date</th>
+                                <th>Detail</th>
                             </tr>
                             </thead>
                             <tbody>
                             @forelse($customers as $customer)
                                 <tr>
-                                    <td>{{ $customer->phone_number }}</td>
-                                    <td class="label-info text-center">{{ 'Customer' }}</td>
-                                    <td>{{ date('Y-m-d',strtotime($customer->created_at))  }}</td>
+                                    <td>An User {{ $customer->name }} Registered, {{ $customer->phone_number }}, {{ getAddress($customer->id, 'customer') }}</td>
                                 </tr>
                             @empty
                             @endforelse
                             @forelse($restaurants as $restaurant)
                                 <tr>
-                                    <td>{{ $restaurant->phone_number }}</td>
-                                    <td class="label-warning text-center">{{ 'Restaurant' }}</td>
-                                    <td>{{ date('Y-m-d',strtotime($restaurant->created_at))  }}</td>
+                                    <td>An User {{ $restaurant->name }} Registered, {{ $restaurant->phone_number }}, {{ getAddress($restaurant->id, 'restaurant') }}</td>
                                 </tr>
                             @empty
                             @endforelse
                             @forelse($riders as $rider)
                                 <tr>
-                                    <td>{{ $rider->phone_number }}</td>
-                                    <td class="label-primary text-center">{{ 'Rider' }}</td>
-                                    <td>{{ date('Y-m-d',strtotime($rider->created_at))  }}</td>
+                                    <td>An User {{ $rider->name }} Registered, {{ $rider->phone_number }}, {{ getAddress($rider->id, 'rider') }}</td>
                                 </tr>
                             @empty
                             @endforelse
@@ -148,7 +142,7 @@
                 </div>
             </div>
 
-            
+
         </div>
     </div>
 
