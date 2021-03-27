@@ -792,17 +792,50 @@ class RestaurantRepository extends BaseRepository implements RestaurantContract
         $query = RestaurantReview::with('customer','restaurant')->latest()->get();
 
         return Datatables::of($query)
+            ->addColumn('action', function ($row) {
+                $actions = '';
 
-            ->editColumn('customer_phone', function ($row) {
-                return $row->customer->phone_number;
+               /* $actions .= '<a class="btn btn-primary btn-xs float-left mr-1" href="' . route('restaurants.reviewEdit', [$row->id]) . '" title="Course Edit"><i class="fa fa-pencil"></i> ' . trans("common.edit") . '</a>';
+
+                $actions .= '
+                    <form action="' . route('restaurants.reviewDestroy', [$row->id]) . '" method="POST">
+                        <input type="hidden" name="_method" value="delete">
+                        <input type="hidden" name="_token" value="' . csrf_token() . '">
+                        <button type="submit" class="btn btn-danger btn-xs"><i class="fa fa-remove"></i> ' . trans("common.delete") . '</button>
+                    </form>
+                ';*/
+
+                return $actions;
+            })
+            ->editColumn('customer', function ($row) {
+                return $row->customer->name;
             })
             ->editColumn('restaurant', function ($row) {
                 return $row->restaurant->name;
             })
-            ->editColumn('restaurant_phone', function ($row) {
-                return $row->restaurant->phone_number;
-            })
             ->make(true);
     }
+
+//    public function findRestaurantReviewByIdByAdmin(int $id)
+//    {
+//        try {
+//            return $this->model->with('restaurant', 'customer')->findOrFail($id);
+//
+//        } catch (ModelNotFoundException $e) {
+//
+//            throw new ModelNotFoundException($e);
+//        }
+//
+//    }
+//
+//
+//    public function deleteRestaurantReview($id)
+//    {
+//        $review = $this->findRestaurantReviewByIdByAdmin((int)$id);
+//
+//        $review->delete();
+//
+//        return $review;
+//    }
 
 }

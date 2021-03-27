@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\Restaurant;
+use App\Models\RestaurantReview;
 use Illuminate\Http\Request;
 use App\Contracts\RestaurantContract;
 use App\Http\Requests\RestaurantStoreFormRequest;
@@ -236,6 +237,8 @@ class RestaurantController extends BaseController
         return $this->responseRedirect('restaurants.index', trans('common.delete_success'), 'success', false, false);
     }
 
+
+
     /**
      * RESTAURANT REVIEW
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
@@ -246,18 +249,20 @@ class RestaurantController extends BaseController
         $data = [
             'tableHeads' => [
                 trans('review.SN'),
-                trans('review.customer_phone'),
-                trans('review.restaurant'),
-                trans('review.restaurant_phone'),
+                trans('review.review'),
                 trans('review.rate'),
+                trans('review.customer_id'),
+                trans('review.restaurant_id'),
+                trans('review.action')
             ],
             'dataUrl' => 'admin/restaurants/review-get-data',
             'columns' => [
                 ['data' => 'id', 'name' => 'id'],
-                ['data' => 'customer_phone', 'name' => 'customer_phone'],
-                ['data' => 'restaurant', 'name' => 'restaurant'],
-                ['data' => 'restaurant_phone', 'name' => 'restaurant_phone'],
+                ['data' => 'review', 'name' => 'review'],
                 ['data' => 'rate', 'name' => 'rate'],
+                ['data' => 'customer', 'name' => 'customer'],
+                ['data' => 'restaurant', 'name' => 'restaurant'],
+                ['data' => 'action' , 'name' => 'action']
             ],
         ];
         return view('admin.restaurants.review', $data);
@@ -271,4 +276,27 @@ class RestaurantController extends BaseController
     {
         return $this->restaurantRepository->restaurantReview($request);
     }
+
+//    // Review Edit
+//    public function reviewEdit()
+//    {
+//        $this->setPageTitle('restaurants', 'Edit review');
+//
+//        $reviewEdit = $this->restaurantRepository->findRestaurantReviewByIdByAdmin($id);
+//
+//        return view('admin.restaurants.reviewEdit',compact('reviewEdit'));
+//    }
+//
+//    // Review Delete
+//    public function reviewsDelete(Request $request, $id)
+//    {
+//        $params = $request->except('_token');
+//
+//        $restaurantReview = $this->restaurantRepository->deleteRestaurantReview($id, $params);
+//
+//        if (!$restaurantReview) {
+//            return $this->responseRedirectBack(trans('common.delete_error'), 'error', true, true);
+//        }
+//        return $this->responseRedirect('admin.restaurants.review', trans('common.delete_success'), 'success', false, false);
+//    }
 }
