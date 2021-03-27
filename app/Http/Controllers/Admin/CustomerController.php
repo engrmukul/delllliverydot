@@ -139,4 +139,12 @@ class CustomerController extends BaseController
         }
         return $this->responseRedirect('customers.index', trans('common.delete_success'), 'success', false, false);
     }
+
+    public function view($id)
+    {
+        $this->setPageTitle('Customer', 'View Customer');
+        $customerDetails =  $this->customerRepository->findCustomerByIdByAdmin($id);
+        //dd($customerDetails->toArray());
+        return view('admin.customers.view', compact('customerDetails'));
+    }
 }

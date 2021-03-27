@@ -29,6 +29,7 @@ Route::group(['prefix' => 'admin'], function () {
             Route::get('/{id}/edit', 'Admin\RestaurantController@edit')->name('restaurants.edit');
             Route::put('/update', 'Admin\RestaurantController@update')->name('restaurants.update');
             Route::delete('/{id}/delete', 'Admin\RestaurantController@delete')->name('restaurants.destroy');
+            Route::get('/{id}/view', 'Admin\RestaurantController@view')->name('restaurants.view');
         });
 
         // food category route
@@ -113,6 +114,7 @@ Route::group(['prefix' => 'admin'], function () {
             Route::put('/update', 'Admin\CustomerController@update')->name('customers.update');
             Route::delete('/{id}/delete', 'Admin\CustomerController@delete')->name('customers.destroy');
             Route::get('/get-data', 'Admin\CustomerController@getData')->name('customers.get-data');
+            Route::get('/{id}/view', 'Admin\CustomerController@view')->name('customers.view');
         });
 
         // Promotional Banner route
@@ -135,6 +137,7 @@ Route::group(['prefix' => 'admin'], function () {
             Route::put('/update', 'Admin\RiderController@update')->name('riders.update');
             Route::delete('/{id}/delete', 'Admin\RiderController@delete')->name('riders.destroy');
             Route::get('/get-data', 'Admin\RiderController@getData')->name('riders.get-data');
+            Route::get('/{id}/view', 'Admin\RiderController@view')->name('riders.view');
         });
 
         // help and support route

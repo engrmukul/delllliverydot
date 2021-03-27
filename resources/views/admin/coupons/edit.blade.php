@@ -85,7 +85,7 @@
                                     <div class="form-group">
                                         <label for="restaurant_id">{{ trans('coupon.restaurant_id')}} <small>Hold <span>Ctrl/Command</span> key to select multiple</small></label>
                                         <input type="hidden" name="id" value="{{ $coupon->id }}">
-                                        <select id="restaurant_id" multiple class="form-control custom-select mt-15 multiple" name="restaurant_id[]">
+                                        <select id="restaurant_id" class="form-control custom-select mt-15 select2" name="restaurant_id">
                                         {{-- <select id="restaurant_id" class="form-control custom-select mt-15 select2" name="restaurant_id" required> --}}
                                             @foreach($restaurants as $key => $restaurant)
                                                 @if (old('restaurant_id', $coupon->restaurant_id) == $restaurant->id)
@@ -124,3 +124,11 @@
         </div>
     </div>
 @endsection
+
+@push('scripts')
+    <script>
+        $(document).ready(function() {
+            $('#restaurant_id').select2();
+        });
+    </script>
+@endpush

@@ -79,13 +79,12 @@ class RiderRepository extends BaseRepository implements RiderContract
     public function findRiderById(int $id)
     {
         try {
-            return $this->findOneOrFail($id);
+            return $this->model->with('riderProfile','riderSetting','riderAddress')->findOrFail($id);
 
         } catch (ModelNotFoundException $e) {
 
             throw new ModelNotFoundException($e);
         }
-
     }
 
     public function findRiderByIdByAdmin(int $id)

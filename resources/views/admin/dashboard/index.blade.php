@@ -81,11 +81,15 @@
                             <tbody>
                             @forelse($orders as $order)
                             <tr>
-                                <td><a href="#">{{ $order->id}}</a></td>
+                                <td><a href="{{route('orders.view',['id'=>$order->id])}}">{{ $order->id}}</a></td>
                                 <td>{{ $order->order_date}}</td>
                                 <td class="label-inverse text-center">{{ ucfirst(str_replace('_',' ',$order->order_status)) }}</td>
-                                <td><a href="#">{{ $order->customer->name }}</a> ordered from <a href="#">{{ $order->restaurant->name }}</a></td>
-                                <td>{{ isset($order->rider->phone_number) ? $order->rider->phone_number : "-" }}</td>
+                                <td><a href="{{route('customers.view',['id'=>$order->customer_id])}}">{{ $order->customer->name }}</a> ordered from <a href="{{route('restaurants.view',['id'=>$order->restaurant_id])}}">{{ $order->restaurant->name }}</a></td>
+                                @if(isset($order->rider->phone_number))
+                                    <td><a href="{{route('riders.view',['id'=>$order->rider_id])}}">{{ isset($order->rider->phone_number) ? $order->rider->name : "-" }}</a></td>
+                                @else
+                                    <td>-</td>
+                                @endif
                             </tr>
                             @empty
                             @endforelse

@@ -146,4 +146,13 @@ class RiderController extends BaseController
         }
         return $this->responseRedirect('riders.index', trans('common.delete_success'), 'success', false, false);
     }
+
+    public function view($id)
+    {
+        $this->setPageTitle('Riders', 'View Rider');
+
+        $riderDetails =  $this->riderRepository->findRiderById($id);
+        //dd($riderDetails->toArray());
+        return view('admin.riders.view', compact('riderDetails'));
+    }
 }

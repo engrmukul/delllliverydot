@@ -120,3 +120,11 @@
         </div>
     </div>
 @endsection
+
+@push('scripts')
+    <script>
+        $(document).ready(function() {
+            $('#restaurant_id').select2();
+        });
+    </script>
+@endpush

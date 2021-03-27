@@ -72,8 +72,9 @@ class OrderController extends BaseController
 
     public function view($id)
     {
+        $this->setPageTitle('Orders', 'View Order');
         $orderDetails =  $this->orderRepository->orderDetails($id);
-        dd($orderDetails->toArray());
+        //dd($orderDetails->toArray());
         return view('admin.orders.view', compact('orderDetails'));
     }
 }
