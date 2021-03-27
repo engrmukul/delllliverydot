@@ -3,8 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use PhpParser\Builder\Class_;
 
 /**
  * Class Attribute
@@ -39,11 +37,11 @@ class RestaurantReview extends Model
 
     public function customer()
     {
-        return $this->hasOne(Customer::class, 'id', customer_id);
+        return $this->hasOne(Customer::class, 'id', 'customer_id');
     }
     public function restaurant()
     {
-        return $this->hasOne(restaurant::class, 'id', restaurant_id);
+        return $this->hasOne(restaurant::class, 'id', 'restaurant_id');
     }
 
 }

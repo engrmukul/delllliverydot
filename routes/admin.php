@@ -22,8 +22,12 @@ Route::group(['prefix' => 'admin'], function () {
             Route::get('/requested-get-data', 'Admin\RestaurantController@requestedGetData')->name('restaurants.requested-get-data');
             Route::get('/', 'Admin\RestaurantController@index')->name('restaurants.index');
             Route::get('/get-data', 'Admin\RestaurantController@requestedGetData')->name('restaurants.get-data');
+
             Route::get('/reviews', 'Admin\RestaurantController@review')->name('restaurants.reviews');
+            Route::get('/reviews/edit/{id}', 'Admin\RestaurantController@reviewEdit')->name('restaurants.reviewEdit');
+            Route::delete('/reviews/delete/{id}', 'Admin\RestaurantController@reviewsDelete')->name('restaurants.reviewDestroy');
             Route::get('/review-get-data', 'Admin\RestaurantController@reviewGetData')->name('restaurants.review-get-data');
+
             Route::get('/create', 'Admin\RestaurantController@create')->name('restaurants.create');
             Route::post('/store', 'Admin\RestaurantController@store')->name('restaurants.store');
             Route::get('/{id}/edit', 'Admin\RestaurantController@edit')->name('restaurants.edit');
