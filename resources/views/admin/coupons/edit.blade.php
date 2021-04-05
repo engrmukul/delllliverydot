@@ -25,6 +25,23 @@
 
                             <div class="row">
                                 <div class="col-md-6">
+
+                                    <!---coupon type--->
+                                    <div class="form-group">
+                                        <label for="coupon_type">{{ trans('coupon.coupon_type')}}</label>
+                                        <select id="coupon_type" class="form-control custom-select mt-15" name="coupon_type" required>
+                                            <option value="">{{ trans('coupon.coupon_type')}}</option>
+                                            @foreach($couponTypes as $key => $couponType)
+                                                @if (old('coupon_type',$coupon->coupon_type) == $couponType)
+                                                    <option value="{{ $couponType }}" selected> {{ ucfirst($couponType) }} </option>
+                                                @else
+                                                    <option value="{{ $couponType }}"> {{ ucfirst($couponType) }} </option>
+                                                @endif
+                                            @endforeach
+                                        </select>
+                                        <span class="form-text m-b-none text-danger"> @error('coupon_type') {{ $message }} @enderror </span>
+                                    </div>
+
                                     <!---coupon code--->
                                     <div class="form-group">
                                         <label for="code" class="font-bold">{{ trans('coupon.code')}}</label>
@@ -57,14 +74,14 @@
 
                                     <!---discount--->
                                     <div class="form-group">
-                                        <label for="discount" class="font-bold">{{ trans('coupon.discount')}}</label>
+                                        <label for="discount" class="font-bold">{{ trans('coupon.discount')}}<span class="currency_symbol">(&#2547;)</span></label>
                                         <input type="text" name="discount" value="{{ old('discount', $coupon->discount) }}" placeholder="{{ trans('coupon.discount')}}" class="form-control" required>
                                         <span class="form-text m-b-none text-danger"> @error('discount') {{ $message }} @enderror </span>
                                     </div>
 
                                     <!---minimum_orderminimum_order--->
                                     <div class="form-group">
-                                        <label for="minimum_order" class="font-bold">{{ trans('coupon.minimum_order')}}</label>
+                                        <label for="minimum_order" class="font-bold">{{ trans('coupon.minimum_order')}}<span class="currency_symbol">(&#2547;)</span></label>
                                         <input type="text" name="minimum_order" value="{{ old('minimum_order', $coupon->minimum_order) }}" placeholder="{{ trans('coupon.minimum_order')}}" class="form-control">
                                         <span class="form-text m-b-none text-danger"> @error('minimum_order') {{ $message }} @enderror </span>
                                     </div>
@@ -82,11 +99,12 @@
                                     </div>
 
                                     <!--- restaurant id --->
-                                    <div class="form-group">
+                                    <div class="form-group restaurantCoupon">
                                         <label for="restaurant_id">{{ trans('coupon.restaurant_id')}} <small>Hold <span>Ctrl/Command</span> key to select multiple</small></label>
                                         <input type="hidden" name="id" value="{{ $coupon->id }}">
                                         <select id="restaurant_id" class="form-control custom-select mt-15 select2" name="restaurant_id">
                                         {{-- <select id="restaurant_id" class="form-control custom-select mt-15 select2" name="restaurant_id" required> --}}
+                                            <option value="">Select restaurant</option>
                                             @foreach($restaurants as $key => $restaurant)
                                                 @if (old('restaurant_id', $coupon->restaurant_id) == $restaurant->id)
                                                     <option value="{{ $restaurant->id }}" selected> {{ $restaurant->name }} </option>
@@ -98,12 +116,22 @@
                                         <span class="form-text m-b-none text-danger"> @error('restaurant_id') {{ $message }} @enderror </span>
                                     </div>
 
+                                    <!--- start date --->
+                                    <div class="form-group" id="dateItem">
+                                        <label for="start_date" class="font-bold">{{ trans('coupon.start_date')}}</label>
+                                        <div class="input-group date">
+                                            <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                            <input type="text" id="start_date" name="start_date" autocomplete="off" value="{{ old('start_date', $coupon->start_date) }}" placeholder="{{ trans('coupon.start_date')}}" class="form-control datepicker" required>
+                                        </div>
+                                        <span class="form-text m-b-none text-danger"> @error('start_date') {{ $message }} @enderror </span>
+                                    </div>
+
                                     <!--- expire datate --->
                                     <div class="form-group" id="dateItem">
                                         <label for="expire_at" class="font-bold">{{ trans('coupon.expire_at')}}</label>
                                         <div class="input-group date">
                                             <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                                            <input type="text" id="expire_at" name="expire_at" value="{{ old('expire_at', $coupon->expire_at) }}" placeholder="{{ trans('coupon.expire_at')}}" class="form-control datepicker" required>
+                                            <input type="text" id="expire_at" name="expire_at" onautocomplete="off" value="{{ old('expire_at', $coupon->expire_at) }}" placeholder="{{ trans('coupon.expire_at')}}" class="form-control datepicker" required>
                                         </div>
                                         <span class="form-text m-b-none text-danger"> @error('expire_at') {{ $message }} @enderror </span>
                                     </div>
@@ -128,7 +156,26 @@
 @push('scripts')
     <script>
         $(document).ready(function() {
-            $('#restaurant_id').select2();
+            $('#restaurant_id').select2({
+                placeholder: 'Select restaurant',
+                allowClear: true
+            });
+
+            let restaurant = '{{$coupon->coupon_type}}';
+            if(restaurant == 'general'){
+                $('.restaurantCoupon').hide();
+            }else{
+                $('.restaurantCoupon').show();
+            }
+
+            $('#coupon_type').on('change', function (){
+                if($(this).val() == 'general' ){
+                    $('.restaurantCoupon').hide();
+                    $('#restaurant_id').select2('val',$('#restaurant_id').find('option:selected').val())
+                }else{
+                    $('.restaurantCoupon').show();
+                }
+            })
         });
     </script>
 @endpush

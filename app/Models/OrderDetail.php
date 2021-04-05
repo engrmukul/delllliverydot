@@ -55,4 +55,9 @@ class OrderDetail extends Model
         return $this->hasMany(FoodVariant::class, 'id','food_variant_id');
     }
 
+    public function extra()
+    {
+        return $this->hasMany(Extra::class);
+    }
+
 }

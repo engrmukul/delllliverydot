@@ -39,6 +39,9 @@ class CouponController extends BaseController
                 trans('coupon.code'),
                 trans('coupon.total_code'),
                 trans('coupon.total_used_code'),
+                trans('coupon.coupon_type'),
+                trans('coupon.restaurant'),
+                trans('coupon.start_date'),
                 trans('coupon.expire_at'),
                 trans('coupon.status'),
                 trans('coupon.action')
@@ -49,6 +52,9 @@ class CouponController extends BaseController
                 ['data' => 'code', 'name' => 'code'],
                 ['data' => 'total_code', 'name' => 'total_code'],
                 ['data' => 'total_used_code', 'name' => 'total_used_code'],
+                ['data' => 'coupon_type', 'name' => 'coupon_type'],
+                ['data' => 'restaurant', 'name' => 'restaurant'],
+                ['data' => 'start_date', 'name' => 'start_date'],
                 ['data' => 'expire_at', 'name' => 'expire_at'],
                 ['data' => 'status', 'name' => 'status'],
                 ['data' => 'action', 'name' => 'action', 'orderable' => false]
@@ -78,9 +84,14 @@ class CouponController extends BaseController
             'fixed' => 'fixed',
         );
 
+        $couponTypes = array(
+            'general' => 'general',
+            'restaurant' => 'restaurant',
+        );
+
         $restaurants = Restaurant::all();
 
-        return view('admin.coupons.create', compact('discountTypes','restaurants'));
+        return view('admin.coupons.create', compact('discountTypes','restaurants','couponTypes'));
     }
 
     /**
@@ -115,11 +126,16 @@ class CouponController extends BaseController
             'fixed' => 'fixed',
         );
 
+        $couponTypes = array(
+            'general' => 'general',
+            'restaurant' => 'restaurant',
+        );
+
         $restaurants = Restaurant::all();
 
         $coupon = $this->couponRepository->findCouponById($id);
 
-        return view('admin.coupons.edit', compact('coupon','restaurants','discountTypes'));
+        return view('admin.coupons.edit', compact('coupon','restaurants','discountTypes','couponTypes'));
     }
 
     /**

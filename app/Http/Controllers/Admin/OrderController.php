@@ -2,8 +2,13 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Models\Order;
+use App\Models\OrderDetail;
+use App\Models\Point;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use App\Contracts\OrderContract;
+use Illuminate\Support\Facades\DB;
 
 class OrderController extends BaseController
 {
@@ -74,7 +79,50 @@ class OrderController extends BaseController
     {
         $this->setPageTitle('Orders', 'View Order');
         $orderDetails =  $this->orderRepository->orderDetails($id);
+
         //dd($orderDetails->toArray());
         return view('admin.orders.view', compact('orderDetails'));
+    }
+
+    public function status($id, $status)
+    {
+        $this->setPageTitle('Orders', 'Action Order');
+
+        //ORDER CANCEL
+        if($status == 'cancel'){
+            Order::where('id', $id)->update(
+                ['order_status' => 'canceled']
+            );
+
+            return $this->responseRedirect('orders.index', trans('common.cancel_success'), 'success', false, false);
+        }
+
+        //ORDER DELETE
+        else if($status == 'delete'){
+            DB::beginTransaction();
+
+            try {
+                //DELETE ORDER DETAILS
+                OrderDetail::where('order_id', $id)->delete();
+
+                //DELETE PINT
+                Point::where('order_id', $id)->delete();
+
+                //DELETE ORDER
+                Order::where('id', $id)->delete();
+
+                DB::commit();
+
+            } catch (ModelNotFoundException $e) {
+                DB::rollback();
+                throw new ModelNotFoundException($e);
+            }
+
+            return $this->responseRedirect('orders.index', trans('common.delete_success'), 'success', false, false);
+        }
+
+        else{
+            redirect()->route('orders.index');
+        }
     }
 }

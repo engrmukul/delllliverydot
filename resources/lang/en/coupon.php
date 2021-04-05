@@ -7,6 +7,8 @@ return [
     'code' => 'Code',
     'total_code' => 'Total Code',
     'total_used_code' => 'Total Used Code',
+    'coupon_type' => 'Coupon Type',
+    'start_date' => 'Start Date',
     'expire_at' => 'Expire at',
     'discount_type' => 'Discount Type',
     'discount' => 'Discount',

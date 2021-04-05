@@ -38,7 +38,7 @@ class Restaurant extends Model
         'updated_at',
     ];
 
-    /**
+    /**SELECT * FROM `foods`
      * @var array
      */
     protected $casts  = [
@@ -63,7 +63,7 @@ class Restaurant extends Model
 
     public function getCoupon(){
         return $this->hasOne('App\Models\Coupon');
-        
+
     }
 
     public function foods(){

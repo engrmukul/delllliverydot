@@ -30,6 +30,8 @@ class Coupon extends Model
         'food_id',
         'restaurant_id',
         'category_id',
+        'coupon_type',
+        'start_date',
         'expire_at',
         'enabled',
         'status',
@@ -45,7 +47,12 @@ class Coupon extends Model
      * @var array
      */
     protected $casts  = [
-
+        'start_date'  => 'date:Y-m-d',
+        'expire_at'  => 'date:Y-m-d',
     ];
+
+    public function restaurant(){
+        return $this->belongsTo(Restaurant::class);
+    }
 
 }

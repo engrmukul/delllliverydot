@@ -123,19 +123,19 @@
                             <tbody>
                             @forelse($customers as $customer)
                                 <tr>
-                                    <td>An User {{ $customer->name }} Registered, {{ $customer->phone_number }}, {{ getAddress($customer->id, 'customer') }}</td>
+                                    <td>An User <a href="{{route('customers.view',['id'=>$customer->id])}}">{{ $customer->name }}</a>  Registered, {{ $customer->phone_number }}, {{ getAddress($customer->id, 'customer') }}</td>
                                 </tr>
                             @empty
                             @endforelse
                             @forelse($restaurants as $restaurant)
                                 <tr>
-                                    <td>An User {{ $restaurant->name }} Registered, {{ $restaurant->phone_number }}, {{ getAddress($restaurant->id, 'restaurant') }}</td>
+                                    <td>An User <a href="{{route('restaurants.view',['id'=>$restaurant->id])}}">{{ $restaurant->name }}</a> Registered, {{ $restaurant->phone_number }}, {{ getAddress($restaurant->id, 'restaurant') }}</td>
                                 </tr>
                             @empty
                             @endforelse
                             @forelse($riders as $rider)
                                 <tr>
-                                    <td>An User {{ $rider->name }} Registered, {{ $rider->phone_number }}, {{ getAddress($rider->id, 'rider') }}</td>
+                                    <td>An User <a href="{{route('riders.view',['id'=>$rider->id])}}">{{ $rider->name }}</a> Registered, {{ $rider->phone_number }}, {{ getAddress($rider->id, 'rider') }}</td>
                                 </tr>
                             @empty
                             @endforelse

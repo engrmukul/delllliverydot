@@ -33,7 +33,9 @@ class CouponRepository extends BaseRepository implements CouponContract
     {
         //$query = $this->all($columns, $order, $sort);
 
-        $query = Coupon::latest()->get();
+        $query = Coupon::with('restaurant')->latest()->get();
+
+        //dd($query->toArray());
 
         return Datatables::of($query)
             ->addColumn('action', function ($row) {
@@ -50,6 +52,9 @@ class CouponRepository extends BaseRepository implements CouponContract
                 ';
 
                 return $actions;
+            })
+            ->editColumn('restaurant', function ($row) {
+                return isset($row->restaurant->name) ? $row->restaurant->name : '';
             })
             ->make(true);
     }
@@ -91,6 +96,8 @@ class CouponRepository extends BaseRepository implements CouponContract
                     $couponData['minimum_order'] = $collection['minimum_order'];
                     $couponData['description'] = $collection['description'];
                     $couponData['restaurant_id'] = $item;
+                    $couponData['coupon_type'] = $collection['coupon_type'];
+                    $couponData['start_date'] = $collection['start_date'];
                     $couponData['expire_at'] = $collection['expire_at']." 00:00:00";
                     $couponData['created_by'] = $created_by;
 
@@ -104,7 +111,9 @@ class CouponRepository extends BaseRepository implements CouponContract
                 $couponData['discount_type'] = $collection['discount_type'];
                 $couponData['discount'] = $collection['discount'];
                 $couponData['minimum_order'] = $collection['minimum_order'];
-                $couponData['description'] = $collection['description'];
+                $couponData['description'] = "Use ".$collection['code']." and get ".$collection['discount']." TK off on all orders over TK ".$collection['minimum_order']." on All restaurant. Order now!";
+                $couponData['coupon_type'] = $collection['coupon_type'];
+                $couponData['start_date'] = $collection['start_date'];
                 $couponData['expire_at'] = $collection['expire_at']." 00:00:00";
                 $couponData['created_by'] = $created_by;
 

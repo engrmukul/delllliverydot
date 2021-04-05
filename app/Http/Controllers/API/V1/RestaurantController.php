@@ -23,6 +23,7 @@ use App\Models\RestaurantSetting;
 use App\Models\Rider;
 use App\Models\TermsAndCondition;
 use App\Traits\UploadTrait;
+use http\Url;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Str;
@@ -69,7 +70,7 @@ class RestaurantController extends BaseController
      */
     public function restaurantTodayOrder(Request $request)
     {
-        $todaysOrder = Order::with('customer', 'RestaurantDetails', 'orderDetails', 'orderDetails.foods', 'orderDetails.foodVariants')->whereDate('order_date', '>=', date('Y-m-d'))->where('restaurant_id', $request->restaurant_id)->orderBy('order_date', 'ASC')->get();
+        $todaysOrder = Order::with('customer', 'RestaurantDetails', 'orderDetails', 'orderDetails.foods', 'orderDetails.foodVariants')->whereDate('order_date', '>=', date('Y-m-d'))->where('restaurant_id', $request->restaurant_id)->orderBy('order_date', 'DESC')->get();
 
         $orderDataArray = array();
         if ($todaysOrder->count() > 0) {
@@ -78,6 +79,7 @@ class RestaurantController extends BaseController
                 $orderData['order_id'] = $order['id'];
                 $orderData['order_status'] = $order['order_status'];
                 $orderData['order_date'] = $order['order_date'];
+                $orderData['order_detail_url'] = "http://panel.deliverydot.com.bd/".$order['id'].'/view';
 
                 foreach ($order['order_details'] as $orderDetails) {
                     $orderData['food_name'] = $orderDetails['foods']['name'];

@@ -61,15 +61,15 @@
 
                                     <!---delivery_fee--->
                                     <div class="form-group">
-                                        <label for="delivery_fee" class="font-bold">{{ trans('restaurant.delivery_fee')}}</label>
-                                        <input type="text" name="delivery_fee" value="{{ old('delivery_fee') }}" placeholder="{{ trans('restaurant.delivery_fee')}}" class="form-control" required>
+                                        <label for="delivery_fee" class="font-bold">{{ trans('restaurant.delivery_fee')}}<span class="currency_symbol">(&#2547;)</span></label>
+                                        <input type="number" name="delivery_fee" value="{{ old('delivery_fee') }}" placeholder="{{ trans('restaurant.delivery_fee')}}" class="form-control currency_symbol" required>
                                         <span class="form-text m-b-none text-danger"> @error('delivery_fee') {{ $message }} @enderror </span>
                                     </div>
 
                                     <!---delivery_time--->
                                     <div class="form-group">
-                                        <label for="delivery_time" class="font-bold">{{ trans('restaurant.delivery_time')}}</label>
-                                        <input type="text" name="delivery_time" value="{{ old('delivery_time') }}" placeholder="{{ trans('restaurant.delivery_time')}}" class="form-control" required>
+                                        <label for="delivery_time" class="font-bold">{{ trans('restaurant.delivery_time')}}(Minute)</label>
+                                        <input type="number" name="delivery_time" value="{{ old('delivery_time') }}" placeholder="{{ trans('restaurant.delivery_time')}}" class="form-control minute_inpute" required>
                                         <span class="form-text m-b-none text-danger"> @error('delivery_time') {{ $message }} @enderror </span>
                                     </div>
                                 </div>
@@ -104,7 +104,7 @@
                                     <!---delivery_range--->
                                     <div class="form-group">
                                         <label for="delivery_range" class="font-bold">{{ trans('restaurant.delivery_range')}}</label>
-                                        <input type="text" name="delivery_range" value="{{ old('delivery_range') }}" placeholder="{{ trans('restaurant.delivery_range')}}" class="form-control" required>
+                                        <input type="number" name="delivery_range" value="{{ old('delivery_range') }}" placeholder="{{ trans('restaurant.delivery_range')}}" class="form-control range_input" required>
                                         <span class="form-text m-b-none text-danger"> @error('delivery_range') {{ $message }} @enderror </span>
                                     </div>
 
@@ -134,8 +134,8 @@
 
                                     <!---discount--->
                                     <div class="form-group discount d-none">
-                                        <label for="discount" class="font-bold">{{ trans('restaurant.discount')}}</label>
-                                        <input type="number" name="discount" value="{{ old('discount') }}" placeholder="{{ trans('restaurant.discount')}}" class="form-control">
+                                        <label for="discount" class="font-bold">{{ trans('restaurant.discount')}}<span class="currency_symbol">(&#2547;)</span></label>
+                                        <input type="number" name="discount" value="{{ old('discount') }}" placeholder="{{ trans('restaurant.discount')}}" class="form-control currency_symbol">
                                         <span class="form-text m-b-none text-danger"> @error('discount') {{ $message }} @enderror </span>
                                     </div>
                                 </div>

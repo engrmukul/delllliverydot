@@ -86,10 +86,11 @@
                              <div class="row">
 
                                  <div class="col-12">
+                                     <label for="food" class="font-bold float-right">Enter food price in <span class="currency_symbol">(&#2547;)</span></label>
                                      <div id="inputFormRow">
                                          <div class="input-group mb-3">
-                                             <input type="text" name="variant_name[]" class="form-control m-input" placeholder="Enter food variant name" autocomplete="off" required>
-                                             <input type="number" name="variant_price[]" class="form-control m-input" placeholder="Enter price" autocomplete="off" required>
+                                             <input type="text" name="variant_name[]" class="form-control m-input food_variant_input" placeholder="Ex: Pizza 9 Inch" autocomplete="off" required>
+                                             <input type="number" name="variant_price[]" class="form-control m-input currency_symbol" placeholder="Enter price ex: 99.00" autocomplete="off" required>
                                              <div class="input-group-append">
                                                  <button type="button" class="btn btn-danger">Remove</button>
                                              </div>
@@ -108,10 +109,11 @@
                             <div class="row">
 
                                 <div class="col-12">
+                                    <label for="food" class="font-bold float-right">Enter food extra price in <span class="currency_symbol">(&#2547;)</span></label>
                                     <div id="inputExtraFormRow">
                                         <div class="input-group mb-3">
-                                            <input type="text" name="extra_name[]" class="form-control m-input" placeholder="Enter food extra name" autocomplete="off">
-                                            <input type="number" name="extra_price[]" class="form-control m-input" placeholder="Enter extra price" autocomplete="off">
+                                            <input type="text" name="extra_name[]" class="form-control m-input food_extra_input" placeholder="Ex: Cheese" autocomplete="off">
+                                            <input type="number" name="extra_price[]" class="form-control m-input currency_symbol" placeholder="Enter extra price ex: 99.00" autocomplete="off">
                                             <div class="input-group-append">
                                                 <button type="button" class="btn btn-danger">Remove</button>
                                             </div>
@@ -147,8 +149,8 @@
             var html = '';
             html += '<div id="inputFormRow">';
             html += '<div class="input-group mb-3">';
-            html += '<input type="text" name="variant_name[]" class="form-control m-input" placeholder="Enter food variant name" autocomplete="off">';
-            html += '<input type="text" name="variant_price[]" class="form-control m-input" placeholder="Enter price" autocomplete="off">';
+            html += '<input type="text" name="variant_name[]" class="form-control m-input food_variant_input" placeholder="Ex: Pizza 9 inch" autocomplete="off">';
+            html += '<input type="number" name="variant_price[]" class="form-control m-input currency_symbol" placeholder="Enter price ex: 99.00" autocomplete="off">';
             html += '<div class="input-group-append">';
             html += '<button id="removeRow" type="button" class="btn btn-danger">Remove</button>';
             html += '</div>';
@@ -167,8 +169,8 @@
             var html = '';
             html += '<div id="inputExtraFormRow">';
             html += '<div class="input-group mb-3">';
-            html += '<input type="text" name="extra_name[]" class="form-control m-input" placeholder="Enter food extra name" autocomplete="off">';
-            html += '<input type="text" name="extra_price[]" class="form-control m-input" placeholder="Enter extra price" autocomplete="off">';
+            html += '<input type="text" name="extra_name[]" class="form-control m-input food_extra_input" placeholder="Ex: Cheese" autocomplete="off">';
+            html += '<input type="number" name="extra_price[]" class="form-control m-input currency_symbol" placeholder="Enter extra price ex: 99.00" autocomplete="off">';
             html += '<div class="input-group-append">';
             html += '<button id="removeExtraRow" type="button" class="btn btn-danger">Remove</button>';
             html += '</div>';

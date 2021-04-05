@@ -3,6 +3,8 @@
 Route::get('/', 'Admin\DashboardController@index');
 Route::get('/home', 'Admin\DashboardController@index');
 
+Route::get('/{id}/view', 'Admin\OrderController@view')->name('orders.view');
+
 Route::group(['prefix' => 'admin'], function () {
 
     Route::get('login', 'Admin\LoginController@showLoginForm')->name('admin.login');
@@ -86,9 +88,9 @@ Route::group(['prefix' => 'admin'], function () {
             Route::get('/create', 'Admin\OrderController@create')->name('orders.create');
             Route::post('/store', 'Admin\OrderController@store')->name('orders.store');
             Route::get('/{id}/edit', 'Admin\OrderController@edit')->name('orders.edit');
-            Route::get('/{id}/view', 'Admin\OrderController@view')->name('orders.view');
+            //Route::get('/{id}/view', 'Admin\OrderController@view')->name('orders.view');
+            Route::get('/{id}/id/{status}/status', 'Admin\OrderController@status')->name('orders.status');
             Route::put('/update', 'Admin\OrderController@update')->name('orders.update');
-            Route::delete('/{id}/delete', 'Admin\OrderController@delete')->name('orders.destroy');
             Route::get('/get-data', 'Admin\OrderController@getData')->name('orders.get-data');
         });
 

@@ -40,22 +40,22 @@
 
                                 <tr>
                                     <td>Total Price</td>
-                                    <td>: {{isset($orderDetails->total_price) ? $orderDetails->total_price : "NA"}}</td>
+                                    <td>: {{isset($orderDetails->total_price) ? $orderDetails->total_price : "NA"}} <span class="currency_symbol">(&#2547;)</span></td>
                                 </tr>
 
                                 <tr>
                                     <td>Discount</td>
-                                    <td>: {{isset($orderDetails->discount) ? $orderDetails->discount : "NA"}}</td>
+                                    <td>: {{isset($orderDetails->discount) ? $orderDetails->discount : "NA"}} <span class="currency_symbol">(&#2547;)</span></td>
                                 </tr>
 
                                 <tr>
                                     <td>VAT</td>
-                                    <td>: {{isset($orderDetails->vat) ? $orderDetails->vat : "NA"}}</td>
+                                    <td>: {{isset($orderDetails->vat) ? $orderDetails->vat : "NA"}} <span class="currency_symbol">(&#2547;)</span></td>
                                 </tr>
 
                                 <tr>
                                     <td>Delivery Fee</td>
-                                    <td>: {{isset($orderDetails->delivery_fee) ? $orderDetails->delivery_fee : "NA"}}</td>
+                                    <td>: {{isset($orderDetails->delivery_fee) ? $orderDetails->delivery_fee : "NA"}} <span class="currency_symbol">(&#2547;)</span></td>
                                 </tr>
 
                                 <tr>
@@ -71,15 +71,38 @@
                                 <hr>
 
                                 <h3>Order Food Details</h3>
-                                @forelse($orderDetails->orderDetails as $od)
+                                <tr>
+                                    <td><strong>Food Items</strong></td>
+                                    <td>
+                                        <table class="table table-bordered">
+                                            <thead>
+                                            <tr>
+                                                <th scope="col">#</th>
+                                                <th scope="col">Food</th>
+                                                <th scope="col">Qty</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                                @forelse($orderDetails->orderDetails as $key => $od)
 
-                                    <tr>
-                                        <td>: {{isset($od->food_variants->name) ? $od->food_variants->name : "NA"}}</td>
-                                        <td>: {{isset($od->food_variants->price) ? $od->food_variants->price : "NA"}}</td>
-                                    </tr>
+                                                    @forelse($od->foodVariants as $food)
+                                                            <tr>
+                                                                <th scope="row">{{$key+1}}</th>
+                                                                <td>{{$food->name}}</td>
+                                                                <td>{{$od->food_quantity}}</td>
+                                                            </tr>
+                                                    @empty
+                                                    @endforelse
 
-                                @empty
-                                @endforelse
+                                                @empty
+                                                @endforelse
+
+
+                                            </tbody>
+                                        </table>
+                                    </td>
+
+                                </tr>
 
                                 <hr>
                                 <tr>
