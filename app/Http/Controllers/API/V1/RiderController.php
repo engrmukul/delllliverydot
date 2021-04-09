@@ -149,6 +149,11 @@ class RiderController extends BaseController
         RiderAddress::where('address','address')->where("rider_id", $request->rider_id)->delete();
 
         if ($riderLocation->save()) {
+
+
+            //UPDATE RIDER LAT LONG
+            getLatLong($request->address, 'riders', $request->rider_id);
+
             if ($request->is_current_address == 'yes') {
                 RiderAddress::where("id", '!=', $riderLocation->id)->where("rider_id", $request->rider_id)->update(
                     [
@@ -179,6 +184,9 @@ class RiderController extends BaseController
 
     public function riderLocationUpdate(RiderAddressUpdateFormRequest $request)
     {
+        //UPDATE RIDER LAT LONG
+        getLatLong($request->address, 'riders', $request->rider_id);
+
         RiderAddress::where("id", $request->id)->update(
             [
                 "rider_id" => $request->rider_id,

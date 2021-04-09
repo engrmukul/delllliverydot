@@ -23,6 +23,7 @@
                         <form role="form" method="post" action="{{route( strtolower($pageTitle) . '.update' )}}" enctype="multipart/form-data">
                             @method('PUT')
                             @csrf
+                            <input type="hidden" name="googleId" value="{{$GOOGLE->ID}}">
                             <input type="hidden" name="fcmId" value="{{$FCM->ID}}">
                             <input type="hidden" name="pusherId" value="{{$PUSHER->ID}}">
                             <input type="hidden" name="twilioId" value="{{$TWILIO->ID}}">
@@ -35,6 +36,17 @@
                                         <label for="SERVER_API_KEY" class="font-bold">{{ trans('SERVER_API_KEY')}}</label>
                                         <textarea name="SERVER_API_KEY" placeholder="{{ trans('SERVER_API_KEY')}}" class="form-control" required>{{ old('SERVER_API_KEY', $FCM->SERVER_API_KEY) }}</textarea>
                                         <span class="form-text m-b-none text-danger"> @error('SERVER_API_KEY') {{ $message }} @enderror </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <h1>GOOGLE GEOCODE API KEY</h1>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="API_KEY" class="font-bold">{{ trans('API_KEY')}}</label>
+                                        <textarea name="API_KEY" placeholder="{{ trans('API_KEY')}}" class="form-control" required>{{ old('API_KEY', $GOOGLE->API_KEY) }}</textarea>
+                                        <span class="form-text m-b-none text-danger"> @error('API_KEY') {{ $message }} @enderror </span>
                                     </div>
                                 </div>
                             </div>

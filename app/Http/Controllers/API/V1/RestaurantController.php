@@ -184,10 +184,23 @@ class RestaurantController extends BaseController
             ]
         );
 
+        $restaurantId = Order::findOrFail($request->order_id)->restaurant_id;
+
+
         event(new \App\Events\NewRegistration());
 
         //SEND PUSH NOTIFICATION
-        $riders = Rider::whereNotNull('device_token')->get();
+        //GET 2 KM DISTANCE LAT LONG
+        $currentAddress =  RestaurantAddress::where(['restaurant_id'=> $restaurantId, 'is_current_address'=>'yes'])->first();
+
+        $distanceLatLong = distanceLatLong($currentAddress->address, 2);
+
+        $riders = Rider::whereNotNull('device_token')
+            ->where('latitude','!=', null)
+            ->where('longitude','!=', null)
+            ->where('latitude','<=', $distanceLatLong['distanceLat'])
+            ->where('longitude','<=', $distanceLatLong['distanceLon'])
+            ->get();
 
         $orderDetail = Order::with('customer', 'RestaurantDetails', 'orderDetails', 'orderDetails.foods', 'orderDetails.foodVariants')->where('id', $request->order_id)->first();
 
@@ -466,6 +479,11 @@ class RestaurantController extends BaseController
         RestaurantAddress::where('address', 'address')->where("restaurant_id", $request->restaurant_id)->delete();
 
         if ($restaurantLocation->save()) {
+
+
+            //UPDATE RESTAURANT LAT LONG
+            getLatLong($request->address, 'restaurants', $request->restaurant_id);
+
             if ($request->is_current_address == 'yes') {
                 RestaurantAddress::where("id", '!=', $restaurantLocation->id)->where("restaurant_id", $request->restaurant_id)->update(
                     [
@@ -496,6 +514,10 @@ class RestaurantController extends BaseController
 
     public function restaurantLocationUpdate(RestaurantAddressUpdateFormRequest $request)
     {
+
+        //UPDATE RESTAURANT LAT LONG
+        getLatLong($request->address, 'restaurants', $request->restaurant_id);
+
         RestaurantAddress::where("id", $request->id)->update(
             [
                 "restaurant_id" => $request->restaurant_id,
@@ -514,7 +536,7 @@ class RestaurantController extends BaseController
             //Update profile address
             RestaurantProfile::where("restaurant_id", $request->restaurant_id)->update(
                 [
-                    "address" => $restaurantLocation->address,
+                    "address" => $request->address,
                 ]
             );
         }

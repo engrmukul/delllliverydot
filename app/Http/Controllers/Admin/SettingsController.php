@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Models\FCM;
 use App\Models\GeneralSetting;
+use App\Models\GOOGLE;
 use App\Models\PUSHER;
 use App\Models\TWILIO;
 use App\Contracts\SettingsContract;
@@ -33,12 +34,13 @@ class SettingsController extends BaseController
     {
         $this->setPageTitle('Settings', 'Edit Settings');
 
+        $GOOGLE = GOOGLE::first();
         $FCM = FCM::first();
         $PUSHER = PUSHER::first();
         $TWILIO = TWILIO::first();
         $GeneralSetting = GeneralSetting::first();
 
-        return view('admin.settings.edit', compact('FCM', 'PUSHER','TWILIO','GeneralSetting'));
+        return view('admin.settings.edit', compact('GOOGLE','FCM', 'PUSHER','TWILIO','GeneralSetting'));
     }
 
     /**

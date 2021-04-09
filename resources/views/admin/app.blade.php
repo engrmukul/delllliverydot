@@ -13,10 +13,8 @@
 
 <body>
 <div id="wrapper">
-    @if(isset(auth()->user()->id))
         @include('admin.partials.sidebar')
-    @else
-    @endif
+
     <div id="page-wrapper" class="gray-bg">
         @include('admin.partials.header')
         @yield('content')

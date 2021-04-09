@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Contracts\SettingsContract;
 use App\Models\FCM;
 use App\Models\GeneralSetting;
+use App\Models\GOOGLE;
 use App\Models\PUSHER;
 use App\Models\TWILIO;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -23,6 +24,12 @@ class SettingsRepository implements SettingsContract
             DB::beginTransaction();
 
             $collection = collect($params)->except('_token');
+
+
+            //GOOGLE GEOCODE API KEY UPDATE
+            $GOOGLE = GOOGLE::findOrNew($collection['googleId']);
+            $GOOGLE->API_KEY = $collection['API_KEY'];
+            $GOOGLE->save();
 
             //FCM UPDATE
 

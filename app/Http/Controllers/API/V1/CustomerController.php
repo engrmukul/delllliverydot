@@ -60,6 +60,7 @@ use App\Models\OrderDetail;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use stdClass;
+use function MongoDB\BSON\toJSON;
 
 /**
  * Class CustomerController
@@ -88,6 +89,7 @@ class CustomerController extends BaseController
     public function store(CustomerPhoneVerificationFormRequest $request)
     {
         $params = $request->except('_token');
+
         $customer = $this->customerRepository->createCustomer($params);
 
         if ($customer) {
@@ -147,6 +149,13 @@ class CustomerController extends BaseController
 
         $banners = Banner::all();
 
+
+        //GET 2 KM DISTANCE LAT LONG
+        $currentAddress =  CustomerAddress::where(['customer_id'=> $request->customer_id, 'is_current_address'=>'yes'])->first();
+
+        $distanceLatLong = distanceLatLong($currentAddress->address, 2);
+
+
         $restaurantsFavorite = Restaurant::with(['RestaurantDetails', 'coupon', 'foods',
             'favoriteRestaurant' => function ($q) use ($request) {
                 $q->where('customer_id', '=', $request->customer_id);
@@ -154,6 +163,10 @@ class CustomerController extends BaseController
             ->where('is_favorite', 'yes')
             ->where('isVerified', '1')
             ->where('status', 'active')
+            ->where('latitude','!=', null)
+            ->where('longitude','!=', null)
+            ->where('latitude','<=', $distanceLatLong['distanceLat'])
+            ->where('longitude','<=', $distanceLatLong['distanceLon'])
             ->orderBy('id', 'DESC')->inRandomOrder()->get();
 
         if ($restaurantsFavorite->count() > 0) {
@@ -165,6 +178,10 @@ class CustomerController extends BaseController
                 }])
                 ->where('isVerified', '1')
                 ->where('status', 'active')
+                ->where('latitude','!=', null)
+                ->where('longitude','!=', null)
+                ->where('latitude','<=', $distanceLatLong['distanceLat'])
+                ->where('longitude','<=', $distanceLatLong['distanceLon'])
                 ->orderBy('id', 'DESC')->inRandomOrder()->get();
         }
 
@@ -176,6 +193,10 @@ class CustomerController extends BaseController
             ->where('is_discounted', 'yes')
             ->where('isVerified', 1)
             ->where('status', 'active')
+            ->where('latitude','!=', null)
+            ->where('longitude','!=', null)
+            ->where('latitude','<=', $distanceLatLong['distanceLat'])
+            ->where('longitude','<=', $distanceLatLong['distanceLon'])
             ->orderBy('id', 'DESC')->inRandomOrder()->get();
 
         if ($restaurantsDiscounted->count() > 0) {
@@ -187,6 +208,10 @@ class CustomerController extends BaseController
                 }])
                 ->where('isVerified', '1')
                 ->where('status', 'active')
+                ->where('latitude','!=', null)
+                ->where('longitude','!=', null)
+                ->where('latitude','<=', $distanceLatLong['distanceLat'])
+                ->where('longitude','<=', $distanceLatLong['distanceLon'])
                 ->orderBy('id', 'DESC')->inRandomOrder()->get();
         }
 
@@ -197,6 +222,10 @@ class CustomerController extends BaseController
             ->where('is_trending', 'yes')
             ->where('isVerified', '1')
             ->where('status', 'active')
+            ->where('latitude','!=', null)
+            ->where('longitude','!=', null)
+            ->where('latitude','<=', $distanceLatLong['distanceLat'])
+            ->where('longitude','<=', $distanceLatLong['distanceLon'])
             ->orderBy('id', 'DESC')->inRandomOrder()->get();
 
         if ($restaurantsTrending->count() > 0) {
@@ -208,6 +237,10 @@ class CustomerController extends BaseController
                 }])
                 ->where('isVerified', '1')
                 ->where('status', 'active')
+                ->where('latitude','!=', null)
+                ->where('longitude','!=', null)
+                //->where('latitude','<=', $distanceLatLong['distanceLat'])
+                //->where('longitude','<=', $distanceLatLong['distanceLon'])
                 ->orderBy('id', 'DESC')->inRandomOrder()->get();
         }
 
@@ -219,6 +252,10 @@ class CustomerController extends BaseController
             ->where('is_popular', 'yes')
             ->where('isVerified', '1')
             ->where('status', 'active')
+            ->where('latitude','!=', null)
+            ->where('longitude','!=', null)
+            ->where('latitude','<=', $distanceLatLong['distanceLat'])
+            ->where('longitude','<=', $distanceLatLong['distanceLon'])
             ->orderBy('id', 'DESC')->inRandomOrder()->get();
 
         if ($restaurantsPopular->count() > 0) {
@@ -230,6 +267,10 @@ class CustomerController extends BaseController
                 }])
                 ->where('isVerified', '1')
                 ->where('status', 'active')
+                ->where('latitude','!=', null)
+                ->where('longitude','!=', null)
+                ->where('latitude','<=', $distanceLatLong['distanceLat'])
+                ->where('longitude','<=', $distanceLatLong['distanceLon'])
                 ->orderBy('id', 'DESC')->inRandomOrder()->get();
         }
 
@@ -558,6 +599,10 @@ class CustomerController extends BaseController
 
         if ($myLocation->save()) {
 
+
+            //UPDATE CUSTOMER LAT LONG
+            getLatLong($request->address, 'customers', $request->customer_id);
+
             //DELETE CUSTOMER DEFAULT ADDRESS
             CustomerAddress::where('address', 'address')->where("customer_id", $request->customer_id)->delete();
 
@@ -599,6 +644,10 @@ class CustomerController extends BaseController
      */
     public function myLocationUpdate(CustomerAddressUpdateFormRequest $request)
     {
+
+        //UPDATE CUSTOMER LAT LONG
+        getLatLong($request->address, 'customers', $request->customer_id);
+
         CustomerAddress::where("id", $request->id)->update(
             [
                 "customer_id" => $request->customer_id,
@@ -648,7 +697,7 @@ class CustomerController extends BaseController
         $customerAddress = CustomerAddress::where('customer_id', $request->customer_id)->orderBy('is_current_address', 'desc')->get();
 
         if ($customerAddress->count() > 0) {
-            return $this->sendResponse($customerAddress, 'CUstomer Address list', Response::HTTP_OK);
+            return $this->sendResponse($customerAddress, 'Customer Address list', Response::HTTP_OK);
         } else {
             return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
         }

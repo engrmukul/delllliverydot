@@ -235,3 +235,88 @@ function getAddress($id, $type)
     return $addresss->address ? $addresss->address : "-";
 }
 
+
+function latLongByAddress($address): array
+{
+    //$address = "Chaitankhila, Bangladesh";
+
+    $prepAddr = str_replace(' ','+',$address);
+    $prepAddr1 = str_replace(',','+',$prepAddr);
+    $apiKey = 'AIzaSyCYxxv5F_j31DkVZnhIzkvXlCAL6gv8uPg'; // Google maps now requires an API key.
+
+    $geocode=file_get_contents('https://maps.googleapis.com/maps/api/geocode/json?address='.urlencode($prepAddr1).'&sensor=false&key='.$apiKey);
+
+    //print_r($geocode);
+
+    $output= json_decode($geocode);
+    $latitude = $output->results[0]->geometry->location->lat;
+    $longitude = $output->results[0]->geometry->location->lng;
+
+    return array('latitude'=>$latitude, 'longitude'=>$longitude);
+
+}
+
+
+function getLatLong($address, $tableName, $id)
+{
+
+    $latLong = latLongByAddress($address);
+
+    if($tableName == 'customers'){
+        \App\Models\Customer::where('id', $id)->update(
+            array(
+                'latitude'=>$latLong['latitude'],
+                'longitude'=>$latLong['longitude'],
+            )
+        );
+    }
+
+    if($tableName == 'restaurants'){
+        \App\Models\Restaurant::where('id', $id)->update(
+            array(
+                'latitude'=>$latLong['latitude'],
+                'longitude'=>$latLong['longitude'],
+            )
+        );
+    }
+
+    if($tableName == 'riders'){
+        \App\Models\Rider::where('id', $id)->update(
+            array(
+                'latitude'=>$latLong['latitude'],
+                'longitude'=>$latLong['longitude'],
+            )
+        );
+    }
+
+}
+
+
+/**
+ * @param $address
+ * @param $distance in Kilometer
+ * @return array
+ */
+function distanceLatLong($address='', $distance=0): array
+{
+    $distance = $distance ? $distance : 0;
+    $earthRadius = 6371;
+
+    $latLong = latLongByAddress($address);
+
+    $currentLat = deg2rad($latLong['latitude']);
+    $currentLon = deg2rad($latLong['longitude']);
+
+    $bearing = deg2rad(0);
+
+    $distanceLat = asin(sin($currentLat) * cos($distance / $earthRadius) + cos($currentLat) * sin($distance / $earthRadius) * cos($bearing));
+    $distanceLon = $currentLon + atan2(sin($bearing) * sin($distance / $earthRadius) * cos($currentLat), cos($distance / $earthRadius) - sin($currentLat) * sin($distanceLat));
+
+    //echo 'LAT: ' . rad2deg($distanceLat) . '<br >';
+    //echo 'LNG: ' . rad2deg($distanceLon);
+
+    return array('distanceLat'=>rad2deg($distanceLat), 'distanceLon'=>rad2deg($distanceLon));
+
+
+}
+
