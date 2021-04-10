@@ -153,21 +153,28 @@ class CustomerController extends BaseController
         //GET 2 KM DISTANCE LAT LONG
         $currentAddress =  CustomerAddress::where(['customer_id'=> $request->customer_id, 'is_current_address'=>'yes'])->first();
 
-        $distanceLatLong = distanceLatLong($currentAddress->address, 2);
+        $latLongByAddress = latLongByAddress($currentAddress);
+        $lat = $latLongByAddress['latitude'] ;
+        $lon = $latLongByAddress['longitude'] ;
+        $distance = getDistance();
 
 
         $restaurantsFavorite = Restaurant::with(['RestaurantDetails', 'coupon', 'foods',
             'favoriteRestaurant' => function ($q) use ($request) {
                 $q->where('customer_id', '=', $request->customer_id);
             }])
+            ->selectRaw("*,
+
+                ( 3959 * acos( cos( radians($lat) ) * cos( radians( restaurants.latitude ) )
+                       * cos( radians(restaurants.longitude) - radians($lon)) + sin(radians($lat))
+                       * sin( radians(restaurants.latitude)))) AS distance"
+            )
             ->where('is_favorite', 'yes')
             ->where('isVerified', '1')
             ->where('status', 'active')
-            ->where('latitude','!=', null)
-            ->where('longitude','!=', null)
-            ->where('latitude','<=', $distanceLatLong['distanceLat'])
-            ->where('longitude','<=', $distanceLatLong['distanceLon'])
-            ->orderBy('id', 'DESC')->inRandomOrder()->get();
+            ->having("distance", "<", $distance)
+            ->orderBy("distance")
+            ->get();
 
         if ($restaurantsFavorite->count() > 0) {
             $restaurantsFavorite = $restaurantsFavorite;
@@ -176,13 +183,17 @@ class CustomerController extends BaseController
                 'favoriteRestaurant' => function ($q) use ($request) {
                     $q->where('customer_id', '=', $request->customer_id);
                 }])
+                ->selectRaw("*,
+
+                ( 3959 * acos( cos( radians($lat) ) * cos( radians( restaurants.latitude ) )
+                       * cos( radians(restaurants.longitude) - radians($lon)) + sin(radians($lat))
+                       * sin( radians(restaurants.latitude)))) AS distance"
+                )
                 ->where('isVerified', '1')
                 ->where('status', 'active')
-                ->where('latitude','!=', null)
-                ->where('longitude','!=', null)
-                ->where('latitude','<=', $distanceLatLong['distanceLat'])
-                ->where('longitude','<=', $distanceLatLong['distanceLon'])
-                ->orderBy('id', 'DESC')->inRandomOrder()->get();
+                ->having("distance", "<", $distance)
+                ->orderBy("distance")
+                ->get();
         }
 
 
@@ -190,14 +201,18 @@ class CustomerController extends BaseController
             'favoriteRestaurant' => function ($q) use ($request) {
                 $q->where('customer_id', '=', $request->customer_id);
             }])
+            ->selectRaw("*,
+
+                ( 3959 * acos( cos( radians($lat) ) * cos( radians( restaurants.latitude ) )
+                       * cos( radians(restaurants.longitude) - radians($lon)) + sin(radians($lat))
+                       * sin( radians(restaurants.latitude)))) AS distance"
+            )
             ->where('is_discounted', 'yes')
-            ->where('isVerified', 1)
+            ->where('isVerified', '1')
             ->where('status', 'active')
-            ->where('latitude','!=', null)
-            ->where('longitude','!=', null)
-            ->where('latitude','<=', $distanceLatLong['distanceLat'])
-            ->where('longitude','<=', $distanceLatLong['distanceLon'])
-            ->orderBy('id', 'DESC')->inRandomOrder()->get();
+            ->having("distance", "<", $distance)
+            ->orderBy("distance")
+            ->get();
 
         if ($restaurantsDiscounted->count() > 0) {
             $restaurantsDiscounted = $restaurantsDiscounted;
@@ -206,27 +221,35 @@ class CustomerController extends BaseController
                 'favoriteRestaurant' => function ($q) use ($request) {
                     $q->where('customer_id', '=', $request->customer_id);
                 }])
+                ->selectRaw("*,
+
+                ( 3959 * acos( cos( radians($lat) ) * cos( radians( restaurants.latitude ) )
+                       * cos( radians(restaurants.longitude) - radians($lon)) + sin(radians($lat))
+                       * sin( radians(restaurants.latitude)))) AS distance"
+                )
                 ->where('isVerified', '1')
                 ->where('status', 'active')
-                ->where('latitude','!=', null)
-                ->where('longitude','!=', null)
-                ->where('latitude','<=', $distanceLatLong['distanceLat'])
-                ->where('longitude','<=', $distanceLatLong['distanceLon'])
-                ->orderBy('id', 'DESC')->inRandomOrder()->get();
+                ->having("distance", "<", $distance)
+                ->orderBy("distance")
+                ->get();
         }
 
         $restaurantsTrending = Restaurant::with(['RestaurantDetails', 'coupon', 'foods',
             'favoriteRestaurant' => function ($q) use ($request) {
                 $q->where('customer_id', '=', $request->customer_id);
             }])
+            ->selectRaw("*,
+
+                ( 3959 * acos( cos( radians($lat) ) * cos( radians( restaurants.latitude ) )
+                       * cos( radians(restaurants.longitude) - radians($lon)) + sin(radians($lat))
+                       * sin( radians(restaurants.latitude)))) AS distance"
+            )
             ->where('is_trending', 'yes')
             ->where('isVerified', '1')
             ->where('status', 'active')
-            ->where('latitude','!=', null)
-            ->where('longitude','!=', null)
-            ->where('latitude','<=', $distanceLatLong['distanceLat'])
-            ->where('longitude','<=', $distanceLatLong['distanceLon'])
-            ->orderBy('id', 'DESC')->inRandomOrder()->get();
+            ->having("distance", "<", $distance)
+            ->orderBy("distance")
+            ->get();
 
         if ($restaurantsTrending->count() > 0) {
             $restaurantsTrending = $restaurantsTrending;
@@ -235,13 +258,17 @@ class CustomerController extends BaseController
                 'favoriteRestaurant' => function ($q) use ($request) {
                     $q->where('customer_id', '=', $request->customer_id);
                 }])
+                ->selectRaw("*,
+
+                ( 3959 * acos( cos( radians($lat) ) * cos( radians( restaurants.latitude ) )
+                       * cos( radians(restaurants.longitude) - radians($lon)) + sin(radians($lat))
+                       * sin( radians(restaurants.latitude)))) AS distance"
+                )
                 ->where('isVerified', '1')
                 ->where('status', 'active')
-                ->where('latitude','!=', null)
-                ->where('longitude','!=', null)
-                //->where('latitude','<=', $distanceLatLong['distanceLat'])
-                //->where('longitude','<=', $distanceLatLong['distanceLon'])
-                ->orderBy('id', 'DESC')->inRandomOrder()->get();
+                ->having("distance", "<", $distance)
+                ->orderBy("distance")
+                ->get();
         }
 
 
@@ -249,14 +276,18 @@ class CustomerController extends BaseController
             'favoriteRestaurant' => function ($q) use ($request) {
                 $q->where('customer_id', '=', $request->customer_id);
             }])
+            ->selectRaw("*,
+
+                ( 3959 * acos( cos( radians($lat) ) * cos( radians( restaurants.latitude ) )
+                       * cos( radians(restaurants.longitude) - radians($lon)) + sin(radians($lat))
+                       * sin( radians(restaurants.latitude)))) AS distance"
+            )
             ->where('is_popular', 'yes')
             ->where('isVerified', '1')
             ->where('status', 'active')
-            ->where('latitude','!=', null)
-            ->where('longitude','!=', null)
-            ->where('latitude','<=', $distanceLatLong['distanceLat'])
-            ->where('longitude','<=', $distanceLatLong['distanceLon'])
-            ->orderBy('id', 'DESC')->inRandomOrder()->get();
+            ->having("distance", "<", $distance)
+            ->orderBy("distance")
+            ->get();
 
         if ($restaurantsPopular->count() > 0) {
             $restaurantsPopular = $restaurantsPopular;
@@ -265,13 +296,17 @@ class CustomerController extends BaseController
                 'favoriteRestaurant' => function ($q) use ($request) {
                     $q->where('customer_id', '=', $request->customer_id);
                 }])
+                ->selectRaw("*,
+
+                ( 3959 * acos( cos( radians($lat) ) * cos( radians( restaurants.latitude ) )
+                       * cos( radians(restaurants.longitude) - radians($lon)) + sin(radians($lat))
+                       * sin( radians(restaurants.latitude)))) AS distance"
+                )
                 ->where('isVerified', '1')
                 ->where('status', 'active')
-                ->where('latitude','!=', null)
-                ->where('longitude','!=', null)
-                ->where('latitude','<=', $distanceLatLong['distanceLat'])
-                ->where('longitude','<=', $distanceLatLong['distanceLon'])
-                ->orderBy('id', 'DESC')->inRandomOrder()->get();
+                ->having("distance", "<", $distance)
+                ->orderBy("distance")
+                ->get();
         }
 
         if ($restaurantsFavorite->count() > 0 || $restaurantsDiscounted->count() > 0 || $restaurantsTrending->count() > 0 || $restaurantsPopular->count() > 0) {

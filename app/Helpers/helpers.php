@@ -320,3 +320,7 @@ function distanceLatLong($address='', $distance=0): array
 
 }
 
+function getDistance(){
+    return \App\Models\GOOGLE::get()->first()->distance;
+}
+

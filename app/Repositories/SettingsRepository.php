@@ -29,6 +29,7 @@ class SettingsRepository implements SettingsContract
             //GOOGLE GEOCODE API KEY UPDATE
             $GOOGLE = GOOGLE::findOrNew($collection['googleId']);
             $GOOGLE->API_KEY = $collection['API_KEY'];
+            $GOOGLE->distance = $collection['distance'];
             $GOOGLE->save();
 
             //FCM UPDATE

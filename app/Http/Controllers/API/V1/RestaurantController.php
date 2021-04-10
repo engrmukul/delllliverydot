@@ -193,13 +193,21 @@ class RestaurantController extends BaseController
         //GET 2 KM DISTANCE LAT LONG
         $currentAddress =  RestaurantAddress::where(['restaurant_id'=> $restaurantId, 'is_current_address'=>'yes'])->first();
 
-        $distanceLatLong = distanceLatLong($currentAddress->address, 2);
+        $latLongByAddress = latLongByAddress($currentAddress);
+        $lat = $latLongByAddress['latitude'] ;
+        $lon = $latLongByAddress['longitude'] ;
+        $distance = getDistance();
 
         $riders = Rider::whereNotNull('device_token')
-            ->where('latitude','!=', null)
-            ->where('longitude','!=', null)
-            ->where('latitude','<=', $distanceLatLong['distanceLat'])
-            ->where('longitude','<=', $distanceLatLong['distanceLon'])
+            ->selectRaw("*,
+
+                ( 3959 * acos( cos( radians($lat) ) * cos( radians( riders.latitude ) )
+                       * cos( radians(riders.longitude) - radians($lon)) + sin(radians($lat))
+                       * sin( radians(riders.latitude)))) AS distance"
+            )
+            ->where('isVerified', '1')
+            ->where('status', 'active')
+            ->having("distance", "<", $distance)
             ->get();
 
         $orderDetail = Order::with('customer', 'RestaurantDetails', 'orderDetails', 'orderDetails.foods', 'orderDetails.foodVariants')->where('id', $request->order_id)->first();

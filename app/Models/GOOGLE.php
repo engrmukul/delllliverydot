@@ -21,7 +21,8 @@ class GOOGLE extends Model
      * @var array
      */
     protected $fillable = [
-        'SERVER_API_KEY'
+        'SERVER_API_KEY',
+        'distance',
     ];
 
     /**

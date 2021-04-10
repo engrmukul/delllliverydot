@@ -51,6 +51,17 @@
                                 </div>
                             </div>
 
+                            <h1>DISTANCE</h1>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="distance" class="font-bold">DISTANCE (KM)</label>
+                                        <input name="distance" value="{{ old('distance', $GOOGLE->distance) }}" placeholder="{{ trans('distance')}}" class="form-control" required>
+                                        <span class="form-text m-b-none text-danger"> @error('distance') {{ $message }} @enderror </span>
+                                    </div>
+                                </div>
+                            </div>
+
                             <hr><h1>PUSHER</h1>
                             <div class="row">
                                 <div class="col-md-12">
