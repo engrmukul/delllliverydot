@@ -579,10 +579,29 @@ class CustomerController extends BaseController
         $items = FoodVariant::where('food_id', $request->food_id)->get();
         $extra = Extra::where('food_id', $request->food_id)->get();
 
-        if ($items->count() > 0) {
 
+        $food = Food::with('restaurants.restaurantDetails')->where('id', $request->food_id)->first();
+
+        $discount = isset(($food->restaurants->restaurantDetails)->discount) ? (($food->restaurants->restaurantDetails)->discount) : 0;
+
+
+        $fv = array();
+
+        foreach ($items as $item){
+            $fd['id'] = $item->id;
+            $fd['food_id'] = $item->food_id;
+            $fd['name'] = $item->name;
+            $fd['price'] = $item->price;
+            $fd['discount'] = $discount;
+
+            $fv[] = $fd;
+        }
+
+
+
+        if ($items->count() > 0) {
             $data = array(
-                'food_variants' => $items,
+                'food_variants' => $fv,
                 'extra_item' => $extra
             );
 
@@ -1606,7 +1625,41 @@ class CustomerController extends BaseController
             if ($orderData) {
                 $order = new Order();
 
-                if ($this->paymentStatus($orderData)) {
+
+                $status = false;
+
+                if($orderData['payment_method'] == 'cash_on_delivery'){
+                    $status = true;
+                }
+
+                if($orderData['payment_method'] == 'bkash'){
+                    $status = true;
+                }
+
+                if($orderData['payment_method'] == 'redeem'){
+
+                    $pointValue = Customer::where('id', $orderData['customer_id'])->first();
+
+                    //dd($pointValue->attributesToArray());
+                    //dd($orderData['sub_total']);
+
+                    if(intval($pointValue->point) <  intval($orderData['sub_total'])){
+                        return $this->sendResponse(array(), 'Your redeem point is low for this order', Response::HTTP_NOT_FOUND);
+                    }
+
+                    Customer::where('id', $orderData['customer_id'])->update(
+                        [
+                            'point' => $pointValue->point - $orderData['sub_total']
+                        ]
+                    );
+
+                    $status = true;
+                }
+
+
+
+
+                if ($status) {
                     $order->order_number = (string)time() . stripslashes($orderData['customer_id']);
                     $order->customer_id = $orderData['customer_id'];
                     $order->delivery_address = $orderData['address'];
@@ -1627,20 +1680,22 @@ class CustomerController extends BaseController
                     $foodArray = array();
                     foreach ($orderData['carts'] as $key => $item) {
 
-                        if ($item['extraItemId'] == 0 || $item['extraItemId'] == NULL) {
+                       /* if ($item['extraItemId'] == 0 || $item['extraItemId'] == NULL) {
                             $item['extraItemId'] = NULL;
                         } else {
                             $item['extraItemId'] = $item['extraItemId'];
-                        }
+                        }*/
 
                         $foodData['order_id'] = $order->id;
                         $foodData['food_id'] = $item['foodId'];
                         $foodData['food_variant_id'] = $item['foodVariantId'];
                         $foodData['food_price'] = $item['price'];
                         $foodData['food_quantity'] = $item['quantity'];
-                        $foodData['extra_id'] = $item['extraItemId'];
+                        $foodData['extra_id'] = $item['extraItemIds'];
                         $foodData['extra_price'] = $item['extraItemPrice'] ? $item['extraItemPrice'] : 0;
                         $foodData['sub_total'] = ($item['price'] * $item['quantity']) + $item['extraItemPrice'];
+                        $foodData['instruction'] = $item['instructionForCooking'];
+
 
                         $foodArray[] = $foodData;
                     }
@@ -1697,7 +1752,7 @@ class CustomerController extends BaseController
 
     public function paymentStatus($orderData)
     {
-        return true;
+        //return true;
         if($orderData['payment_method'] == 'cash_on_delivery'){
             return true;
         }
@@ -1705,14 +1760,19 @@ class CustomerController extends BaseController
             return true;
         }
         else if($orderData['payment_method'] == 'redeem'){
+
             $pointValue = Customer::where('id', $orderData['customer_id'])->first();
-            if(isset($pointValue->point) AND $pointValue->point <  $orderData['sub_total']){
+
+            //dd($pointValue->attributesToArray());
+            //dd($orderData['sub_total']);
+
+            if(intval($pointValue->point) <  intval($orderData['sub_total'])){
                 return $this->sendResponse(array(), 'Your redeem point is low for this order', Response::HTTP_NOT_FOUND);
             }
 
             Customer::where('id', $orderData['customer_id'])->update(
                 [
-                    'point' => $pointValue - $orderData['sub_total']
+                    'point' => $pointValue->point - $orderData['sub_total']
                 ]
             );
 
