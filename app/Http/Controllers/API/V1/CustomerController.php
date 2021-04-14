@@ -1696,9 +1696,9 @@ class CustomerController extends BaseController
                         $foodData['sub_total'] = ($item['price'] * $item['quantity']) + $item['extraItemPrice'];
                         $foodData['instruction'] = $item['instructionForCooking'];
 
-
                         $foodArray[] = $foodData;
                     }
+
 
 
                     OrderDetail::insert($foodArray);

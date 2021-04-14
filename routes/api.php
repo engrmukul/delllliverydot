@@ -115,6 +115,7 @@ Route::get('/rider-terms-and-condition', 'API\V1\RiderController@termsAndConditi
 Route::post('/restaurant-otp-verify', 'API\V1\RestaurantController@otpVerify')->name('restaurant-otp-verify');
 Route::post('/restaurant-document', 'API\V1\RestaurantController@documentUpdate')->name('restaurant-document');
 Route::post('/restaurant-today-order', 'API\V1\RestaurantController@restaurantTodayOrder')->name('restaurant-today-order');
+Route::post('/restaurant-order-details', 'API\V1\RestaurantController@orderDetails')->name('restaurant-order-details');
 Route::post('/restaurant-order-accept', 'API\V1\RestaurantController@orderAccept')->name('restaurant-order-accept');
 Route::post('/restaurant-order-cancel', 'API\V1\RestaurantController@orderCancel')->name('restaurant-order-cancel');
 Route::post('/restaurant-order-ready', 'API\V1\RestaurantController@orderReady')->name('restaurant-order-ready');

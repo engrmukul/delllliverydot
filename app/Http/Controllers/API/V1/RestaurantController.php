@@ -13,9 +13,11 @@ use App\Http\Requests\RestaurantPhoneVerificationFormRequest;
 use App\Http\Requests\RestaurantStoreFormRequest;
 use App\Http\Requests\RestaurantUpdateFormRequest;
 use App\Http\Requests\RiderDeviceTokenStoreFormRequest;
+use App\Models\Extra;
 use App\Models\Food;
 use App\Models\HelpAndSupport;
 use App\Models\Order;
+use App\Models\OrderDetail;
 use App\Models\Restaurant;
 use App\Models\RestaurantAddress;
 use App\Models\RestaurantProfile;
@@ -70,7 +72,11 @@ class RestaurantController extends BaseController
      */
     public function restaurantTodayOrder(Request $request)
     {
-        $todaysOrder = Order::with('customer', 'RestaurantDetails', 'orderDetails', 'orderDetails.foods', 'orderDetails.foodVariants')->whereDate('order_date', '>=', date('Y-m-d'))->where('restaurant_id', $request->restaurant_id)->orderBy('order_date', 'DESC')->get();
+        $todaysOrder = Order::with('customer', 'RestaurantDetails', 'orderDetails', 'orderDetails.foods', 'orderDetails.foodVariants')
+            ->whereDate('order_date', '>=', date('Y-m-d'))
+            ->where('restaurant_id', $request->restaurant_id)
+            ->orderBy('order_date', 'DESC')
+            ->get();
 
         $orderDataArray = array();
         if ($todaysOrder->count() > 0) {
@@ -94,6 +100,51 @@ class RestaurantController extends BaseController
         }
 
     }
+
+    /**
+     * ORDER DETAILS
+     */
+    public function orderDetails(Request $request)
+    {
+        $orderDetails = OrderDetail::with('foods','foodVariants')
+            ->where('order_id', $request->order_id)
+            ->get();
+
+        $orderItemDetailsArray = array();
+
+        if($orderDetails){
+            foreach ($orderDetails as $order){
+
+                $extra = Extra::whereIn('id', explode(",",$order->extra_id))->get(['name']);
+
+                if($extra){
+                    foreach ($extra as $key => $ex){
+                        $a[$key] = $ex->name;
+                    }
+                }
+
+                $orderItemData['item'] = $order->foodVariants[0]->name;
+                $orderItemData['quantity'] = $order->food_quantity;
+                $orderItemData['extra'] = $a ? implode(", ",$a) : "";
+
+
+                $orderItemDetailsArray[] = $orderItemData;
+            }
+        }
+
+
+        //dd($orderItemDetailsArray);
+
+
+        if($orderItemDetailsArray){
+            return $this->sendResponse($orderItemDetailsArray, 'Order details.', Response::HTTP_OK);
+        }else{
+            return $this->sendResponse(array(), 'Data not found', Response::HTTP_NOT_FOUND);
+        }
+
+    }
+
+
 
     public function orderAccept(Request $request)
     {

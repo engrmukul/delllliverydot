@@ -40,7 +40,6 @@ class OrderDetail extends Model
         "food_variant_id" => 'int',
         "food_price" => 'double',
         "food_quantity" => 'int',
-        "extra_id" => 'int',
         "extra_price" => 'double',
         "sub_total" => 'double',
     ];
