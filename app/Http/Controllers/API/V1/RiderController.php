@@ -26,6 +26,7 @@ use Doctrine\Instantiator\Exception\InvalidArgumentException;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -337,6 +338,9 @@ class RiderController extends BaseController
 
     public function orderList(RiderOrderListFormRequest $request)
     {
+        date_default_timezone_set("Asia/Dhaka");
+
+
         $orderList = Order::with('customer','customerDetails','restaurant', 'RestaurantDetails', 'orderDetails', 'orderDetails.foods', 'orderDetails.foodVariants')->where('rider_id', $request->rider_id)->orderBy('order_date', 'DESC')->get();
 
         $orderDataArray = array();
@@ -344,16 +348,34 @@ class RiderController extends BaseController
 
             foreach ($orderList->toArray() as $order) {
 
+                //CALCULATE REMAINING TIME
+                $orderDate = strtotime($order['order_date']);
+                $currentDate = strtotime(date('Y-m-d h:i:s'));
+
+                $timeDiff = $currentDate-$orderDate;
+
+                $time = date('i', $timeDiff);
+
+                $leftTime = intval($order['restaurant_details']['delivery_time']) - intval($time);
+
+                if($leftTime > 0){
+                    $lt = $leftTime ." M";
+                }else{
+                    $lt = "0 M";
+                }
+
+
                 $orderData['order_id'] = $order['id'];
                 $orderData['order_status'] = $order['order_status'];
                 $orderData['order_date'] = $order['order_date'];
-                $orderData['delivery_time'] = $order['restaurant_details']['delivery_time'];
+               // $orderData['delivery_time'] = $order['restaurant_details']['delivery_time'];
+                $orderData['delivery_time'] = $lt;
 
-                if($order['order_status'] == 'rider_accepted') {
+                if($order['order_status'] == 'on_the_way_to_restaurant') {
                     $orderData['name'] = $order['restaurant_details']['name'];
                     $orderData['address'] = $order['restaurant_details']['address'];
                     $orderData['phone_number'] = $order['restaurant']['phone_number'];
-                }if($order['order_status'] == 'delivery_on_the_way' || $order['order_status'] == 'delivered' ){
+                }if($order['order_status'] == 'on_the_way_to_customer' || $order['order_status'] == 'delivered' ){
                     $orderData['name'] = $order['customer']['name'];
                     $orderData['address'] = $order['customer_details']['address'];
                     $orderData['phone_number'] = $order['customer']['phone_number'];
@@ -362,6 +384,8 @@ class RiderController extends BaseController
                 foreach ($order['order_details'] as $orderDetails) {
                     $orderData['food_name'] = $orderDetails['foods']['name'];
                 }
+
+                //dd($order['order_details']);
 
                 $orderDataArray[] = $orderData;
             }

@@ -59,4 +59,19 @@ class OrderDetail extends Model
         return $this->hasMany(Extra::class);
     }
 
+    public function getFoodPriceAttribute($value)
+    {
+        return number_format($value,2);
+    }
+
+    public function getExtraPriceAttribute($value)
+    {
+        return number_format($value,2);
+    }
+
+    public function getSubTotalAttribute($value)
+    {
+        return number_format($value,2);
+    }
+
 }
