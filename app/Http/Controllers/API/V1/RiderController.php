@@ -304,23 +304,48 @@ class RiderController extends BaseController
             ->limit(10)
             ->get();
 
+
+        date_default_timezone_set("Asia/Dhaka");
+
+
         $orderDataArray = array();
         if ($orderList->count() > 0) {
             foreach ($orderList->toArray() as $order) {
 
+                //CALCULATE REMAINING TIME
+                $orderDate = strtotime($order['order_date']);
+                $currentDate = strtotime(date('Y-m-d h:i:s'));
+
+                $timeDiff = $currentDate-$orderDate;
+
+                $time = date('i', $timeDiff);
+
+                $leftTime = intval($order['restaurant_details']['delivery_time']) - intval($time);
+
+                if($leftTime > 0){
+                    $lt = $leftTime ." M";
+                }else{
+                    $lt = "0 M";
+                }
+
+
                 $orderData['order_id'] = $order['id'];
                 $orderData['order_status'] = $order['order_status'];
                 $orderData['order_date'] = $order['order_date'];
-                $orderData['delivery_time'] = $order['restaurant_details']['delivery_time'];
+                $orderData['delivery_time'] = $lt;
 
-                if($order['order_status'] == 'rider_accepted') {
+                if($order['order_status'] == 'on_the_way_to_restaurant') {
                     $orderData['name'] = $order['restaurant_details']['name'];
                     $orderData['address'] = $order['restaurant_details']['address'];
                     $orderData['phone_number'] = $order['restaurant']['phone_number'];
-                }if($order['order_status'] == 'delivery_on_the_way' || $order['order_status'] == 'delivered' ){
+                    $orderData['latitude'] = $order['restaurant']['latitude'];
+                    $orderData['longitude'] = $order['restaurant']['longitude'];
+                }if($order['order_status'] == 'on_the_way_to_customer' || $order['order_status'] == 'delivered' ){
                     $orderData['name'] = $order['customer']['name'];
                     $orderData['address'] = $order['customer_details']['address'];
                     $orderData['phone_number'] = $order['customer']['phone_number'];
+                    $orderData['latitude'] = $order['customer']['latitude'];
+                    $orderData['longitude'] = $order['customer']['longitude'];
                 }
 
                 foreach ($order['order_details'] as $orderDetails) {
@@ -375,10 +400,14 @@ class RiderController extends BaseController
                     $orderData['name'] = $order['restaurant_details']['name'];
                     $orderData['address'] = $order['restaurant_details']['address'];
                     $orderData['phone_number'] = $order['restaurant']['phone_number'];
+                    $orderData['latitude'] = $order['restaurant']['latitude'];
+                    $orderData['longitude'] = $order['restaurant']['longitude'];
                 }if($order['order_status'] == 'on_the_way_to_customer' || $order['order_status'] == 'delivered' ){
                     $orderData['name'] = $order['customer']['name'];
                     $orderData['address'] = $order['customer_details']['address'];
                     $orderData['phone_number'] = $order['customer']['phone_number'];
+                    $orderData['latitude'] = $order['customer']['latitude'];
+                    $orderData['longitude'] = $order['customer']['longitude'];
                 }
 
                 foreach ($order['order_details'] as $orderDetails) {

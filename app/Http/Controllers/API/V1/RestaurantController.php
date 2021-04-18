@@ -125,7 +125,7 @@ class RestaurantController extends BaseController
 
                 $orderItemData['item'] = $order->foodVariants[0]->name;
                 $orderItemData['quantity'] = $order->food_quantity;
-                $orderItemData['extra'] = $a ? implode(", ",$a) : "";
+                $orderItemData['extra'] = isset($a) ? implode(", ",$a) : "";
 
 
                 $orderItemDetailsArray[] = $orderItemData;

@@ -38,10 +38,10 @@ class OrderDetail extends Model
         "order_id" => 'int',
         "food_id" => 'int',
         "food_variant_id" => 'int',
-        "food_price" => 'double',
+        "food_price" => 'int',
         "food_quantity" => 'int',
-        "extra_price" => 'double',
-        "sub_total" => 'double',
+        "extra_price" => 'int',
+        "sub_total" => 'int',
     ];
 
     public function foods()
@@ -59,19 +59,19 @@ class OrderDetail extends Model
         return $this->hasMany(Extra::class);
     }
 
-    public function getFoodPriceAttribute($value)
+    /*public function getFoodPriceAttribute($value)
     {
-        return number_format($value,2);
+        return (double)number_format($value,2);
     }
 
     public function getExtraPriceAttribute($value)
     {
-        return number_format($value,2);
+        return (double)number_format($value,2);
     }
 
     public function getSubTotalAttribute($value)
     {
-        return number_format($value,2);
-    }
+        return (double)number_format($value,2);
+    }*/
 
 }
